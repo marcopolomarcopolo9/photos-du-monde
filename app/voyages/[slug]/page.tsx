@@ -10,16 +10,15 @@ import MasonryGrid from '@/components/gallery/MasonryGrid';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 
 interface Props {
-  params: Promise<{ slug: string }>;
+  params: { slug: string };
 }
 
-export async function generateStaticParams() {
+export function generateStaticParams() {
   return VOYAGES.map((v) => ({ slug: v.slug }));
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
-  const voyage = getVoyageBySlug(slug);
+export function generateMetadata({ params }: Props): Metadata {
+  const voyage = getVoyageBySlug(params.slug);
   if (!voyage) return {};
   return {
     title: `${voyage.title} — ${voyage.country}`,
@@ -32,9 +31,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function VoyagePage({ params }: Props) {
-  const { slug } = await params;
-  const voyage = getVoyageBySlug(slug);
+export default function VoyagePage({ params }: Props) {
+  const voyage = getVoyageBySlug(params.slug);
   if (!voyage) notFound();
 
   const startDate = new Date(voyage.startDate).toLocaleDateString('fr-FR', {
@@ -48,13 +46,10 @@ export default async function VoyagePage({ params }: Props) {
     <div className="bg-noir min-h-screen">
       <VoyageHero voyage={voyage} />
 
-      {/* Main content */}
       <div className="max-w-screen-xl mx-auto px-6 md:px-10 py-20 md:py-28">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
 
-          {/* LEFT: Description + Anecdotes */}
           <div className="lg:col-span-2">
-            {/* Description */}
             <ScrollReveal>
               <div className="flex items-center gap-4 mb-6">
                 <div className="w-8 h-px bg-or" />
@@ -65,7 +60,6 @@ export default async function VoyagePage({ params }: Props) {
               </p>
             </ScrollReveal>
 
-            {/* Date strip */}
             <ScrollReveal delay={0.1} className="gold-line mb-10" />
             <ScrollReveal delay={0.15}>
               <div className="flex flex-wrap gap-8 mb-16">
@@ -88,7 +82,6 @@ export default async function VoyagePage({ params }: Props) {
               </div>
             </ScrollReveal>
 
-            {/* Anecdotes */}
             {voyage.anecdotes.length > 0 && (
               <div className="mb-16">
                 <ScrollReveal>
@@ -106,15 +99,12 @@ export default async function VoyagePage({ params }: Props) {
             )}
           </div>
 
-          {/* RIGHT: Map + Tips */}
           <div className="lg:col-span-1">
             <div className="sticky top-24 flex flex-col gap-6">
-              {/* Map */}
               <ScrollReveal direction="right">
                 <VoyageMap voyage={voyage} />
               </ScrollReveal>
 
-              {/* Travel tips */}
               {voyage.tips.length > 0 && (
                 <ScrollReveal direction="right" delay={0.1}>
                   <div className="bg-noir-mid border border-white/5 p-6 md:p-8">
@@ -136,7 +126,6 @@ export default async function VoyagePage({ params }: Props) {
           </div>
         </div>
 
-        {/* Photo gallery */}
         {voyage.photos.length > 0 && (
           <div className="mt-20 md:mt-28">
             <ScrollReveal>
@@ -156,20 +145,13 @@ export default async function VoyagePage({ params }: Props) {
           </div>
         )}
 
-        {/* Navigation */}
         <div className="mt-24 md:mt-32">
           <div className="gold-line mb-10" />
           <div className="flex justify-between items-center">
-            <Link
-              href="/voyages"
-              className="flex items-center gap-3 text-[11px] tracking-widest uppercase text-creme/50 hover:text-or transition-colors"
-            >
+            <Link href="/voyages" className="flex items-center gap-3 text-[11px] tracking-widest uppercase text-creme/50 hover:text-or transition-colors">
               ← Tous les voyages
             </Link>
-            <Link
-              href="/galerie"
-              className="flex items-center gap-3 text-[11px] tracking-widest uppercase text-creme/50 hover:text-or transition-colors"
-            >
+            <Link href="/galerie" className="flex items-center gap-3 text-[11px] tracking-widest uppercase text-creme/50 hover:text-or transition-colors">
               Galerie complète →
             </Link>
           </div>
