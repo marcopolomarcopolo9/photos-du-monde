@@ -17,7 +17,7 @@ export const VOYAGES: Voyage[] = [
     startDate: '2024-06-01',
     endDate: '2024-06-08',
     duration: 7,
-    heroImage: `${BASE}/marcus_island_paradisiac_b033ad32-c4d9-491e-bcf9-3cc00694fef4_kolbdl`,
+    heroImage: `https://res.cloudinary.com/doxsjisyx/image/upload/v1779123268/istockphoto-858018608-2048x2048_seuyjk.jpg`,
     heroImageAlt: 'Île volcanique d\'Hawaï baignée de lumière tropicale',
     featured: true,
     coordinates: { lat: 19.421, lng: -155.287 },
@@ -31,7 +31,7 @@ export const VOYAGES: Voyage[] = [
     photos: [
       {
         id: 'hi-1',
-        src: `${BASE}/marcus_island_paradisiac_b033ad32-c4d9-491e-bcf9-3cc00694fef4_kolbdl`,
+        src: `https://res.cloudinary.com/doxsjisyx/image/upload/v1779123268/istockphoto-858018608-2048x2048_seuyjk.jpg`,
         alt: 'L\'île d\'Hawaï vue depuis l\'océan',
         location: 'Big Island, Hawaii',
         country: 'États-Unis',
@@ -134,7 +134,7 @@ export function getVoyageBySlug(slug: string): Voyage | undefined {
 export const HERO_SLIDES = [
   {
     id: 1,
-    image: `${BASE}/marcus_island_paradisiac_b033ad32-c4d9-491e-bcf9-3cc00694fef4_kolbdl`,
+    image: `https://res.cloudinary.com/doxsjisyx/image/upload/v1779123268/istockphoto-858018608-2048x2048_seuyjk.jpg`,
     country: 'États-Unis',
     location: 'Big Island, Hawaii',
     title: "Sous les nuages\ntropicaux d'Hawaï",
