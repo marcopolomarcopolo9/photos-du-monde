@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import CustomCursor from '@/components/ui/CustomCursor';
+
 
 export const metadata: Metadata = {
   title: {
@@ -40,7 +40,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="fr" className="scroll-smooth">
       <body className="bg-noir text-creme antialiased">
-        <CustomCursor />
+        
         <Navbar />
         <main>{children}</main>
         <Footer />
