@@ -148,7 +148,7 @@ body {
 /* Cursor custom */
 @media (pointer: fine) {
   * {
-    cursor: none !important;
+    
   }
 }
 
