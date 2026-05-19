@@ -4,6 +4,58 @@ const BASE = 'https://res.cloudinary.com/doxsjisyx/image/upload';
 
 export const VOYAGES: Voyage[] = [
   {
+    id: '1779178508456',
+    slug: 'tetette',
+    title: 'tetette',
+    subtitle: 'cxCCXC',
+    description: 'csds',
+    country: 'chine',
+    continent: 'Amérique Centrale',
+    city: '',
+    region: '',
+    startDate: '1999-09-10',
+    endDate: '',
+    duration: 7,
+    heroImage: 'https://res.cloudinary.com/doxsjisyx/image/upload/v1779178408/photos-du-monde/oeasyrqufe8ermlusfbz.jpg',
+    heroImageAlt: 'tetette',
+    featured: true,
+    coordinates: { lat: 0, lng: 0 },
+    tags: [],
+    categories: ['Paysages'],
+    photos: [
+      {
+        id: '1779178508456-p0',
+        src: 'https://res.cloudinary.com/doxsjisyx/image/upload/v1779178442/photos-du-monde/wkx2sci6vjwbihazs0t0.png',
+        alt: 'Magic logo',
+        location: '',
+        country: 'chine',
+        continent: 'Amérique Centrale',
+        date: '2026-05-19',
+        width: 1200,
+        height: 800,
+        voyageSlug: 'tetette',
+      },
+      {
+        id: '1779178508456-p1',
+        src: 'https://res.cloudinary.com/doxsjisyx/image/upload/v1779178451/photos-du-monde/vsxrtqi1ytf4s6htiuu1.png',
+        alt: 'logofb',
+        location: '',
+        country: 'chine',
+        continent: 'Amérique Centrale',
+        date: '2026-05-19',
+        width: 1200,
+        height: 800,
+        voyageSlug: 'tetette',
+      }
+    ],
+    anecdotes: [
+
+    ],
+    tips: [
+
+    ],
+  },
+  {
     id: '1',
     slug: 'hawaii-volcans-tropicaux',
     title: "Sous les nuages tropicaux d'Hawaï",
