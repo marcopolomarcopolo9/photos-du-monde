@@ -6,6 +6,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ChevronDown, Volume2, VolumeX } from 'lucide-react';
 import { HERO_SLIDES } from '@/lib/data';
+import Toucans from './Toucans';
 
 export default function Hero() {
   const [current, setCurrent] = useState(0);
@@ -54,6 +55,18 @@ export default function Hero() {
       <div className="absolute top-0 left-0 right-0 h-14 bg-noir z-20 pointer-events-none" />
       <div className="absolute bottom-0 left-0 right-0 h-14 bg-noir z-20 pointer-events-none" />
 
+      {/* Permanent tagline */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.5, duration: 1 }}
+        className="absolute top-20 left-1/2 -translate-x-1/2 z-30 text-center pointer-events-none"
+      >
+        <p className="text-[10px] tracking-[0.45em] uppercase text-creme/35 font-poppins font-light whitespace-nowrap">
+          Voyages &nbsp;·&nbsp; Nature &nbsp;·&nbsp; Photographie
+        </p>
+      </motion.div>
+
       {/* Background images */}
       <AnimatePresence initial={false}>
         <motion.div
@@ -86,6 +99,9 @@ export default function Hero() {
       <div className="absolute inset-0 z-10 bg-gradient-to-t from-noir via-noir/40 to-noir/20 pointer-events-none" />
       <div className="absolute inset-0 z-10 bg-gradient-to-r from-noir/60 via-transparent to-transparent pointer-events-none" />
 
+      {/* Toucans */}
+      <Toucans />
+
       {/* Content */}
       <div className="relative z-30 h-full flex flex-col justify-end pb-20 md:pb-24 px-6 md:px-14 max-w-screen-xl mx-auto">
         <AnimatePresence mode="wait">
@@ -98,7 +114,7 @@ export default function Hero() {
               className="flex items-center gap-3 mb-5"
             >
               <div className="w-6 h-px bg-or" />
-              <span className="text-[10px] tracking-[0.3em] uppercase text-or font-light">
+              <span className="text-[10px] tracking-[0.3em] uppercase text-or font-poppins font-light">
                 {slide.country} &bull; {slide.location} &bull; {slide.year}
               </span>
             </motion.div>
@@ -127,7 +143,7 @@ export default function Hero() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.9, duration: 0.7 }}
-              className="text-sm md:text-base text-creme/60 max-w-md leading-relaxed mb-8 font-light"
+              className="text-sm md:text-base text-creme/60 max-w-md leading-relaxed mb-8 font-poppins font-light"
             >
               {slide.subtitle}
             </motion.p>

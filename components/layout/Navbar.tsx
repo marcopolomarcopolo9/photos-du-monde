@@ -8,7 +8,8 @@ import { Search, X, Menu } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const NAV_LINKS = [
-  { href: '/voyages', label: 'Voyages' },
+  { href: '/', label: 'Accueil' },
+  { href: '/voyages', label: 'Destinations' },
   { href: '/galerie', label: 'Galerie' },
   { href: '/admin', label: 'Admin' },
 ];
@@ -64,7 +65,7 @@ export default function Navbar() {
                   key={link.href}
                   href={link.href}
                   className={cn(
-                    'text-[11px] tracking-[0.25em] uppercase font-light transition-colors duration-200',
+                    'text-[11px] tracking-[0.25em] uppercase font-poppins font-light transition-colors duration-200',
                     pathname === link.href
                       ? 'text-or'
                       : 'text-creme/60 hover:text-creme'
