@@ -29,6 +29,7 @@ const config: Config = {
       fontFamily: {
         serif: ['var(--font-cormorant)', 'Georgia', 'serif'],
         sans: ['var(--font-barlow)', 'system-ui', 'sans-serif'],
+        poppins: ['var(--font-poppins)', 'system-ui', 'sans-serif'],
       },
       letterSpacing: {
         widest: '0.3em',

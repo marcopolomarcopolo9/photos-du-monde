@@ -1,15 +1,31 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Volume2, VolumeX } from 'lucide-react';
 import { HERO_SLIDES } from '@/lib/data';
 
 export default function Hero() {
   const [current, setCurrent] = useState(0);
   const [prev, setPrev] = useState<number | null>(null);
+  const [soundOn, setSoundOn] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const toggleSound = () => {
+    if (!audioRef.current) {
+      audioRef.current = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3');
+      audioRef.current.loop = true;
+      audioRef.current.volume = 0.18;
+    }
+    if (soundOn) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play().catch(() => {});
+    }
+    setSoundOn(!soundOn);
+  };
 
   const next = useCallback(() => {
     setPrev(current);
@@ -132,6 +148,21 @@ export default function Hero() {
             </motion.div>
           </motion.div>
         </AnimatePresence>
+
+        {/* Sound toggle */}
+        <motion.button
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.8 }}
+          onClick={toggleSound}
+          className="absolute top-6 right-6 md:right-14 flex items-center gap-2 text-creme/50 hover:text-or transition-colors z-30 group"
+          aria-label={soundOn ? 'Couper le son' : 'Activer le son ambiance'}
+        >
+          <span className="text-[9px] tracking-[0.25em] uppercase opacity-0 group-hover:opacity-100 transition-opacity">
+            {soundOn ? 'Silence' : 'Ambiance'}
+          </span>
+          {soundOn ? <Volume2 size={14} /> : <VolumeX size={14} />}
+        </motion.button>
 
         {/* Slide dots */}
         <div className="absolute bottom-6 md:bottom-8 right-6 md:right-14 flex items-center gap-3 z-30">

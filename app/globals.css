@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Barlow:wght@200;300;400;500;600&family=Barlow+Condensed:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Barlow:wght@200;300;400;500;600&family=Barlow+Condensed:wght@300;400;500;600&family=Poppins:wght@200;300;400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -8,6 +8,7 @@
   --font-cormorant: 'Cormorant Garamond', Georgia, serif;
   --font-barlow: 'Barlow', system-ui, sans-serif;
   --font-barlow-condensed: 'Barlow Condensed', system-ui, sans-serif;
+  --font-poppins: 'Poppins', system-ui, sans-serif;
 }
 
 * {

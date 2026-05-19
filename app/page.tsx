@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Hero from '@/components/home/Hero';
 import StatsSection from '@/components/home/StatsSection';
 import FeaturedVoyages from '@/components/home/FeaturedVoyages';
+import WorldMap from '@/components/home/WorldMap';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import Link from 'next/link';
 
@@ -15,6 +16,7 @@ export default function HomePage() {
       <Hero />
       <StatsSection />
       <FeaturedVoyages />
+      <WorldMap />
 
       {/* About strip */}
       <section className="bg-noir py-24 md:py-32">
