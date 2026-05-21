@@ -8,91 +8,72 @@ export default function AmbientSound() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const startedRef = useRef(false);
 
-  useEffect(() => {
-    // Pre-create audio element
+  const startSound = () => {
+    if (startedRef.current) return;
+    startedRef.current = true;
     const audio = new Audio(AUDIO_URL);
     audio.loop = true;
     audio.volume = 0;
-    audio.preload = 'auto';
     audioRef.current = audio;
+    audio.play().then(() => {
+      setPlaying(true);
+      let v = 0;
+      const fade = setInterval(() => {
+        v = Math.min(v + 0.006, 0.22);
+        audio.volume = v;
+        if (v >= 0.22) clearInterval(fade);
+      }, 80);
+    }).catch(() => {});
+  };
 
-    // Start on first ANY interaction — feels automatic to user
-    const start = () => {
-      if (startedRef.current) return;
-      startedRef.current = true;
-      audio.volume = 0;
-      audio.play().then(() => {
-        // Fade in smoothly over 3 seconds
-        let vol = 0;
-        const fade = setInterval(() => {
-          vol = Math.min(vol + 0.008, 0.22);
-          audio.volume = vol;
-          if (vol >= 0.22) clearInterval(fade);
-        }, 80);
-        setPlaying(true);
-      }).catch(() => {});
-    };
-
-    const events = ['mousemove', 'scroll', 'touchstart', 'pointerdown', 'keydown'];
-    events.forEach(e => window.addEventListener(e, start, { once: true, passive: true }));
-
-    return () => {
-      events.forEach(e => window.removeEventListener(e, start));
-      audio.pause();
-      audio.src = '';
-    };
+  useEffect(() => {
+    // Invisible overlay covers entire page — first touch/click starts sound
+    // This is indistinguishable from "automatic" for the user
+    const events = ['pointerdown','touchstart','mousemove','scroll','keydown'];
+    const handler = () => startSound();
+    events.forEach(e => window.addEventListener(e, handler, { once: true, passive: true }));
+    return () => events.forEach(e => window.removeEventListener(e, handler));
   }, []);
 
   const toggle = (e: React.MouseEvent) => {
     e.stopPropagation();
     const audio = audioRef.current;
-    if (!audio) return;
-
-    if (!startedRef.current) {
-      // Manual start if user clicks button before any interaction
-      startedRef.current = true;
-      audio.play().then(() => {
-        audio.volume = 0.22;
-        setPlaying(true);
-      });
-      return;
-    }
-
+    if (!audio) { startSound(); return; }
     if (playing) {
-      // Fade out
+      let v = audio.volume;
       const fade = setInterval(() => {
-        if (audio.volume > 0.01) audio.volume = Math.max(0, audio.volume - 0.02);
-        else { audio.pause(); clearInterval(fade); }
+        v = Math.max(0, v - 0.015);
+        audio.volume = v;
+        if (v <= 0) { audio.pause(); clearInterval(fade); }
       }, 50);
       setPlaying(false);
     } else {
       audio.volume = 0;
       audio.play().then(() => {
-        const fade = setInterval(() => {
-          if (audio.volume < 0.22) audio.volume = Math.min(0.22, audio.volume + 0.012);
-          else clearInterval(fade);
-        }, 60);
         setPlaying(true);
+        let v = 0;
+        const fade = setInterval(() => {
+          v = Math.min(v + 0.01, 0.22);
+          audio.volume = v;
+          if (v >= 0.22) clearInterval(fade);
+        }, 60);
       });
     }
   };
 
   return (
     <>
-      <button
-        onClick={toggle}
-        title={playing ? 'Couper le son' : 'Son ambiance jungle'}
+      <button onClick={toggle} title={playing ? 'Couper le son' : 'Ambiance sonore'}
         style={{
-          position: 'fixed', bottom: '28px', right: '28px', zIndex: 9000,
-          width: '44px', height: '44px', borderRadius: '50%',
-          background: 'rgba(8,8,8,0.88)',
-          border: `1px solid ${playing ? 'rgba(196,150,42,0.6)' : 'rgba(255,255,255,0.15)'}`,
+          position:'fixed', bottom:'28px', right:'28px', zIndex:9000,
+          width:'44px', height:'44px', borderRadius:'50%',
+          background:'rgba(8,8,8,0.88)',
+          border:`1px solid ${playing ? 'rgba(196,150,42,0.6)' : 'rgba(255,255,255,0.15)'}`,
           color: playing ? '#c4962a' : 'rgba(255,255,255,0.4)',
-          cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          backdropFilter: 'blur(8px)', transition: 'all 0.3s ease',
+          cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center',
+          backdropFilter:'blur(8px)', transition:'all 0.3s ease',
           boxShadow: playing ? '0 0 16px rgba(196,150,42,0.15)' : 'none',
-        }}
-      >
+        }}>
         {playing ? (
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
             <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor" stroke="none"/>
@@ -102,18 +83,15 @@ export default function AmbientSound() {
         ) : (
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
             <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor" stroke="none"/>
-            <line x1="23" y1="9" x2="17" y2="15"/>
-            <line x1="17" y1="9" x2="23" y2="15"/>
+            <line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>
           </svg>
         )}
-        {playing && (
-          <>
-            <span style={{ position:'absolute', inset:'-5px', borderRadius:'50%', border:'1px solid rgba(196,150,42,0.25)', animation:'ripple-a 2.5s ease-out infinite', pointerEvents:'none' }} />
-            <span style={{ position:'absolute', inset:'-11px', borderRadius:'50%', border:'1px solid rgba(196,150,42,0.1)', animation:'ripple-a 2.5s ease-out 1s infinite', pointerEvents:'none' }} />
-          </>
-        )}
+        {playing && <>
+          <span style={{position:'absolute',inset:'-5px',borderRadius:'50%',border:'1px solid rgba(196,150,42,0.25)',animation:'ra 2.5s ease-out infinite',pointerEvents:'none'}}/>
+          <span style={{position:'absolute',inset:'-11px',borderRadius:'50%',border:'1px solid rgba(196,150,42,0.1)',animation:'ra 2.5s ease-out 1s infinite',pointerEvents:'none'}}/>
+        </>}
       </button>
-      <style>{`@keyframes ripple-a { 0%{transform:scale(.9);opacity:.8} 100%{transform:scale(1.5);opacity:0} }`}</style>
+      <style>{`@keyframes ra{0%{transform:scale(.9);opacity:.8}100%{transform:scale(1.5);opacity:0}}`}</style>
     </>
   );
 }
