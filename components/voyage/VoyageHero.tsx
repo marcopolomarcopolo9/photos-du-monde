@@ -48,7 +48,7 @@ export default function VoyageHero({ voyage }: Props) {
 
         {/* Category tags */}
         <div className="flex flex-wrap gap-2 mb-5">
-          {voyage.categories.map((cat) => (
+          {(voyage.categories||[]).map((cat) => (
             <span key={cat} className="badge">{cat}</span>
           ))}
         </div>

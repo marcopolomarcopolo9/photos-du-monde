@@ -18,6 +18,23 @@ export function generateStaticParams() {
   return VOYAGES.map((v) => ({ slug: v.slug }));
 }
 
+// Normalize photos from new data structure
+function normalizePhotos(voyage: any) {
+  return (voyage.photos || []).map((p: any, i: number) => ({
+    id: `${voyage.slug}-p${i}`,
+    src: typeof p === 'string' ? p : (p.src || ''),
+    alt: p.alt || voyage.title,
+    location: p.location || voyage.city || '',
+    country: voyage.country || '',
+    continent: voyage.continent || '',
+    date: p.date || voyage.startDate || '',
+    width: p.width || 1200,
+    height: p.height || 800,
+    voyageSlug: voyage.slug,
+    tags: p.tags || [],
+  }));
+}
+
 export function generateMetadata({ params }: Props): Metadata {
   const voyage = VOYAGES.find(v => v.slug === params.slug);
   if (!voyage) return {};
@@ -39,9 +56,10 @@ export default function VoyagePage({ params }: Props) {
   const startDate = new Date(voyage.startDate).toLocaleDateString('fr-FR', {
     day: 'numeric', month: 'long', year: 'numeric',
   });
-  const endDate = new Date(voyage.endDate).toLocaleDateString('fr-FR', {
+  const endDate = voyage.endDate ? new Date(voyage.endDate).toLocaleDateString('fr-FR', {
     day: 'numeric', month: 'long', year: 'numeric',
-  });
+  }) : '';
+  const photos = normalizePhotos(voyage);
 
   return (
     <div className="bg-noir min-h-screen">
@@ -92,7 +110,7 @@ export default function VoyagePage({ params }: Props) {
                   </div>
                 </ScrollReveal>
                 <div className="flex flex-col gap-8">
-                  {voyage.anecdotes.map((anecdote, i) => (
+                  {(voyage.anecdotes||[]).map((anecdote, i) => (
                     <AnecdoteCard key={anecdote.id} anecdote={anecdote} index={i} />
                   ))}
                 </div>
@@ -113,7 +131,7 @@ export default function VoyagePage({ params }: Props) {
                       Conseils pratiques
                     </div>
                     <ul className="flex flex-col gap-3">
-                      {voyage.tips.map((tip, i) => (
+                      {(voyage.tips||[]).map((tip, i) => (
                         <li key={i} className="flex items-start gap-3 text-sm text-creme/55 leading-relaxed">
                           <CheckCircle size={13} className="text-or mt-1 flex-shrink-0" />
                           {tip}
@@ -127,7 +145,7 @@ export default function VoyagePage({ params }: Props) {
           </div>
         </div>
 
-        {((voyage.photos||[])||[]).length > 0 && (
+        {photos.length > 0 && (
           <div className="mt-20 md:mt-28">
             <ScrollReveal>
               <div className="flex items-center justify-between mb-10">
@@ -135,14 +153,14 @@ export default function VoyagePage({ params }: Props) {
                   <div className="flex items-center gap-4 mb-3">
                     <div className="w-8 h-px bg-or" />
                     <span className="text-[10px] tracking-[0.3em] uppercase text-or">
-                      {((voyage.photos||[])||[]).length} photographies
+                      {photos.length} photographies
                     </span>
                   </div>
                   <h2 className="font-serif italic text-3xl text-creme">Galerie du voyage</h2>
                 </div>
               </div>
             </ScrollReveal>
-            <MasonryGrid photos={(voyage.photos||[])} showFilters={false} />
+            <MasonryGrid photos={photos} showFilters={false} />
           </div>
         )}
 
