@@ -23,7 +23,7 @@ export const VOYAGES = [
     city: "Hilo",
     startDate: "2024-06-01",
     description: "Sous les nuages tropicaux d'Hawaï, les volcans façonnent un paysage presque irréel. Entre coulées de lave noire, falaises abruptes et plages sauvages bordées par l'océan Pacifique, chaque instant donne l'impression d'explorer un autre monde — un territoire encore en train de naître sous nos pieds.",
-    heroImage: "https://res.cloudinary.com/doxsjisyx/image/upload/v1779123268/istockphoto-858018608-2048x2048_seuyjk.jpg",
+    heroImage: "https://res.cloudinary.com/doxsjisyx/image/upload/v1779368566/photos-du-monde/kbxt5gfqwzvnoyglopcd.png",
     photos: [
     { src: "https://res.cloudinary.com/doxsjisyx/image/upload/v1779123268/istockphoto-858018608-2048x2048_seuyjk.jpg" },
     { src: "https://res.cloudinary.com/doxsjisyx/image/upload/marcus_two_kids_and_pikachu_exploring_an_island_in_jungle_c4ca1393-6cd3-465d-937d-85ce68c48be4_zojkvm" },
