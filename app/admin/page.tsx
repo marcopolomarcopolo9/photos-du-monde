@@ -56,19 +56,64 @@ function Inp({ value, onChange, placeholder, type, multiline, rows, style }) {
   return <input type={type} value={value || ''} onChange={e => onChange(e.target.value)} placeholder={placeholder} style={s} />;
 }
 
+// Compress image before upload — max 1920px, WebP quality 0.82
+// Typical result: 4MB photo → 200-400KB, no visible quality loss
+async function compressImage(file: File): Promise<File> {
+  const MAX_SIZE = 1920;
+  const QUALITY = 0.82;
+
+  return new Promise((resolve) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+
+      let { width, height } = img;
+
+      // Resize if larger than MAX_SIZE
+      if (width > MAX_SIZE || height > MAX_SIZE) {
+        if (width > height) { height = Math.round(height * MAX_SIZE / width); width = MAX_SIZE; }
+        else { width = Math.round(width * MAX_SIZE / height); height = MAX_SIZE; }
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d')!;
+      ctx.drawImage(img, 0, 0, width, height);
+
+      // Try WebP first (smaller), fallback to JPEG
+      const mime = 'image/webp';
+      canvas.toBlob((blob) => {
+        if (!blob) { resolve(file); return; }
+        const compressed = new File([blob], file.name.replace(/\.[^.]+$/, '.webp'), { type: mime });
+        // Only use compressed if it's actually smaller
+        resolve(compressed.size < file.size ? compressed : file);
+      }, mime, QUALITY);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); resolve(file); };
+    img.src = url;
+  });
+}
+
 async function uploadFile(file) {
-  // 1. Get signature from our server
+  // 1. Compress client-side
+  const compressed = await compressImage(file);
+
+  // 2. Get signature from our server
   const sigRes = await fetch('/api/admin/upload', { method: 'POST' });
   if (!sigRes.ok) throw new Error('Erreur signature');
   const { signature, timestamp, api_key, cloud_name, folder } = await sigRes.json();
 
-  // 2. Upload directly to Cloudinary (bypasses Vercel 4.5MB limit)
+  // 3. Upload to Cloudinary with auto quality optimization
   const fd = new FormData();
-  fd.append('file', file);
+  fd.append('file', compressed);
   fd.append('api_key', api_key);
   fd.append('timestamp', String(timestamp));
   fd.append('signature', signature);
   fd.append('folder', folder);
+  fd.append('quality', 'auto:good');
+  fd.append('fetch_format', 'auto');
 
   const res = await fetch(
     `https://api.cloudinary.com/v1_1/${cloud_name}/image/upload`,
@@ -124,7 +169,7 @@ function PhotoGrid({ photos, onChange, onZoom }) {
   const addFiles = async files => {
     setUploading(true);
     const arr = Array.from(files);
-    const prog = arr.map(f => ({ name: f.name, status: 'uploading' }));
+    const prog = arr.map(f => ({ name: f.name, status: 'uploading', originalSize: f.size }));
     setProgress(prog);
     const newPhotos = [];
     for (let i = 0; i < arr.length; i++) {
@@ -132,14 +177,16 @@ function PhotoGrid({ photos, onChange, onZoom }) {
         const url = await uploadFile(arr[i]);
         newPhotos.push({ src: url });
         prog[i].status = 'done';
+        prog[i].url = url;
       } catch (e) {
         prog[i].status = 'error';
+        prog[i].err = e.message;
       }
       setProgress([...prog]);
     }
-    onChange([...photos, ...newPhotos]);
+    if (newPhotos.length > 0) onChange([...photos, ...newPhotos]);
     setUploading(false);
-    setTimeout(() => setProgress([]), 3000);
+    setTimeout(() => setProgress([]), 4000);
   };
 
   const remove = i => onChange(photos.filter((_, j) => j !== i));
@@ -173,7 +220,9 @@ function PhotoGrid({ photos, onChange, onZoom }) {
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
           {progress.map((p, i) => (
             <span key={i} style={{ fontSize: '11px', padding: '4px 10px', borderRadius: '20px', background: p.status === 'done' ? '#1a3320' : p.status === 'error' ? '#3a1010' : '#1a1a3a', color: p.status === 'done' ? '#4ade80' : p.status === 'error' ? '#f87171' : '#93c5fd' }}>
-              {p.status === 'uploading' ? '...' : p.status === 'done' ? '✓' : '✗'} {p.name.slice(0, 18)}
+              {p.status === 'uploading' ? '⏳ ' : p.status === 'done' ? '✓ ' : '✗ '}
+              {p.name.slice(0, 16)}
+              {p.originalSize ? ' · ' + (p.originalSize / 1024 / 1024).toFixed(1) + 'MB' : ''}
             </span>
           ))}
         </div>

@@ -8,7 +8,9 @@ export async function POST(req: NextRequest) {
 
   const timestamp = Math.round(Date.now() / 1000);
   const folder = 'photos-du-monde';
-  const paramsToSign = `folder=${folder}&timestamp=${timestamp}`;
+
+  // Include quality params in signature
+  const paramsToSign = `fetch_format=auto&folder=${folder}&quality=auto:good&timestamp=${timestamp}`;
   const signature = crypto
     .createHash('sha256')
     .update(paramsToSign + API_SECRET)
