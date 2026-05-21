@@ -1,64 +1,104 @@
 'use client';
-
-import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { useEffect, useRef, useState } from 'react';
 
 export default function CustomCursor() {
-  const [pos, setPos] = useState({ x: -100, y: -100 });
-  const [hovered, setHovered] = useState(false);
-  const [clicked, setClicked] = useState(false);
+  const dotRef = useRef<HTMLDivElement>(null);
+  const ringRef = useRef<HTMLDivElement>(null);
+  const [state, setState] = useState<'default' | 'hover' | 'click' | 'photo'>('default');
+  const pos = useRef({ x: -100, y: -100 });
+  const ring = useRef({ x: -100, y: -100 });
+  const raf = useRef<number>();
 
   useEffect(() => {
-    const move = (e: MouseEvent) => setPos({ x: e.clientX, y: e.clientY });
-    const down = () => setClicked(true);
-    const up = () => setClicked(false);
+    // Hide on touch devices
+    if (window.matchMedia('(pointer: coarse)').matches) return;
+    document.documentElement.style.cursor = 'none';
 
-    const checkHover = (e: MouseEvent) => {
-      const t = e.target as HTMLElement;
-      setHovered(
-        !!(
-          t.closest('a') ||
-          t.closest('button') ||
-          t.closest('[data-cursor-hover]')
-        )
-      );
+    const move = (e: MouseEvent) => {
+      pos.current = { x: e.clientX, y: e.clientY };
+      if (dotRef.current) {
+        dotRef.current.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+      }
     };
 
+    const animate = () => {
+      ring.current.x += (pos.current.x - ring.current.x) * 0.12;
+      ring.current.y += (pos.current.y - ring.current.y) * 0.12;
+      if (ringRef.current) {
+        ringRef.current.style.transform = `translate(${ring.current.x}px, ${ring.current.y}px)`;
+      }
+      raf.current = requestAnimationFrame(animate);
+    };
+    raf.current = requestAnimationFrame(animate);
+
+    const over = (e: MouseEvent) => {
+      const t = e.target as HTMLElement;
+      if (t.closest('a, button, [data-cursor="hover"]')) setState('hover');
+      else if (t.closest('img, [data-cursor="photo"]')) setState('photo');
+      else setState('default');
+    };
+
+    const down = () => setState('click');
+    const up = () => setState('default');
+
     window.addEventListener('mousemove', move);
-    window.addEventListener('mousemove', checkHover);
+    window.addEventListener('mouseover', over);
     window.addEventListener('mousedown', down);
     window.addEventListener('mouseup', up);
+
     return () => {
+      document.documentElement.style.cursor = '';
+      if (raf.current) cancelAnimationFrame(raf.current);
       window.removeEventListener('mousemove', move);
-      window.removeEventListener('mousemove', checkHover);
+      window.removeEventListener('mouseover', over);
       window.removeEventListener('mousedown', down);
       window.removeEventListener('mouseup', up);
     };
   }, []);
 
+  const sizes = {
+    default: { dot: 5, ring: 32, opacity: 0.6 },
+    hover:   { dot: 4, ring: 48, opacity: 1 },
+    click:   { dot: 3, ring: 22, opacity: 1 },
+    photo:   { dot: 0, ring: 56, opacity: 0.9 },
+  };
+  const s = sizes[state];
+
   return (
     <>
       {/* Dot */}
-      <motion.div
-        className="fixed top-0 left-0 z-[9999] pointer-events-none"
-        animate={{ x: pos.x - 4, y: pos.y - 4, scale: clicked ? 0.5 : 1 }}
-        transition={{ type: 'spring', stiffness: 800, damping: 35, mass: 0.1 }}
-      >
-        <div className="w-2 h-2 rounded-full bg-or" />
-      </motion.div>
-      {/* Ring */}
-      <motion.div
-        className="fixed top-0 left-0 z-[9998] pointer-events-none"
-        animate={{
-          x: pos.x - 20,
-          y: pos.y - 20,
-          scale: hovered ? 1.8 : clicked ? 0.8 : 1,
-          opacity: hovered ? 0.6 : 0.35,
+      <div
+        ref={dotRef}
+        className="pointer-events-none fixed top-0 left-0 z-[99999]"
+        style={{
+          width: `${s.dot}px`, height: `${s.dot}px`,
+          borderRadius: '50%', background: '#c4962a',
+          marginLeft: `-${s.dot / 2}px`, marginTop: `-${s.dot / 2}px`,
+          transition: 'width 0.2s, height 0.2s, margin 0.2s',
+          willChange: 'transform',
         }}
-        transition={{ type: 'spring', stiffness: 200, damping: 20, mass: 0.5 }}
+      />
+      {/* Ring */}
+      <div
+        ref={ringRef}
+        className="pointer-events-none fixed top-0 left-0 z-[99998]"
+        style={{
+          width: `${s.ring}px`, height: `${s.ring}px`,
+          borderRadius: '50%',
+          border: state === 'photo' ? '1.5px solid rgba(196,150,42,0.8)' : '1px solid rgba(196,150,42,0.5)',
+          marginLeft: `-${s.ring / 2}px`, marginTop: `-${s.ring / 2}px`,
+          opacity: s.opacity,
+          transition: 'width 0.3s ease, height 0.3s ease, margin 0.3s ease, opacity 0.2s',
+          willChange: 'transform',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}
       >
-        <div className="w-10 h-10 rounded-full border border-or" />
-      </motion.div>
+        {state === 'photo' && (
+          <span style={{ fontSize: '11px', color: 'rgba(196,150,42,0.8)', fontFamily: 'system-ui' }}>
+            ↔
+          </span>
+        )}
+      </div>
     </>
   );
 }

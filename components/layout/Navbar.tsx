@@ -12,6 +12,8 @@ const NAV_LINKS = [
   { href: '/', label: 'Accueil' },
   { href: '/voyages', label: 'Destinations' },
   { href: '/galerie', label: 'Galerie' },
+  { href: '/a-propos', label: 'À propos' },
+  { href: '/contact', label: 'Contact' },
   { href: '/admin', label: 'Admin' },
 ];
 

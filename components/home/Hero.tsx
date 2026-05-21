@@ -1,6 +1,6 @@
 // @ts-nocheck
 'use client';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import Link from 'next/link';
 
 export default function Hero() {
@@ -8,6 +8,13 @@ export default function Hero() {
   const [current, setCurrent] = useState(0);
   const [prev, setPrev] = useState(null);
   const [transitioning, setTransitioning] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const onScroll = () => setScrollY(window.scrollY);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   useEffect(() => {
     fetch('/api/admin/homepage').then(r => r.json()).then(d => setConfig(d.config || d));
@@ -53,7 +60,9 @@ export default function Hero() {
           backgroundImage: `url(${slide.image})`,
           backgroundSize:'cover', backgroundPosition:'center',
           opacity: i === current ? 1 : 0,
+          transform: `translateY(${scrollY * 0.35}px) scale(1.15)`,
           transition: i === current ? 'opacity 1.2s ease-in-out' : i === prev ? 'opacity 1.2s ease-in-out' : 'none',
+          willChange: 'transform',
         }} />
       ))}
 

@@ -4,6 +4,8 @@ import './globals.css';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import AmbientSound from '@/components/ui/AmbientSound';
+import PageLoader from '@/components/ui/PageLoader';
+import CustomCursor from '@/components/ui/CustomCursor';
 
 
 export const metadata: Metadata = {
@@ -43,6 +45,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="fr" className="scroll-smooth">
       <body className="bg-noir text-creme antialiased">
         
+        <PageLoader />
+        <CustomCursor />
         <Navbar />
         <main>{children}</main>
         <Footer />
