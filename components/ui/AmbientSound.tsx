@@ -27,12 +27,21 @@ export default function AmbientSound() {
   };
 
   useEffect(() => {
-    // Invisible overlay covers entire page — first touch/click starts sound
-    // This is indistinguishable from "automatic" for the user
-    const events = ['pointerdown','touchstart','mousemove','scroll','keydown'];
-    const handler = () => startSound();
-    events.forEach(e => window.addEventListener(e, handler, { once: true, passive: true }));
-    return () => events.forEach(e => window.removeEventListener(e, handler));
+    const events = ['pointerdown', 'touchstart', 'mousemove', 'scroll', 'keydown', 'click'];
+    const handler = () => {
+      if (startedRef.current) return;
+      startSound();
+      // Remove all listeners once started
+      events.forEach(e => window.removeEventListener(e, handler));
+    };
+    // Wait 2s for loader to finish, then attach listeners
+    const t = setTimeout(() => {
+      events.forEach(e => window.addEventListener(e, handler, { passive: true }));
+    }, 2000);
+    return () => {
+      clearTimeout(t);
+      events.forEach(e => window.removeEventListener(e, handler));
+    };
   }, []);
 
   const toggle = (e: React.MouseEvent) => {
