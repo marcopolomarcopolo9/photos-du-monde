@@ -1,5 +1,5 @@
 // @ts-nocheck
-// Configuration de la page d'accueil — modifiable depuis l'admin CMS
+// Configuration page accueil — modifiable depuis admin CMS
 
 export const HOMEPAGE_CONFIG = {
   hero: {
@@ -8,7 +8,13 @@ export const HOMEPAGE_CONFIG = {
     tagline: "VOYAGES · NATURE · PHOTOGRAPHIE",
     cta1: "VOIR LES VOYAGES",
     cta2: "GALERIE",
-    backgroundImage: ""
+    backgroundImage: "",
+    slides: [
+      { image: "", country: "", caption: "" },
+      { image: "", country: "", caption: "" },
+      { image: "", country: "", caption: "" },
+      { image: "", country: "", caption: "" }
+    ]
   },
   about: {
     intro: "Photographe voyageur, je capture l'essence des territoires sauvages et des cultures lointaines. Chaque voyage est une rencontre, chaque photo un témoignage.",
@@ -20,5 +26,11 @@ export const HOMEPAGE_CONFIG = {
     title: "Photos du Monde — Voyage Photographique",
     description: "Photographie de voyage — paysages, nature, cultures du monde entier.",
     keywords: "photographie, voyage, nature, paysage, monde"
+  },
+  footer: {
+    instagram: "",
+    email: "contact@photosdumonde.fr",
+    description: "Un carnet visuel de voyages au cœur des volcans, jungles et sanctuaires d'oiseaux du monde.",
+    quote: "\"La photographie, c'est la vérité.\" — Jean-Luc Godard"
   }
 };

@@ -33,6 +33,9 @@ function buildDataTs(voyages) {
       return `    { src: ${JSON.stringify(src)} }`;
     }).join(',\n');
     const tags = (v.tags||[]).map(t => JSON.stringify(t)).join(', ');
+    const waypoints = (v.waypoints||[]).map(w =>
+      `    { lat: ${w.lat}, lng: ${w.lng}, label: ${JSON.stringify(w.label||'')}, day: ${w.day||null} }`
+    ).join(',\n');
     return `  {
     slug: ${JSON.stringify(v.slug||v.id||'')},
     title: ${JSON.stringify(v.title||'')},
@@ -41,17 +44,17 @@ function buildDataTs(voyages) {
     startDate: ${JSON.stringify(v.startDate||v.date||'')},
     description: ${JSON.stringify(v.description||'')},
     heroImage: ${JSON.stringify(v.heroImage||v.coverImage||'')},
-    photos: [
-${photos}
-    ],
+    photos: [\n${photos}\n    ],
     lat: ${v.lat !== undefined ? v.lat : null},
     lng: ${v.lng !== undefined ? v.lng : null},
     tags: [${tags}],
-    published: ${v.published !== false}
+    published: ${v.published !== false},
+    waypoints: [\n${waypoints}\n    ]
   }`;
   }).join(',\n');
   return `// @ts-nocheck
 // Data managed via admin — do not edit manually
+export type Waypoint = { lat: number; lng: number; label: string; day: number | null };
 export type Voyage = {
   slug: string;
   title: string;
@@ -65,6 +68,7 @@ export type Voyage = {
   lng: number | null;
   tags: string[];
   published: boolean;
+  waypoints: Waypoint[];
 };
 
 export const VOYAGES = [

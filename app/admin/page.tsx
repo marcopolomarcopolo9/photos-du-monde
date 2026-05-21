@@ -296,7 +296,7 @@ export default function AdminPage() {
   };
 
   const openEdit = v => setEditingVoyage({ ...v, slug: v.slug || v.id, id: v.slug || v.id, isNew: false, heroImage: v.heroImage || v.coverImage || '' });
-  const openNew = () => setEditingVoyage({ isNew: true, slug: '', title: '', country: '', city: '', startDate: '', description: '', heroImage: '', coverImage: '', photos: [], tags: [], lat: null, lng: null, published: true });
+  const openNew = () => setEditingVoyage({ isNew: true, slug: '', title: '', country: '', city: '', startDate: '', description: '', heroImage: '', coverImage: '', photos: [], tags: [], lat: null, lng: null, published: true, waypoints: [] });
 
   /* ─── LOGIN ─── */
   if (!auth) return (
@@ -379,12 +379,48 @@ export default function AdminPage() {
               <Field label="Tags (virgules)">
                 <Inp value={(editingVoyage.tags || []).join(', ')} onChange={v => setEditingVoyage(p => ({ ...p, tags: v.split(',').map(s => s.trim()).filter(Boolean) }))} placeholder="Forêt, Volcans" />
               </Field>
-              <Field label="Latitude (carte monde)">
+              <Field label="Latitude (centre carte)">
                 <Inp value={editingVoyage.lat != null ? String(editingVoyage.lat) : ''} onChange={v => setEditingVoyage(p => ({ ...p, lat: parseFloat(v) || null }))} placeholder="9.7489" />
               </Field>
-              <Field label="Longitude (carte monde)">
+              <Field label="Longitude (centre carte)">
                 <Inp value={editingVoyage.lng != null ? String(editingVoyage.lng) : ''} onChange={v => setEditingVoyage(p => ({ ...p, lng: parseFloat(v) || null }))} placeholder="-83.7534" />
               </Field>
+            </div>
+
+            {/* Waypoints */}
+            <div style={{ marginTop: '20px', padding: '20px', background: '#0d0d0d', borderRadius: '10px', border: '1px solid #1e1e1e' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+                <label style={lbl}>ÉTAPES DE L'ITINÉRAIRE ({(editingVoyage.waypoints||[]).length})</label>
+                <button onClick={() => setEditingVoyage(p => ({ ...p, waypoints: [...(p.waypoints||[]), { lat: '', lng: '', label: '', day: '' }] }))}
+                  style={{ padding: '5px 14px', background: 'rgba(196,150,42,.1)', border: '1px solid ' + G, borderRadius: '6px', color: G, cursor: 'pointer', fontSize: '12px' }}>
+                  + Ajouter une étape
+                </button>
+              </div>
+              {(editingVoyage.waypoints||[]).length === 0 && (
+                <div style={{ color: '#444', fontSize: '13px', textAlign: 'center', padding: '16px' }}>
+                  Ajoutez des étapes pour tracer l'itinéraire sur la carte du voyage
+                </div>
+              )}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {(editingVoyage.waypoints||[]).map((wp, i) => (
+                  <div key={i} style={{ display: 'grid', gridTemplateColumns: '24px 1fr 100px 100px 60px 28px', gap: '8px', alignItems: 'center' }}>
+                    <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: '#1a1a1a', border: '1px solid ' + G, display: 'flex', alignItems: 'center', justifyContent: 'center', color: G, fontSize: '10px', fontWeight: '700', flexShrink: 0 }}>{i+1}</div>
+                    <input value={wp.label||''} onChange={e => setEditingVoyage(p => { const w=[...p.waypoints]; w[i]={...w[i],label:e.target.value}; return {...p,waypoints:w}; })}
+                      placeholder="Nom du lieu (ex: San José)" style={{ ...inp, fontSize: '13px', padding: '8px 12px' }} />
+                    <input value={wp.lat||''} onChange={e => setEditingVoyage(p => { const w=[...p.waypoints]; w[i]={...w[i],lat:e.target.value}; return {...p,waypoints:w}; })}
+                      placeholder="Latitude" style={{ ...inp, fontSize: '12px', padding: '8px 10px' }} />
+                    <input value={wp.lng||''} onChange={e => setEditingVoyage(p => { const w=[...p.waypoints]; w[i]={...w[i],lng:e.target.value}; return {...p,waypoints:w}; })}
+                      placeholder="Longitude" style={{ ...inp, fontSize: '12px', padding: '8px 10px' }} />
+                    <input value={wp.day||''} onChange={e => setEditingVoyage(p => { const w=[...p.waypoints]; w[i]={...w[i],day:e.target.value}; return {...p,waypoints:w}; })}
+                      placeholder="Jour" style={{ ...inp, fontSize: '12px', padding: '8px 8px', textAlign: 'center' }} />
+                    <button onClick={() => setEditingVoyage(p => ({ ...p, waypoints: p.waypoints.filter((_,j)=>j!==i) }))}
+                      style={{ background: 'none', border: 'none', color: '#f87171', cursor: 'pointer', fontSize: '18px', padding: '4px' }}>&#215;</button>
+                  </div>
+                ))}
+              </div>
+              <p style={{ color: '#444', fontSize: '11px', marginTop: '12px' }}>
+                💡 Trouvez les coordonnées sur <a href="https://www.latlong.net" target="_blank" style={{ color: G }}>latlong.net</a> — cliquez sur la carte pour copier lat/lng
+              </p>
             </div>
 
             <div style={{ marginTop: '16px' }}>
@@ -598,28 +634,55 @@ export default function AdminPage() {
                     </div>
                   </div>
                   <div style={{ marginTop: '14px' }}>
-                    <Field label="Image de fond">
-                      <div style={{ display: 'flex', gap: '10px' }}>
-                        <Inp value={hp.hero && hp.hero.backgroundImage || ''} onChange={v => updHp('hero', 'backgroundImage', v)} placeholder="URL Cloudinary" />
-                        <label style={{ padding: '11px 16px', background: '#1a1a1a', border: '1px solid #333', borderRadius: '8px', color: G, cursor: 'pointer', fontSize: '13px', whiteSpace: 'nowrap' }}>
-                          &#8679; Upload
-                          <input type="file" accept="image/*" style={{ display: 'none' }} onChange={async e => {
-                            const f = e.target.files[0]; if (!f) return;
-                            toast('Upload...', 'info');
-                            try { const url = await uploadFile(f); updHp('hero', 'backgroundImage', url); toast('Image uploadée !'); }
-                            catch (er) { toast('Erreur upload', 'err'); }
-                          }} />
-                        </label>
-                      </div>
-                      {hp.hero && hp.hero.backgroundImage && (
-                        <div style={{ position: 'relative', marginTop: '10px', borderRadius: '8px', overflow: 'hidden', height: '180px', cursor: 'zoom-in' }} onClick={() => setLightbox({ photos: [{ src: hp.hero.backgroundImage }], index: 0 })}>
-                          <img src={hp.hero.backgroundImage} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top,rgba(0,0,0,.5),transparent)', display: 'flex', alignItems: 'flex-end', padding: '12px 14px' }}>
-                            <span style={{ color: 'rgba(255,255,255,.6)', fontSize: '12px' }}>&#128269; Cliquer pour zoomer</span>
+                    <label style={lbl}>4 PHOTOS DE FOND (DIAPORAMA)</label>
+                    <p style={{ color: '#555', fontSize: '12px', marginBottom: '14px' }}>Ces 4 photos défilent en boucle dans le hero. Cliquez sur ⬆ pour uploader ou collez une URL Cloudinary.</p>
+                    <div style={{ display: 'grid', gap: '12px' }}>
+                      {[0,1,2,3].map(i => {
+                        const slide = (hp.hero?.slides || [])[i] || { image:'', country:'', caption:'' };
+                        return (
+                          <div key={i} style={{ background: '#0d0d0d', border: '1px solid #1e1e1e', borderRadius: '8px', padding: '14px', display: 'grid', gridTemplateColumns: slide.image ? '120px 1fr' : '1fr', gap: '14px', alignItems: 'center' }}>
+                            {slide.image && (
+                              <div style={{ position: 'relative', height: '68px', borderRadius: '6px', overflow: 'hidden', cursor: 'zoom-in' }} onClick={() => setLightbox({ photos:[{src:slide.image}], index:0 })}>
+                                <img src={slide.image} alt="" style={{ width:'100%', height:'100%', objectFit:'cover' }} />
+                                <div style={{ position:'absolute', top:'4px', left:'6px', background:'rgba(0,0,0,.7)', color:G, fontSize:'10px', fontWeight:'700', padding:'2px 7px', borderRadius:'3px' }}>Slide {i+1}</div>
+                              </div>
+                            )}
+                            {!slide.image && (
+                              <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
+                                <div style={{ width:'36px', height:'36px', borderRadius:'50%', background:'#1a1a1a', border:'1px solid #2a2a2a', display:'flex', alignItems:'center', justifyContent:'center', color:'#555', fontSize:'13px', fontWeight:'700', flexShrink:0 }}>{i+1}</div>
+                              </div>
+                            )}
+                            <div style={{ display:'grid', gap:'8px' }}>
+                              <div style={{ display:'flex', gap:'8px' }}>
+                                <input value={slide.image||''} onChange={e => { const s=[...((hp.hero?.slides)||[{},{},{},{}])]; s[i]={...s[i],image:e.target.value}; updHp('hero','slides',s); }}
+                                  placeholder="URL de l'image" style={{ ...inp, fontSize:'12px', padding:'7px 10px', flex:1 }} />
+                                <label style={{ padding:'7px 12px', background:'#1a1a1a', border:'1px solid #333', borderRadius:'6px', color:G, cursor:'pointer', fontSize:'12px', whiteSpace:'nowrap', display:'flex', alignItems:'center' }}>
+                                  &#8679;
+                                  <input type="file" accept="image/*" style={{ display:'none' }} onChange={async e => {
+                                    const f=e.target.files[0]; if(!f) return;
+                                    toast('Upload slide '+(i+1)+'...','info');
+                                    try {
+                                      const url = await uploadFile(f);
+                                      const s=[...((hp.hero?.slides)||[{},{},{},{}])];
+                                      s[i]={...s[i],image:url};
+                                      updHp('hero','slides',s);
+                                      toast('Slide '+(i+1)+' uploadé !');
+                                    } catch(er){ toast('Erreur upload','err'); }
+                                  }} />
+                                </label>
+                                {slide.image && <button onClick={() => { const s=[...((hp.hero?.slides)||[{},{},{},{}])]; s[i]={...s[i],image:''}; updHp('hero','slides',s); }} style={{ padding:'7px 10px', background:'none', border:'1px solid #7f1d1d', borderRadius:'6px', color:'#f87171', cursor:'pointer', fontSize:'12px' }}>&#215;</button>}
+                              </div>
+                              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'8px' }}>
+                                <input value={slide.country||''} onChange={e => { const s=[...((hp.hero?.slides)||[{},{},{},{}])]; s[i]={...s[i],country:e.target.value}; updHp('hero','slides',s); }}
+                                  placeholder="Pays (ex: Costa Rica)" style={{ ...inp, fontSize:'12px', padding:'7px 10px' }} />
+                                <input value={slide.caption||''} onChange={e => { const s=[...((hp.hero?.slides)||[{},{},{},{}])]; s[i]={...s[i],caption:e.target.value}; updHp('hero','slides',s); }}
+                                  placeholder="Légende (ex: Volcan Arenal)" style={{ ...inp, fontSize:'12px', padding:'7px 10px' }} />
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      )}
-                    </Field>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
 

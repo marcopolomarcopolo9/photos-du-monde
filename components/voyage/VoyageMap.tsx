@@ -1,121 +1,161 @@
 // @ts-nocheck
-import type { Voyage } from '@/lib/types';
+'use client';
+import { useEffect, useRef } from 'react';
 
-interface Props {
-  voyage: Voyage;
+interface Waypoint {
+  lat: number;
+  lng: number;
+  label: string;
+  day?: number;
 }
 
-export default function VoyageMap({ voyage }: Props) {
-  const points = voyage.mapPoints ?? [];
+interface Props {
+  waypoints: Waypoint[];
+  country: string;
+  centerLat?: number;
+  centerLng?: number;
+}
 
-  // Simple lat/lng to SVG position (crude world map projection)
-  const toSVG = (lat: number, lng: number) => ({
-    x: ((lng + 180) / 360) * 360 + 20,
-    y: ((90 - lat) / 180) * 180 + 10,
-  });
+export default function VoyageMap({ waypoints, country, centerLat, centerLng }: Props) {
+  const mapRef = useRef(null);
+  const instanceRef = useRef(null);
+
+  useEffect(() => {
+    if (!mapRef.current || instanceRef.current) return;
+    if (!waypoints?.length && !centerLat) return;
+
+    let L;
+    import('leaflet').then(mod => {
+      L = mod.default;
+
+      // Fix default icon
+      delete L.Icon.Default.prototype._getIconUrl;
+      L.Icon.Default.mergeOptions({
+        iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+        iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+        shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+      });
+
+      const pts = waypoints?.length ? waypoints : [{ lat: centerLat, lng: centerLng, label: country }];
+
+      // Center & zoom
+      const lats = pts.map(p => p.lat);
+      const lngs = pts.map(p => p.lng);
+      const centerLt = (Math.min(...lats) + Math.max(...lats)) / 2;
+      const centerLn = (Math.min(...lngs) + Math.max(...lngs)) / 2;
+
+      const map = L.map(mapRef.current, {
+        center: [centerLt, centerLn],
+        zoom: pts.length === 1 ? 7 : 6,
+        zoomControl: true,
+        scrollWheelZoom: false,
+        attributionControl: false,
+      });
+
+      instanceRef.current = map;
+
+      // Dark tile layer
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '© OpenStreetMap © CARTO',
+        maxZoom: 18,
+      }).addTo(map);
+
+      // Draw route line
+      if (pts.length > 1) {
+        const latlngs = pts.map(p => [p.lat, p.lng]);
+        L.polyline(latlngs, {
+          color: '#c4962a',
+          weight: 2.5,
+          opacity: 0.8,
+          dashArray: '6, 8',
+        }).addTo(map);
+
+        // Fit bounds with padding
+        const bounds = L.latLngBounds(latlngs);
+        map.fitBounds(bounds, { padding: [48, 48] });
+      }
+
+      // Custom marker icon
+      const makeIcon = (num, isFirst, isLast) => L.divIcon({
+        html: `<div style="
+          width:${isFirst || isLast ? 32 : 24}px;
+          height:${isFirst || isLast ? 32 : 24}px;
+          background:${isFirst ? '#c4962a' : isLast ? '#c4962a' : '#1a1a1a'};
+          border:2px solid ${isFirst || isLast ? '#f5f0e8' : '#c4962a'};
+          border-radius:50%;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          color:${isFirst || isLast ? '#0a0a0a' : '#c4962a'};
+          font-size:10px;
+          font-weight:700;
+          font-family:system-ui;
+          box-shadow:0 2px 12px rgba(0,0,0,0.6);
+        ">${num}</div>`,
+        className: '',
+        iconSize: [isFirst || isLast ? 32 : 24, isFirst || isLast ? 32 : 24],
+        iconAnchor: [isFirst || isLast ? 16 : 12, isFirst || isLast ? 16 : 12],
+      });
+
+      // Add markers
+      pts.forEach((pt, i) => {
+        const isFirst = i === 0;
+        const isLast = i === pts.length - 1;
+        const marker = L.marker([pt.lat, pt.lng], {
+          icon: makeIcon(i + 1, isFirst, isLast),
+        }).addTo(map);
+
+        const dayInfo = pt.day ? `Jour ${pt.day}` : `Étape ${i + 1}`;
+        marker.bindPopup(`
+          <div style="background:#111;border:1px solid #2a2a2a;border-radius:8px;padding:12px 14px;min-width:140px;font-family:system-ui;color:#f5f0e8">
+            <div style="color:#c4962a;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:4px">${dayInfo}</div>
+            <div style="font-size:14px;font-weight:500">${pt.label || 'Étape'}</div>
+          </div>
+        `, { className: 'custom-popup' });
+      });
+    });
+
+    return () => {
+      if (instanceRef.current) {
+        instanceRef.current.remove();
+        instanceRef.current = null;
+      }
+    };
+  }, [waypoints, centerLat, centerLng, country]);
+
+  if (!waypoints?.length && !centerLat) return null;
 
   return (
-    <div className="bg-noir-mid border border-white/5 p-6 md:p-8">
-      <div className="text-[10px] tracking-[0.3em] uppercase text-or mb-6">
-        Carte du voyage
-      </div>
-
-      {/* SVG Map */}
-      <div className="relative w-full aspect-[2/1] bg-noir rounded overflow-hidden mb-6">
-        <svg
-          viewBox="0 0 400 200"
-          className="w-full h-full"
-          aria-label={`Carte du voyage ${voyage.title}`}
-        >
-          {/* Grid */}
-          {[0, 50, 100, 150, 200].map((y) => (
-            <line key={y} x1="0" y1={y} x2="400" y2={y} stroke="rgba(255,255,255,0.04)" strokeWidth="0.5" />
-          ))}
-          {[0, 80, 160, 240, 320, 400].map((x) => (
-            <line key={x} x1={x} y1="0" x2={x} y2="200" stroke="rgba(255,255,255,0.04)" strokeWidth="0.5" />
-          ))}
-
-          {/* Continent outlines (simplified) */}
-          {/* Americas */}
-          <path
-            d="M40 30 L55 28 L60 35 L65 50 L70 70 L65 90 L60 110 L55 130 L50 150 L45 160 L40 155 L35 140 L30 120 L32 95 L35 70 L38 50Z"
-            fill="rgba(255,255,255,0.04)"
-            stroke="rgba(255,255,255,0.08)"
-            strokeWidth="0.5"
-          />
-          {/* Europe/Africa */}
-          <path
-            d="M165 25 L185 22 L195 30 L200 50 L198 70 L195 90 L185 120 L175 145 L165 160 L155 155 L150 135 L148 110 L150 85 L155 60 L160 40Z"
-            fill="rgba(255,255,255,0.04)"
-            stroke="rgba(255,255,255,0.08)"
-            strokeWidth="0.5"
-          />
-          {/* Asia */}
-          <path
-            d="M200 25 L240 22 L280 28 L295 40 L300 55 L290 70 L280 80 L260 85 L240 82 L220 78 L205 70 L198 55 L200 40Z"
-            fill="rgba(255,255,255,0.04)"
-            stroke="rgba(255,255,255,0.08)"
-            strokeWidth="0.5"
-          />
-
-          {/* Route line */}
-          {points.length > 1 && (
-            <polyline
-              points={points
-                .map(({ coordinates }) => {
-                  const pos = toSVG(coordinates.lat, coordinates.lng);
-                  return `${pos.x},${pos.y}`;
-                })
-                .join(' ')}
-              fill="none"
-              stroke="#C8A96E"
-              strokeWidth="0.8"
-              strokeDasharray="4,3"
-              opacity="0.6"
-            />
-          )}
-
-          {/* Points */}
-          {points.map((point, i) => {
-            const pos = toSVG(point.coordinates.lat, point.coordinates.lng);
-            return (
-              <g key={i}>
-                <circle cx={pos.x} cy={pos.y} r="4" fill="rgba(200,169,110,0.15)" />
-                <circle cx={pos.x} cy={pos.y} r="2" fill="#C8A96E" />
-                <text
-                  x={pos.x + 6}
-                  y={pos.y + 4}
-                  fill="rgba(240,232,216,0.7)"
-                  fontSize="6"
-                  fontFamily="'Barlow', sans-serif"
-                  fontWeight="300"
-                >
-                  {point.name}
-                </text>
-              </g>
-            );
-          })}
-        </svg>
-      </div>
-
-      {/* Points list */}
-      {points.length > 0 && (
-        <div className="flex flex-col gap-3">
-          {points.map((point, i) => (
-            <div key={i} className="flex items-start gap-3">
-              <div className="w-4 h-4 mt-0.5 flex items-center justify-center flex-shrink-0">
-                <div className="w-1.5 h-1.5 rounded-full bg-or" />
-              </div>
-              <div>
-                <div className="text-xs font-medium text-creme/80">{point.name}</div>
-                {point.description && (
-                  <div className="text-[11px] text-creme/40 mt-0.5">{point.description}</div>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+    <div>
+      {/* Leaflet CSS */}
+      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+      <style>{`
+        .custom-popup .leaflet-popup-content-wrapper {
+          background: transparent !important;
+          border: none !important;
+          box-shadow: none !important;
+          padding: 0 !important;
+        }
+        .custom-popup .leaflet-popup-content {
+          margin: 0 !important;
+        }
+        .custom-popup .leaflet-popup-tip {
+          background: #111 !important;
+        }
+        .leaflet-control-zoom {
+          border: 1px solid #2a2a2a !important;
+          background: #111 !important;
+        }
+        .leaflet-control-zoom a {
+          background: #111 !important;
+          color: #c4962a !important;
+          border-color: #2a2a2a !important;
+        }
+        .leaflet-control-zoom a:hover {
+          background: #1a1a1a !important;
+        }
+      `}</style>
+      <div ref={mapRef} style={{ width:'100%', height:'420px', borderRadius:'4px', background:'#0d0d0d' }} />
     </div>
   );
 }
