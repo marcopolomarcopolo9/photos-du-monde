@@ -57,22 +57,16 @@ function Inp({ value, onChange, placeholder, type, multiline, rows, style }) {
 }
 
 async function uploadFile(file) {
-  const sig = await fetch('/api/admin/upload', {
-    method: 'POST',
-    headers: { 'x-admin-auth': 'true' },
-  });
-  if (!sig.ok) throw new Error('Auth ' + sig.status);
-  const { signature, timestamp, api_key, cloud_name, folder } = await sig.json();
   const fd = new FormData();
   fd.append('file', file);
-  fd.append('api_key', api_key);
-  fd.append('timestamp', String(timestamp));
-  fd.append('signature', signature);
-  fd.append('folder', folder);
-  const res = await fetch('https://api.cloudinary.com/v1_1/' + cloud_name + '/image/upload', { method: 'POST', body: fd });
+  const res = await fetch('/api/admin/upload', { method: 'POST', body: fd });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || 'Erreur ' + res.status);
+  }
   const data = await res.json();
-  if (!data.secure_url) throw new Error(data.error?.message || 'Upload failed');
-  return data.secure_url;
+  if (!data.url) throw new Error(data.error || 'Upload échoué');
+  return data.url;
 }
 
 /* ─── Lightbox zoom ─── */
