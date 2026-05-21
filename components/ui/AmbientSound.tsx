@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 
-const AUDIO_URL = 'https://res.cloudinary.com/doxsjisyx/video/upload/v1779388451/photos-du-monde/jungle-ambient.mp3';
+const AUDIO_URL = 'https://res.cloudinary.com/doxsjisyx/video/upload/v1779389179/photos-du-monde/jungle-ambient.mp3';
 
 export default function AmbientSound() {
   const [playing, setPlaying] = useState(false);

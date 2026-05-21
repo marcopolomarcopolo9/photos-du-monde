@@ -251,7 +251,7 @@ export default function AdminPage() {
   const [bulkUploading, setBulkUploading] = useState(false);
   const uploadRef = useRef(null);
 
-  const TABS = ['TABLEAU DE BORD', 'VOYAGES', "PAGE D'ACCUEIL", 'GALERIE', 'UPLOAD', 'PARAMETRES'];
+  const TABS = ['TABLEAU DE BORD', 'VOYAGES', "PAGE D'ACCUEIL", 'À PROPOS', 'GALERIE', 'UPLOAD', 'PARAMETRES'];
 
   useEffect(() => {
     if (localStorage.getItem('admin_auth') === 'true') { setAuth(true); loadAll(); }
@@ -781,8 +781,121 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* ═══ GALERIE ═══ */}
+        {/* ═══ À PROPOS ═══ */}
         {tab === 3 && (
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '24px' }}>
+              <div>
+                <h1 style={{ fontSize: '26px', fontWeight: '200', fontFamily: 'Georgia,serif', fontStyle: 'italic', margin: '0 0 4px' }}>Page À propos</h1>
+                <p style={{ color: '#555', fontSize: '13px', margin: 0 }}>Modifiez votre présentation et votre photo de profil</p>
+              </div>
+              {hp && <Btn onClick={saveHp} disabled={hpSaving}>{hpSaving ? 'PUBLICATION...' : '✓ SAUVEGARDER ET PUBLIER'}</Btn>}
+            </div>
+            {!hp ? (
+              <div style={{ textAlign: 'center', color: '#444', padding: '60px' }}>Chargement... <button onClick={loadHp} style={{ marginLeft: '12px', padding: '8px 16px', background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: '6px', color: '#888', cursor: 'pointer' }}>Recharger</button></div>
+            ) : (
+              <div style={{ display: 'grid', gap: '18px' }}>
+
+                {/* Photo de profil */}
+                <div style={cardSt}>
+                  <h3 style={{ margin: '0 0 18px', color: G, fontSize: '11px', letterSpacing: '.22em', fontWeight: '700' }}>VOTRE PHOTO</h3>
+                  <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
+                    {/* Preview */}
+                    <div style={{ width: '120px', height: '160px', borderRadius: '6px', overflow: 'hidden', background: '#0d0d0d', border: '1px solid #2a2a2a', flexShrink: 0, cursor: (hp.about?.photo) ? 'zoom-in' : 'default' }}
+                      onClick={() => hp.about?.photo && setLightbox({ photos: [{ src: hp.about.photo }], index: 0 })}>
+                      {hp.about?.photo
+                        ? <img src={hp.about.photo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#333', fontSize: '30px' }}>&#128247;</div>
+                      }
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <Field label="URL ou uploader une photo">
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                          <Inp value={hp.about?.photo || ''} onChange={v => updHp('about', 'photo', v)} placeholder="URL Cloudinary de votre photo" />
+                          <label style={{ padding: '11px 16px', background: '#1a1a1a', border: '1px solid #333', borderRadius: '8px', color: G, cursor: 'pointer', fontSize: '13px', whiteSpace: 'nowrap' }}>
+                            &#8679; Upload
+                            <input type="file" accept="image/*" style={{ display: 'none' }} onChange={async e => {
+                              const f = e.target.files[0]; if (!f) return;
+                              toast('Upload photo...', 'info');
+                              try { const url = await uploadFile(f); updHp('about', 'photo', url); toast('Photo uploadée !'); }
+                              catch (er) { toast('Erreur upload', 'err'); }
+                            }} />
+                          </label>
+                        </div>
+                      </Field>
+                      {hp.about?.photo && (
+                        <button onClick={() => updHp('about', 'photo', '')}
+                          style={{ marginTop: '8px', padding: '6px 14px', background: 'none', border: '1px solid #7f1d1d', borderRadius: '6px', color: '#f87171', cursor: 'pointer', fontSize: '12px' }}>
+                          &#215; Supprimer la photo
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Textes */}
+                <div style={cardSt}>
+                  <h3 style={{ margin: '0 0 18px', color: G, fontSize: '11px', letterSpacing: '.22em', fontWeight: '700' }}>PRÉSENTATION</h3>
+                  <div style={{ display: 'grid', gap: '14px' }}>
+                    <Field label="Texte d'introduction (accroche)">
+                      <Inp value={hp.about?.intro || ''} onChange={v => updHp('about', 'intro', v)} multiline rows={3} placeholder="Photographe voyageur, je capture..." />
+                    </Field>
+                    <Field label="Philosophie (paragraphe 1)">
+                      <Inp value={hp.about?.philosophy || ''} onChange={v => updHp('about', 'philosophy', v)} multiline rows={3} placeholder="Chaque voyage est une immersion totale..." />
+                    </Field>
+                    <Field label="Philosophie (paragraphe 2)">
+                      <Inp value={hp.about?.philosophy2 || ''} onChange={v => updHp('about', 'philosophy2', v)} multiline rows={3} placeholder="Les meilleurs clichés naissent..." />
+                    </Field>
+                  </div>
+                </div>
+
+                {/* Stats */}
+                <div style={cardSt}>
+                  <h3 style={{ margin: '0 0 18px', color: G, fontSize: '11px', letterSpacing: '.22em', fontWeight: '700' }}>STATISTIQUES</h3>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
+                    <Field label="&#127758; Pays visités"><Inp value={String(hp.about?.countries || '')} onChange={v => updHp('about', 'countries', parseInt(v) || 0)} placeholder="32" /></Field>
+                    <Field label="&#128247; Photos prises"><Inp value={String(hp.about?.photos || '')} onChange={v => updHp('about', 'photos', parseInt(v) || 0)} placeholder="4800" /></Field>
+                    <Field label="&#128197; Années d'exp."><Inp value={String(hp.about?.years || '')} onChange={v => updHp('about', 'years', parseInt(v) || 0)} placeholder="8" /></Field>
+                  </div>
+                </div>
+
+                {/* Équipement */}
+                <div style={cardSt}>
+                  <h3 style={{ margin: '0 0 18px', color: G, fontSize: '11px', letterSpacing: '.22em', fontWeight: '700' }}>ÉQUIPEMENT (séparés par virgules)</h3>
+                  <Inp value={hp.about?.equipment || ''} onChange={v => updHp('about', 'equipment', v)} placeholder="Sony A7R V, 200-600mm f/5.6, Trépied Gitzo" />
+                </div>
+
+                {/* Destinations favorites */}
+                <div style={cardSt}>
+                  <h3 style={{ margin: '0 0 18px', color: G, fontSize: '11px', letterSpacing: '.22em', fontWeight: '700' }}>DESTINATIONS FAVORITES</h3>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '12px' }}>
+                    {(hp.about?.favorites || []).map((fav, i) => (
+                      <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 32px', gap: '8px', alignItems: 'center' }}>
+                        <input value={fav.name || ''} onChange={e => { const f=[...(hp.about?.favorites||[])]; f[i]={...f[i],name:e.target.value}; updHp('about','favorites',f); }}
+                          placeholder="Costa Rica" style={{ ...inp, fontSize:'13px', padding:'8px 12px' }} />
+                        <input value={fav.desc || ''} onChange={e => { const f=[...(hp.about?.favorites||[])]; f[i]={...f[i],desc:e.target.value}; updHp('about','favorites',f); }}
+                          placeholder="Description courte" style={{ ...inp, fontSize:'13px', padding:'8px 12px' }} />
+                        <button onClick={() => { const f=(hp.about?.favorites||[]).filter((_,j)=>j!==i); updHp('about','favorites',f); }}
+                          style={{ background:'none', border:'none', color:'#f87171', cursor:'pointer', fontSize:'18px', padding:'4px' }}>&#215;</button>
+                      </div>
+                    ))}
+                  </div>
+                  <button onClick={() => { const f=[...(hp.about?.favorites||[]),{name:'',desc:''}]; updHp('about','favorites',f); }}
+                    style={{ padding:'7px 16px', background:'rgba(196,150,42,.1)', border:'1px solid '+G, borderRadius:'6px', color:G, cursor:'pointer', fontSize:'12px' }}>
+                    + Ajouter une destination
+                  </button>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <Btn onClick={saveHp} disabled={hpSaving} style={{ padding: '14px 40px' }}>{hpSaving ? 'PUBLICATION EN COURS...' : '✓ SAUVEGARDER ET PUBLIER'}</Btn>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ═══ GALERIE ═══ */}
+        {tab === 4 && (
           <div>
             <h1 style={{ fontSize: '26px', fontWeight: '200', fontFamily: 'Georgia,serif', fontStyle: 'italic', margin: '0 0 6px' }}>Galerie</h1>
             <p style={{ color: '#555', fontSize: '13px', marginBottom: '28px' }}>Toutes les photos — cliquez pour zoomer</p>
@@ -818,7 +931,7 @@ export default function AdminPage() {
         )}
 
         {/* ═══ UPLOAD ═══ */}
-        {tab === 4 && (
+        {tab === 5 && (
           <div>
             <h1 style={{ fontSize: '26px', fontWeight: '200', fontFamily: 'Georgia,serif', fontStyle: 'italic', margin: '0 0 6px' }}>Upload d'images</h1>
             <p style={{ color: '#555', fontSize: '13px', marginBottom: '28px' }}>Uploadez sur Cloudinary — copiez les URLs pour les utiliser partout</p>
@@ -858,7 +971,7 @@ export default function AdminPage() {
         )}
 
         {/* ═══ PARAMÈTRES ═══ */}
-        {tab === 5 && (
+        {tab === 6 && (
           <div>
             <h1 style={{ fontSize: '26px', fontWeight: '200', fontFamily: 'Georgia,serif', fontStyle: 'italic', margin: '0 0 28px' }}>Paramètres</h1>
             <div style={{ display: 'grid', gap: '16px' }}>
