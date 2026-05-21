@@ -1,222 +1,192 @@
 'use client';
-
 import { useState, useEffect, useRef } from 'react';
 
-// Generates jungle ambient using Web Audio API — no external file needed
-function createJungleAmbience(ctx: AudioContext, masterGain: GainNode) {
-  const sounds: { stop: () => void }[] = [];
+function createJungle(ctx: AudioContext, master: GainNode) {
+  const stops: (() => void)[] = [];
 
-  // ── Wind / background noise ──────────────────────────────────
-  const bufferSize = ctx.sampleRate * 3;
-  const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-  const data = noiseBuffer.getChannelData(0);
-  for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+  // Wind
+  const buf = ctx.createBuffer(1, ctx.sampleRate * 4, ctx.sampleRate);
+  const d = buf.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  const wind = ctx.createBufferSource();
+  wind.buffer = buf; wind.loop = true;
+  const wf = ctx.createBiquadFilter(); wf.type = 'bandpass'; wf.frequency.value = 350; wf.Q.value = 0.25;
+  const wg = ctx.createGain(); wg.gain.value = 0.035;
+  wind.connect(wf); wf.connect(wg); wg.connect(master); wind.start();
+  stops.push(() => { try { wind.stop(); } catch {} });
 
-  const noiseSource = ctx.createBufferSource();
-  noiseSource.buffer = noiseBuffer;
-  noiseSource.loop = true;
-
-  const windFilter = ctx.createBiquadFilter();
-  windFilter.type = 'bandpass';
-  windFilter.frequency.value = 400;
-  windFilter.Q.value = 0.3;
-
-  const windGain = ctx.createGain();
-  windGain.gain.value = 0.04;
-
-  noiseSource.connect(windFilter);
-  windFilter.connect(windGain);
-  windGain.connect(masterGain);
-  noiseSource.start();
-  sounds.push({ stop: () => noiseSource.stop() });
-
-  // ── Cricket chirps ───────────────────────────────────────────
-  function chirp(freq: number, delay: number, interval: number) {
-    let stopped = false;
+  // Crickets
+  const chirp = (freq: number, delay: number, ms: number) => {
+    let on = true;
     const tick = () => {
-      if (stopped || ctx.state === 'closed') return;
-      const o = ctx.createOscillator();
-      const g = ctx.createGain();
-      o.type = 'sine';
-      o.frequency.value = freq + (Math.random() - 0.5) * 30;
+      if (!on || ctx.state === 'closed') return;
+      const o = ctx.createOscillator(); const g = ctx.createGain();
+      o.type = 'sine'; o.frequency.value = freq + (Math.random() - .5) * 40;
       g.gain.setValueAtTime(0, ctx.currentTime);
-      g.gain.linearRampToValueAtTime(0.06, ctx.currentTime + 0.01);
-      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
-      o.connect(g); g.connect(masterGain);
-      o.start(ctx.currentTime);
-      o.stop(ctx.currentTime + 0.1);
-      setTimeout(tick, interval + Math.random() * interval * 0.5);
+      g.gain.linearRampToValueAtTime(0.055, ctx.currentTime + 0.012);
+      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.09);
+      o.connect(g); g.connect(master);
+      o.start(); o.stop(ctx.currentTime + 0.1);
+      setTimeout(tick, ms + Math.random() * ms * .6);
     };
     setTimeout(tick, delay);
-    sounds.push({ stop: () => { stopped = true; } });
-  }
+    stops.push(() => { on = false; });
+  };
+  chirp(4100, 0, 170); chirp(3750, 80, 210); chirp(4400, 150, 155); chirp(3500, 40, 290);
 
-  chirp(4200, 0,    180);
-  chirp(3800, 60,   220);
-  chirp(4500, 110,  160);
-  chirp(3600, 30,   300);
-
-  // ── Bird calls ───────────────────────────────────────────────
-  function birdCall(baseFreq: number, delay: number, interval: number) {
-    let stopped = false;
+  // Birds
+  const bird = (base: number, delay: number, ms: number) => {
+    let on = true;
     const tick = () => {
-      if (stopped || ctx.state === 'closed') return;
-      const notes = [1, 1.2, 0.9, 1.35].slice(0, 2 + Math.floor(Math.random() * 3));
-      notes.forEach((ratio, i) => {
-        const o = ctx.createOscillator();
-        const g = ctx.createGain();
-        o.type = 'sine';
-        const f = baseFreq * ratio + (Math.random() - 0.5) * 80;
-        o.frequency.setValueAtTime(f, ctx.currentTime + i * 0.12);
-        o.frequency.linearRampToValueAtTime(f * 1.08, ctx.currentTime + i * 0.12 + 0.08);
-        g.gain.setValueAtTime(0, ctx.currentTime + i * 0.12);
-        g.gain.linearRampToValueAtTime(0.07, ctx.currentTime + i * 0.12 + 0.02);
-        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.12 + 0.18);
-        o.connect(g); g.connect(masterGain);
-        o.start(ctx.currentTime + i * 0.12);
-        o.stop(ctx.currentTime + i * 0.12 + 0.25);
+      if (!on || ctx.state === 'closed') return;
+      const notes = [1, 1.18, 0.88].slice(0, 2 + Math.floor(Math.random() * 2));
+      notes.forEach((r, i) => {
+        const o = ctx.createOscillator(); const g = ctx.createGain();
+        o.type = 'sine'; const f = base * r + (Math.random() - .5) * 70;
+        o.frequency.setValueAtTime(f, ctx.currentTime + i * 0.13);
+        o.frequency.linearRampToValueAtTime(f * 1.07, ctx.currentTime + i * 0.13 + 0.09);
+        g.gain.setValueAtTime(0, ctx.currentTime + i * 0.13);
+        g.gain.linearRampToValueAtTime(0.065, ctx.currentTime + i * 0.13 + 0.025);
+        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.13 + 0.2);
+        o.connect(g); g.connect(master);
+        o.start(ctx.currentTime + i * 0.13); o.stop(ctx.currentTime + i * 0.13 + 0.28);
       });
-      setTimeout(tick, interval + Math.random() * interval);
+      setTimeout(tick, ms + Math.random() * ms);
     };
     setTimeout(tick, delay);
-    sounds.push({ stop: () => { stopped = true; } });
-  }
+    stops.push(() => { on = false; });
+  };
+  bird(1750, 300, 3800); bird(2350, 900, 5500); bird(1150, 1600, 7200); bird(2700, 500, 4600);
 
-  birdCall(1800, 200,  4000);
-  birdCall(2400, 800,  6000);
-  birdCall(1200, 1500, 8000);
-  birdCall(2800, 400,  5000);
-
-  // ── Distant frog croaks ──────────────────────────────────────
-  function frog(delay: number, interval: number) {
-    let stopped = false;
+  // Frogs
+  const frog = (delay: number, ms: number) => {
+    let on = true;
     const tick = () => {
-      if (stopped || ctx.state === 'closed') return;
-      const o = ctx.createOscillator();
-      const g = ctx.createGain();
+      if (!on || ctx.state === 'closed') return;
+      const o = ctx.createOscillator(); const g = ctx.createGain();
+      const fl = ctx.createBiquadFilter(); fl.type = 'lowpass'; fl.frequency.value = 580;
       o.type = 'sawtooth';
-      o.frequency.setValueAtTime(180 + Math.random() * 40, ctx.currentTime);
-      o.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + 0.15);
-      g.gain.setValueAtTime(0.05, ctx.currentTime);
-      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
-
-      const filter = ctx.createBiquadFilter();
-      filter.type = 'lowpass';
-      filter.frequency.value = 600;
-
-      o.connect(filter); filter.connect(g); g.connect(masterGain);
-      o.start(ctx.currentTime); o.stop(ctx.currentTime + 0.25);
-      setTimeout(tick, interval + Math.random() * interval * 2);
+      o.frequency.setValueAtTime(170 + Math.random() * 45, ctx.currentTime);
+      o.frequency.exponentialRampToValueAtTime(110, ctx.currentTime + 0.18);
+      g.gain.setValueAtTime(0.045, ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.22);
+      o.connect(fl); fl.connect(g); g.connect(master);
+      o.start(); o.stop(ctx.currentTime + 0.26);
+      setTimeout(tick, ms + Math.random() * ms * 2.2);
     };
     setTimeout(tick, delay);
-    sounds.push({ stop: () => { stopped = true; } });
-  }
+    stops.push(() => { on = false; });
+  };
+  frog(600, 2800); frog(1400, 4200);
 
-  frog(500,  3000);
-  frog(1200, 4500);
-
-  return { stop: () => sounds.forEach(s => s.stop()) };
+  return () => stops.forEach(fn => fn());
 }
 
 export default function AmbientSound() {
   const [playing, setPlaying] = useState(false);
-  const [visible, setVisible] = useState(false);
+  const [started, setStarted] = useState(false);
   const ctxRef = useRef<AudioContext | null>(null);
-  const gainRef = useRef<GainNode | null>(null);
-  const jungleRef = useRef<{ stop: () => void } | null>(null);
-  const startedRef = useRef(false);
+  const masterRef = useRef<GainNode | null>(null);
+  const stopJungleRef = useRef<(() => void) | null>(null);
+  const doneRef = useRef(false);
 
-  useEffect(() => {
-    const t = setTimeout(() => setVisible(true), 2500);
-    return () => clearTimeout(t);
-  }, []);
-
-  const start = () => {
-    if (startedRef.current) return;
-    startedRef.current = true;
+  const startSound = () => {
+    if (doneRef.current) return;
+    doneRef.current = true;
 
     const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
     const master = ctx.createGain();
-    master.gain.value = 0.28;
+    // Fade in over 2s
+    master.gain.setValueAtTime(0, ctx.currentTime);
+    master.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 2);
     master.connect(ctx.destination);
     ctxRef.current = ctx;
-    gainRef.current = master;
+    masterRef.current = master;
 
-    jungleRef.current = createJungleAmbience(ctx, master);
+    stopJungleRef.current = createJungle(ctx, master);
     setPlaying(true);
+    setStarted(true);
   };
+
+  useEffect(() => {
+    // Start on ANY interaction — mousemove, scroll, touchstart, keydown
+    const events = ['mousemove', 'scroll', 'touchstart', 'keydown', 'pointerdown'];
+    const handler = () => startSound();
+    events.forEach(e => window.addEventListener(e, handler, { once: true, passive: true }));
+    return () => events.forEach(e => window.removeEventListener(e, handler));
+  }, []);
 
   const toggle = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!startedRef.current) { start(); return; }
-
-    const gain = gainRef.current;
     const ctx = ctxRef.current;
-    if (!gain || !ctx) return;
+    const master = masterRef.current;
+
+    if (!ctx) { startSound(); return; }
 
     if (playing) {
-      gain.gain.setTargetAtTime(0, ctx.currentTime, 0.3);
+      master!.gain.setTargetAtTime(0, ctx.currentTime, 0.3);
       setPlaying(false);
     } else {
       ctx.resume();
-      gain.gain.setTargetAtTime(0.28, ctx.currentTime, 0.5);
+      master!.gain.setTargetAtTime(0.3, ctx.currentTime, 0.5);
       setPlaying(true);
     }
   };
 
-  // Auto-start on first interaction
-  useEffect(() => {
-    const handler = () => { if (!startedRef.current) start(); };
-    window.addEventListener('click', handler, { once: true });
-    window.addEventListener('scroll', handler, { once: true });
-    return () => {
-      window.removeEventListener('click', handler);
-      window.removeEventListener('scroll', handler);
-    };
-  }, []);
-
-  if (!visible) return null;
-
   return (
-    <button onClick={toggle} title={playing ? 'Couper le son' : 'Ambiance jungle'}
-      style={{
-        position: 'fixed', bottom: '28px', right: '28px', zIndex: 9000,
-        width: '44px', height: '44px', borderRadius: '50%',
-        background: 'rgba(8,8,8,0.88)',
-        border: `1px solid ${playing ? 'rgba(196,150,42,0.6)' : 'rgba(255,255,255,0.12)'}`,
-        color: playing ? '#c4962a' : 'rgba(255,255,255,0.3)',
-        cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-        backdropFilter: 'blur(8px)', transition: 'all 0.3s ease',
-        boxShadow: playing ? '0 0 16px rgba(196,150,42,0.12)' : 'none',
-      }}>
+    <>
+      {/* Sound button — always visible */}
+      <button
+        onClick={toggle}
+        title={playing ? 'Couper le son ambiance' : 'Activer le son ambiance'}
+        style={{
+          position: 'fixed',
+          bottom: '28px',
+          right: '28px',
+          zIndex: 9000,
+          width: '44px',
+          height: '44px',
+          borderRadius: '50%',
+          background: 'rgba(8,8,8,0.88)',
+          border: `1px solid ${playing ? 'rgba(196,150,42,0.6)' : 'rgba(255,255,255,0.15)'}`,
+          color: playing ? '#c4962a' : 'rgba(255,255,255,0.4)',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backdropFilter: 'blur(8px)',
+          transition: 'all 0.3s ease',
+          boxShadow: playing ? '0 0 16px rgba(196,150,42,0.15)' : 'none',
+        }}
+      >
+        {playing ? (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor" stroke="none"/>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07" strokeOpacity="0.7"/>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14" strokeOpacity="0.4"/>
+          </svg>
+        ) : (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor" stroke="none"/>
+            <line x1="23" y1="9" x2="17" y2="15"/>
+            <line x1="17" y1="9" x2="23" y2="15"/>
+          </svg>
+        )}
 
-      {playing ? (
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor" stroke="none"/>
-          <path d="M15.54 8.46a5 5 0 0 1 0 7.07" strokeOpacity="0.6"/>
-          <path d="M19.07 4.93a10 10 0 0 1 0 14.14" strokeOpacity="0.35"/>
-        </svg>
-      ) : (
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor" stroke="none"/>
-          <line x1="23" y1="9" x2="17" y2="15"/>
-          <line x1="17" y1="9" x2="23" y2="15"/>
-        </svg>
-      )}
-
-      {playing && (
-        <>
-          <span style={{ position:'absolute', inset:'-5px', borderRadius:'50%', border:'1px solid rgba(196,150,42,0.2)', animation:'ripple1 2.4s ease-out infinite' }} />
-          <span style={{ position:'absolute', inset:'-10px', borderRadius:'50%', border:'1px solid rgba(196,150,42,0.1)', animation:'ripple1 2.4s ease-out 0.8s infinite' }} />
-        </>
-      )}
+        {playing && (
+          <>
+            <span style={{ position:'absolute', inset:'-5px', borderRadius:'50%', border:'1px solid rgba(196,150,42,0.2)', animation:'ripple-s 2.4s ease-out infinite', pointerEvents:'none' }} />
+            <span style={{ position:'absolute', inset:'-11px', borderRadius:'50%', border:'1px solid rgba(196,150,42,0.1)', animation:'ripple-s 2.4s ease-out 0.9s infinite', pointerEvents:'none' }} />
+          </>
+        )}
+      </button>
 
       <style>{`
-        @keyframes ripple1 {
-          0% { transform:scale(0.95); opacity:0.8; }
-          100% { transform:scale(1.4); opacity:0; }
+        @keyframes ripple-s {
+          0% { transform: scale(0.9); opacity: 0.8; }
+          100% { transform: scale(1.45); opacity: 0; }
         }
       `}</style>
-    </button>
+    </>
   );
 }
