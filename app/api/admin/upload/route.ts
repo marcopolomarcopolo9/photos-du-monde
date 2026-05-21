@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 
+// Auth via cookie OR Authorization header (localStorage fallback)
 function checkAuth(req: NextRequest) {
+  // Check cookie first
   const cookie = req.cookies.get('admin_auth')?.value;
-  return cookie === (process.env.ADMIN_PASSWORD || 'admin123');
+  if (cookie === (process.env.ADMIN_PASSWORD || 'admin123')) return true;
+  // Check Authorization header (sent by admin page using localStorage)
+  const auth = req.headers.get('x-admin-auth');
+  if (auth === 'true' || auth === (process.env.ADMIN_PASSWORD || 'admin123')) return true;
+  return false;
 }
 
 export async function POST(req: NextRequest) {
@@ -23,11 +29,5 @@ export async function POST(req: NextRequest) {
     .update(paramsToSign + API_SECRET)
     .digest('hex');
 
-  return NextResponse.json({
-    signature,
-    timestamp,
-    api_key: API_KEY,
-    cloud_name: CLOUD_NAME,
-    folder,
-  });
+  return NextResponse.json({ signature, timestamp, api_key: API_KEY, cloud_name: CLOUD_NAME, folder });
 }

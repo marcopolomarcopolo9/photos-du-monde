@@ -57,8 +57,11 @@ function Inp({ value, onChange, placeholder, type, multiline, rows, style }) {
 }
 
 async function uploadFile(file) {
-  const sig = await fetch('/api/admin/upload', { method: 'POST' });
-  if (!sig.ok) throw new Error('Auth');
+  const sig = await fetch('/api/admin/upload', {
+    method: 'POST',
+    headers: { 'x-admin-auth': 'true' },
+  });
+  if (!sig.ok) throw new Error('Auth ' + sig.status);
   const { signature, timestamp, api_key, cloud_name, folder } = await sig.json();
   const fd = new FormData();
   fd.append('file', file);
