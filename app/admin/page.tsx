@@ -105,15 +105,13 @@ async function uploadFile(file) {
   if (!sigRes.ok) throw new Error('Erreur signature');
   const { signature, timestamp, api_key, cloud_name, folder } = await sigRes.json();
 
-  // 3. Upload to Cloudinary with auto quality optimization
+  // 3. Upload to Cloudinary
   const fd = new FormData();
   fd.append('file', compressed);
   fd.append('api_key', api_key);
   fd.append('timestamp', String(timestamp));
   fd.append('signature', signature);
   fd.append('folder', folder);
-  fd.append('quality', 'auto:good');
-  fd.append('fetch_format', 'auto');
 
   const res = await fetch(
     `https://api.cloudinary.com/v1_1/${cloud_name}/image/upload`,
