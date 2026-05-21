@@ -57,16 +57,28 @@ function Inp({ value, onChange, placeholder, type, multiline, rows, style }) {
 }
 
 async function uploadFile(file) {
+  // 1. Get signature from our server
+  const sigRes = await fetch('/api/admin/upload', { method: 'POST' });
+  if (!sigRes.ok) throw new Error('Erreur signature');
+  const { signature, timestamp, api_key, cloud_name, folder } = await sigRes.json();
+
+  // 2. Upload directly to Cloudinary (bypasses Vercel 4.5MB limit)
   const fd = new FormData();
   fd.append('file', file);
-  const res = await fetch('/api/admin/upload', { method: 'POST', body: fd });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.error || 'Erreur ' + res.status);
-  }
+  fd.append('api_key', api_key);
+  fd.append('timestamp', String(timestamp));
+  fd.append('signature', signature);
+  fd.append('folder', folder);
+
+  const res = await fetch(
+    `https://api.cloudinary.com/v1_1/${cloud_name}/image/upload`,
+    { method: 'POST', body: fd }
+  );
+
+  if (!res.ok) throw new Error('Cloudinary ' + res.status);
   const data = await res.json();
-  if (!data.url) throw new Error(data.error || 'Upload échoué');
-  return data.url;
+  if (!data.secure_url) throw new Error(data.error?.message || 'Upload échoué');
+  return data.secure_url;
 }
 
 /* ─── Lightbox zoom ─── */
