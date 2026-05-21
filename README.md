@@ -93,3 +93,4 @@ Compatible **Vercel** (déploiement en un clic), **Netlify**, ou tout hébergeur
 # Sur Vercel
 vercel deploy
 ```
+# Force deploy Thu May 21 12:56:38 UTC 2026
