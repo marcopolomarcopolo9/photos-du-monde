@@ -222,3 +222,10 @@ export const STATS = [
   { value: '5', label: 'Photographies' },
   { value: '2', label: 'Plages de lave noire' },
 ];
+
+export const NAV_ITEMS = [
+  { href: '/', label: 'Accueil' },
+  { href: '/voyages', label: 'Destinations' },
+  { href: '/galerie', label: 'Galerie' },
+  { href: '/admin', label: 'Admin' },
+];

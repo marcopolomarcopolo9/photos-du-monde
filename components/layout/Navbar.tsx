@@ -6,13 +6,7 @@ import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, X, Menu } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
-const NAV_LINKS = [
-  { href: '/', label: 'Accueil' },
-  { href: '/voyages', label: 'Destinations' },
-  { href: '/galerie', label: 'Galerie' },
-  { href: '/admin', label: 'Admin' },
-];
+import { NAV_ITEMS } from '@/lib/data';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -20,6 +14,8 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const pathname = usePathname();
+
+  const NAV_LINKS = NAV_ITEMS;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60);
