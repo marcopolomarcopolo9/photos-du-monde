@@ -35,6 +35,7 @@ export default function AdminPage() {
   const [form, setForm] = useState(emptyForm);
   const [uploadStatus, setUploadStatus] = useState<Record<string, string>>({});
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [voyagesList, setVoyagesList] = useState(VOYAGES);
 
   // Hero slides state
   const [slides, setSlides] = useState(HERO_SLIDES.map(s => ({ ...s })));
@@ -134,7 +135,14 @@ export default function AdminPage() {
     });
     setSaveStatus('idle');
     setDeleteConfirm(null);
-    if (res.ok) { setSaveMsg('Voyage supprimé ! Déploiement en cours...'); setTimeout(() => setSaveMsg(''), 4000); }
+    if (res.ok) {
+      setVoyagesList(list => list.filter(v => v.slug !== slug));
+      setSaveMsg('Voyage supprimé ! Déploiement en cours...');
+      setTimeout(() => setSaveMsg(''), 4000);
+    } else {
+      setSaveMsg('Erreur lors de la suppression');
+      setSaveStatus('error');
+    }
   };
 
   const handleEditVoyage = (voyage: typeof VOYAGES[0]) => {
@@ -277,7 +285,7 @@ export default function AdminPage() {
           {(tab === 'voyages') && (
             <motion.div key="voyages" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
               <div className="flex flex-col gap-2">
-                {VOYAGES.map((v) => (
+                {voyagesList.map((v) => (
                   <div key={v.id} className="group relative flex items-center gap-4 p-4 bg-noir-mid border border-white/5 hover:border-white/10 transition-colors">
                     {/* Thumb */}
                     <div className="w-20 h-14 overflow-hidden flex-shrink-0">
@@ -329,7 +337,7 @@ export default function AdminPage() {
                   </div>
                 ))}
 
-                {VOYAGES.length === 0 && (
+                {voyagesList.length === 0 && (
                   <div className="p-12 text-center text-creme/30 text-sm font-poppins border border-dashed border-white/10">
                     Aucun voyage pour l'instant
                   </div>
