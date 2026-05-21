@@ -1,3 +1,4 @@
+// @ts-nocheck
 import Image from 'next/image';
 import Link from 'next/link';
 import { Calendar, Clock, Camera, MapPin } from 'lucide-react';

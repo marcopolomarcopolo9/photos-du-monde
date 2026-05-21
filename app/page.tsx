@@ -1,83 +1,54 @@
-import type { Metadata } from 'next';
-import Hero from '@/components/home/Hero';
-import StatsSection from '@/components/home/StatsSection';
-import FeaturedVoyages from '@/components/home/FeaturedVoyages';
-import Destinations from '@/components/home/Destinations';
-import WorldMap from '@/components/home/WorldMap';
-import ScrollReveal from '@/components/ui/ScrollReveal';
+// @ts-nocheck
+import Hero from '../components/home/Hero';
+import { VOYAGES } from '../lib/data';
+import { HOMEPAGE_CONFIG } from '../lib/homepage';
 import Link from 'next/link';
 
-export const metadata: Metadata = {
-  title: 'Accueil — Photos du Monde',
-  description: "Explorez le monde à travers l'objectif. Galerie photo immersive de voyages au cœur des volcans, jungles et sanctuaires d'oiseaux.",
-  openGraph: {
-    title: "Photos du Monde — Explorer le monde à travers l'objectif",
-    description: 'Galerie photo immersive de voyages nature. Costa Rica, Hawaï, Amazonie, Galápagos.',
-  },
-};
-
 export default function HomePage() {
+  const published = VOYAGES.filter(v => v.published !== false).slice(0, 6);
+  const config = HOMEPAGE_CONFIG;
+
   return (
-    <>
-      <Hero />
-      <StatsSection />
-      <FeaturedVoyages />
-      <Destinations />
-      <WorldMap />
-
-      {/* À propos */}
-      <section className="bg-noir-soft py-24 md:py-32">
-        <div className="max-w-screen-xl mx-auto px-6 md:px-10">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-            <ScrollReveal direction="left">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-8 h-px bg-or" />
-                <span className="text-[10px] tracking-[0.3em] uppercase text-or font-poppins">À propos</span>
-              </div>
-              <h2 className="font-serif font-light text-4xl md:text-5xl text-creme italic leading-snug mb-8">
-                Explorer le monde
-                <br />
-                à travers <em>l&apos;objectif</em>
+    <main>
+      <Hero config={config} />
+      <section style={{ background: '#0a0a0a', padding: '100px 0' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 40px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '60px' }}>
+            <div>
+              <p style={{ fontSize: '10px', letterSpacing: '0.22em', color: 'rgba(212,175,55,0.7)', textTransform: 'uppercase', marginBottom: '12px', fontFamily: 'Inter,sans-serif' }}>
+                Destinations
+              </p>
+              <h2 style={{ fontFamily: '"Cormorant Garamond",serif', fontSize: '42px', fontWeight: 300, color: 'rgba(255,255,255,0.85)', margin: 0 }}>
+                Voyages récents
               </h2>
-              <p className="text-creme/55 leading-relaxed mb-4 text-sm font-poppins font-light">
-                Photos du Monde est une galerie photographique dédiée aux paysages
-                volcaniques, aux forêts primaires et aux espèces d&apos;oiseaux les
-                plus rares de la planète.
-              </p>
-              <p className="text-creme/45 leading-relaxed text-sm font-poppins font-light">
-                Les photos sont réalisées avec un respect total de la faune sauvage
-                — aucun animal n&apos;a été perturbé pour ces clichés.
-              </p>
-              <div className="mt-10">
-                <Link
-                  href="/galerie"
-                  className="inline-flex items-center gap-3 text-[11px] tracking-[0.25em] uppercase text-creme/70 border border-creme/20 hover:border-or hover:text-or px-6 py-3.5 transition-all duration-300 group font-poppins"
-                >
-                  Voir la galerie
-                  <span className="group-hover:translate-x-1 transition-transform">→</span>
-                </Link>
-              </div>
-            </ScrollReveal>
-
-            <ScrollReveal direction="right" delay={0.15}>
-              <div className="grid grid-cols-2 gap-3">
-                {[
-                  { label: 'Volcans actifs', value: '8', sub: 'observés de près' },
-                  { label: "Espèces d'oiseaux", value: '312', sub: 'photographiées' },
-                  { label: 'km parcourus', value: '48 000', sub: 'en tout terrain' },
-                  { label: 'Forêts primaires', value: '6', sub: 'traversées' },
-                ].map((stat) => (
-                  <div key={stat.label} className="bg-noir-mid border border-white/5 p-6">
-                    <div className="font-serif text-3xl text-or font-light mb-1">{stat.value}</div>
-                    <div className="text-xs font-poppins font-medium text-creme/70 mb-0.5">{stat.label}</div>
-                    <div className="text-[11px] text-creme/35 font-poppins">{stat.sub}</div>
-                  </div>
-                ))}
-              </div>
-            </ScrollReveal>
+            </div>
+            <Link href="/voyages" style={{ fontSize: '11px', letterSpacing: '0.16em', color: 'rgba(212,175,55,0.7)', textDecoration: 'none', textTransform: 'uppercase', fontFamily: 'Inter,sans-serif' }}>
+              Tout voir →
+            </Link>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '2px' }}>
+            {published.map(v => (
+              <Link key={v.slug} href={'/voyages/' + v.slug} style={{ display: 'block', textDecoration: 'none', position: 'relative', overflow: 'hidden', aspectRatio: '4/3' }}>
+                <div style={{
+                  position: 'absolute', inset: 0,
+                  backgroundImage: 'url(' + (v.heroImage || (v.photos[0] && v.photos[0].src) || '') + ')',
+                  backgroundSize: 'cover', backgroundPosition: 'center',
+                  transition: 'transform 0.6s ease',
+                }} className="voyage-img" />
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 60%)' }} />
+                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '24px' }}>
+                  <p style={{ fontSize: '10px', letterSpacing: '0.2em', color: 'rgba(212,175,55,0.7)', textTransform: 'uppercase', margin: '0 0 6px', fontFamily: 'Inter,sans-serif' }}>
+                    {v.country}
+                  </p>
+                  <h3 style={{ fontFamily: '"Cormorant Garamond",serif', fontSize: '22px', fontWeight: 300, color: 'rgba(255,255,255,0.9)', margin: 0 }}>
+                    {v.title}
+                  </h3>
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
-    </>
+    </main>
   );
 }

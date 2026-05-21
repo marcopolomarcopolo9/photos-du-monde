@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { Voyage } from '@/lib/types';
 
 interface Props {

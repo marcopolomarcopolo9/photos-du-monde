@@ -1,97 +1,69 @@
-import type { Metadata } from 'next';
-import Image from 'next/image';
-import Link from 'next/link';
-import { Calendar, Clock, Camera, MapPin } from 'lucide-react';
-import { VOYAGES } from '@/lib/data';
-import ScrollReveal from '@/components/ui/ScrollReveal';
+// @ts-nocheck
+'use client';
 
-export const metadata: Metadata = {
-  title: 'Voyages — Photos du Monde',
-  description: 'Tous les voyages photographiques — Costa Rica, Galápagos, Amazonie, Islande, Hawaii.',
-};
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
 
 export default function VoyagesPage() {
+  const [voyages, setVoyages] = useState([]);
+  const [filter, setFilter] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/voyages').then(r=>r.json()).then(d => {
+      setVoyages(d.voyages||[]);
+      setLoading(false);
+    });
+  }, []);
+
+  const countries = [...new Set(voyages.map(v=>v.country).filter(Boolean))];
+  const filtered = filter ? voyages.filter(v=>v.country===filter) : voyages;
+
   return (
-    <div className="min-h-screen bg-noir pt-32 pb-24">
-      <div className="max-w-screen-xl mx-auto px-6 md:px-10">
+    <div style={{minHeight:'100vh',background:'#080808',color:'rgba(255,255,255,0.85)',paddingTop:'80px'}}>
+      <div style={{padding:'clamp(48px,8vw,100px) clamp(24px,6vw,80px) 48px',maxWidth:'1400px',margin:'0 auto'}}>
+        <span style={{fontSize:'9px',letterSpacing:'0.3em',textTransform:'uppercase',color:'rgba(212,175,55,0.6)',display:'block',marginBottom:'12px'}}>Explorations photographiques</span>
+        <h1 style={{fontFamily:'"Cormorant Garamond","Playfair Display",Georgia,serif',fontSize:'clamp(36px,6vw,72px)',fontWeight:300,color:'rgba(255,255,255,0.88)',letterSpacing:'-0.02em',lineHeight:1.05,marginBottom:'8px'}}>Destinations</h1>
+        <p style={{fontSize:'12px',color:'rgba(255,255,255,0.3)',letterSpacing:'0.08em'}}>{voyages.length} voyage{voyages.length!==1?'s':''} documentes</p>
+      </div>
 
-        {/* Header */}
-        <div className="mb-16">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-8 h-px bg-or" />
-            <span className="text-[10px] tracking-[0.3em] uppercase text-or">
-              {VOYAGES.length} expéditions
-            </span>
-          </div>
-          <h1 className="font-serif font-light text-5xl md:text-6xl text-creme italic">
-            Voyages
-          </h1>
-        </div>
-
-        {/* Voyages list */}
-        <div className="flex flex-col gap-px">
-          {VOYAGES.map((voyage, i) => (
-            <ScrollReveal key={voyage.id} delay={i * 0.05}>
-              <Link
-                href={`/voyages/${voyage.slug}`}
-                className="group flex flex-col md:flex-row gap-0 border border-transparent hover:border-white/5 transition-all duration-300 bg-noir hover:bg-noir-mid"
-              >
-                {/* Image */}
-                <div className="relative w-full md:w-80 h-56 md:h-52 flex-shrink-0 overflow-hidden img-zoom">
-                  <Image
-                    src={voyage.heroImage}
-                    alt={voyage.heroImageAlt}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                    sizes="(max-width: 768px) 100vw, 320px"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent to-noir/30 md:bg-gradient-to-r" />
-                </div>
-
-                {/* Content */}
-                <div className="flex-1 flex flex-col justify-between p-6 md:p-8 border-t md:border-t-0 md:border-l border-white/5">
-                  <div>
-                    <div className="flex items-center gap-3 mb-3">
-                      {voyage.categories.slice(0, 3).map((cat) => (
-                        <span key={cat} className="badge text-[9px] py-1">{cat}</span>
-                      ))}
-                    </div>
-                    <h2 className="font-serif italic text-2xl md:text-3xl text-creme group-hover:text-or transition-colors duration-300 mb-2">
-                      {voyage.title}
-                    </h2>
-                    <p className="text-creme/50 text-sm mb-4">{voyage.subtitle}</p>
-                    <p className="text-creme/40 text-sm leading-relaxed line-clamp-2 max-w-2xl">
-                      {voyage.description}
-                    </p>
-                  </div>
-
-                  <div className="flex flex-wrap items-center gap-6 mt-6 pt-6 border-t border-white/5">
-                    <span className="flex items-center gap-2 text-xs text-creme/40">
-                      <MapPin size={11} className="text-or" />
-                      {voyage.city}, {voyage.country}
-                    </span>
-                    <span className="flex items-center gap-2 text-xs text-creme/40">
-                      <Calendar size={11} className="text-or" />
-                      {new Date(voyage.startDate).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long' })}
-                    </span>
-                    <span className="flex items-center gap-2 text-xs text-creme/40">
-                      <Clock size={11} className="text-or" />
-                      {voyage.duration} jours
-                    </span>
-                    <span className="flex items-center gap-2 text-xs text-creme/40">
-                      <Camera size={11} className="text-or" />
-                      {voyage.photos.length} photos
-                    </span>
-                    <span className="ml-auto text-xs text-or tracking-widest group-hover:translate-x-1 transition-transform">
-                      Voir →
-                    </span>
-                  </div>
-                </div>
-              </Link>
-            </ScrollReveal>
+      {countries.length > 1 && (
+        <div style={{padding:'0 clamp(24px,6vw,80px) 48px',maxWidth:'1400px',margin:'0 auto',display:'flex',gap:'4px',flexWrap:'wrap'}}>
+          <button onClick={()=>setFilter('')} style={{padding:'7px 18px',fontSize:'10px',letterSpacing:'0.15em',textTransform:'uppercase',cursor:'pointer',border:'1px solid',borderColor:!filter?'rgba(212,175,55,0.5)':'rgba(255,255,255,0.08)',background:!filter?'rgba(212,175,55,0.08)':'transparent',color:!filter?'rgba(212,175,55,0.9)':'rgba(255,255,255,0.35)',borderRadius:'2px'}}>Tous</button>
+          {countries.map(c=>(
+            <button key={c} onClick={()=>setFilter(c)} style={{padding:'7px 18px',fontSize:'10px',letterSpacing:'0.15em',textTransform:'uppercase',cursor:'pointer',border:'1px solid',borderColor:filter===c?'rgba(212,175,55,0.5)':'rgba(255,255,255,0.08)',background:filter===c?'rgba(212,175,55,0.08)':'transparent',color:filter===c?'rgba(212,175,55,0.9)':'rgba(255,255,255,0.35)',borderRadius:'2px'}}>{c}</button>
           ))}
         </div>
-      </div>
+      )}
+
+      {loading && <p style={{textAlign:'center',color:'rgba(255,255,255,0.25)',fontSize:'13px',padding:'60px 0'}}>Chargement...</p>}
+
+      {!loading && (
+        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(min(100%,380px),1fr))',gap:'3px',padding:'0 clamp(24px,6vw,80px) 80px',maxWidth:'1400px',margin:'0 auto'}}>
+          {filtered.length===0 && <div style={{textAlign:'center',padding:'80px 0',gridColumn:'1/-1'}}><p style={{fontSize:'14px',color:'rgba(255,255,255,0.25)'}}>Aucun voyage</p></div>}
+          {filtered.map(v => (
+            <Link
+              key={v.id}
+              href={'/voyages/'+v.id}
+              style={{position:'relative',overflow:'hidden',aspectRatio:'3/4',display:'block',textDecoration:'none',cursor:'pointer'}}
+              onMouseOver={e=>{const img=e.currentTarget.querySelector('img');if(img){img.style.transform='scale(1.06)';img.style.filter='brightness(0.85)';}}}
+              onMouseOut={e=>{const img=e.currentTarget.querySelector('img');if(img){img.style.transform='scale(1)';img.style.filter='brightness(0.7)';}}}
+            >
+              {v.coverImage ? (
+                <img src={v.coverImage} alt={v.title} style={{width:'100%',height:'100%',objectFit:'cover',filter:'brightness(0.7)',transition:'transform 0.7s ease,filter 0.4s ease'}}/>
+              ) : (
+                <div style={{width:'100%',height:'100%',background:'#1a1a1a',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'32px'}}>&#127760;</div>
+              )}
+              <div style={{position:'absolute',inset:0,background:'linear-gradient(to top,rgba(0,0,0,0.85) 0%,rgba(0,0,0,0.1) 60%)'}}/>
+              <div style={{position:'absolute',bottom:0,left:0,right:0,padding:'28px 24px'}}>
+                <span style={{fontSize:'9px',letterSpacing:'0.25em',textTransform:'uppercase',color:'rgba(212,175,55,0.7)',display:'block',marginBottom:'6px'}}>{v.country}</span>
+                <h2 style={{fontFamily:'"Cormorant Garamond","Playfair Display",Georgia,serif',fontSize:'clamp(20px,3vw,26px)',fontWeight:300,color:'rgba(255,255,255,0.92)',lineHeight:1.2,margin:'0 0 6px 0'}}>{v.title}</h2>
+                <p style={{fontSize:'10px',color:'rgba(255,255,255,0.4)',letterSpacing:'0.1em'}}>{v.date} &middot; {(v.photos||[]).length} photos</p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

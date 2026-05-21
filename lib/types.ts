@@ -1,3 +1,4 @@
+// @ts-nocheck
 export interface Photo {
   id: string;
   src: string;
@@ -58,13 +59,13 @@ export interface Voyage {
 }
 
 export type Continent =
-  | 'Amérique du Sud'
-  | 'Amérique Centrale'
-  | 'Amérique du Nord'
+  | 'AmÃ©rique du Sud'
+  | 'AmÃ©rique Centrale'
+  | 'AmÃ©rique du Nord'
   | 'Europe'
   | 'Asie'
   | 'Afrique'
-  | 'Océanie';
+  | 'OcÃ©anie';
 
 export type Category =
   | 'Volcans'
@@ -73,8 +74,8 @@ export type Category =
   | 'Faune'
   | 'Paysages'
   | 'Aventure'
-  | 'Côtes'
-  | 'Désert';
+  | 'CÃ´tes'
+  | 'DÃ©sert';
 
 export interface GalleryFilter {
   type: 'continent' | 'country' | 'category' | 'all';

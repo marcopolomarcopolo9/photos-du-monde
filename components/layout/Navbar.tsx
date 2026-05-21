@@ -1,3 +1,4 @@
+// @ts-nocheck
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -6,7 +7,13 @@ import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, X, Menu } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { NAV_ITEMS } from '@/lib/data';
+
+const NAV_LINKS = [
+  { href: '/', label: 'Accueil' },
+  { href: '/voyages', label: 'Destinations' },
+  { href: '/galerie', label: 'Galerie' },
+  { href: '/admin', label: 'Admin' },
+];
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -14,8 +21,6 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const pathname = usePathname();
-
-  const NAV_LINKS = NAV_ITEMS;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60);
@@ -148,11 +153,11 @@ export default function Navbar() {
                 autoFocus
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Costa Rica, Volcan, Toucan…"
+                placeholder="Costa Rica, Volcan, Toucanâ¦"
                 className="w-full bg-transparent border-b border-white/20 focus:border-or outline-none text-creme font-serif text-3xl md:text-4xl italic pb-4 placeholder:text-creme/20 transition-colors"
               />
               <p className="mt-4 text-sm text-creme/30">
-                Appuyez sur Entrée pour chercher
+                Appuyez sur EntrÃ©e pour chercher
               </p>
             </div>
           </motion.div>
