@@ -18,5 +18,23 @@ export type Voyage = {
 };
 
 export const VOYAGES = [
+  {
+    slug: "costa-rica-jungl",
+    title: "costa rica & jungl",
+    country: "Costa Rica",
+    city: "San josé ",
+    startDate: "2024",
+    description: "Un voyage a la carte au millieu de jungle et plage un savoureux melange de couleure et ambiances..",
+    heroImage: "",
+    photos: [
 
+    ],
+    lat: 9.915285,
+    lng: -84.105542,
+    tags: [],
+    published: true,
+    waypoints: [
+
+    ]
+  }
 ];
