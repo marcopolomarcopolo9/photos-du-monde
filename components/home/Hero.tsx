@@ -11,7 +11,7 @@ export default function Hero() {
   const [scrollY, setScrollY] = useState(0);
 
   useEffect(() => {
-    fetch('/api/admin/homepage').then(r => r.json()).then(d => setConfig(d.config || d));
+    fetch('/api/admin/homepage').then(r => r.json()).then(d => setConfig(d.config || d)).catch(() => {});
   }, []);
 
   useEffect(() => {

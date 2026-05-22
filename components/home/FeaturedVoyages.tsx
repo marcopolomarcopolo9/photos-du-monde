@@ -9,7 +9,7 @@ export default function FeaturedVoyages() {
   const [hovered, setHovered] = useState(null);
 
   useEffect(() => {
-    fetch('/api/voyages').then(r => r.json()).then(d => setVoyages((d.voyages || []).slice(0, 4)));
+    fetch('/api/voyages').then(r => r.json()).then(d => setVoyages((d.voyages || []).slice(0, 4))).catch(() => {});
   }, []);
 
   if (!voyages.length) return null;

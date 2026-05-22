@@ -32,7 +32,8 @@ export default function VoyagePage({ params }: { params: { slug: string } }) {
           (x.country === v.country || (x.categories || []).some((c: string) => (v.categories || []).includes(c)))
         ).slice(0, 3));
         setLoading(false);
-      });
+      })
+      .catch(() => setLoading(false));
   }, [params.slug]);
 
   if (loading) return (
