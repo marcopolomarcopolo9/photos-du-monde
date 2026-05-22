@@ -28,7 +28,14 @@ export const VOYAGES = [
     heroImage: "https://res.cloudinary.com/doxsjisyx/image/upload/v1779430677/photos-du-monde/zoamp6ljimhdi3uykrfp.jpg",
     photos: [
     { src: "https://res.cloudinary.com/doxsjisyx/image/upload/v1779430695/photos-du-monde/iaoklbpf7acmnciznc47.jpg" },
-    { src: "https://res.cloudinary.com/doxsjisyx/image/upload/v1779430697/photos-du-monde/gyaenlhdxfzh7snq8pk3.jpg" }
+    { src: "https://res.cloudinary.com/doxsjisyx/image/upload/v1779430697/photos-du-monde/gyaenlhdxfzh7snq8pk3.jpg" },
+    { src: "https://res.cloudinary.com/doxsjisyx/image/upload/f_auto,q_auto/v1779432441/photos-du-monde/kvihgh5gzm3ustkddz2h.jpg" },
+    { src: "https://res.cloudinary.com/doxsjisyx/image/upload/f_auto,q_auto/v1779432445/photos-du-monde/tt8asa7fnuxyfce0g46s.jpg" },
+    { src: "https://res.cloudinary.com/doxsjisyx/image/upload/f_auto,q_auto/v1779432447/photos-du-monde/w9huiiq6khx4lf3g4acw.jpg" },
+    { src: "https://res.cloudinary.com/doxsjisyx/image/upload/f_auto,q_auto/v1779432450/photos-du-monde/emgdtvufponxl1fvrt09.jpg" },
+    { src: "https://res.cloudinary.com/doxsjisyx/image/upload/f_auto,q_auto/v1779432452/photos-du-monde/opbeqy4wfb6npnobwxpo.jpg" },
+    { src: "https://res.cloudinary.com/doxsjisyx/image/upload/f_auto,q_auto/v1779432454/photos-du-monde/vrwask99ljiiqddptbha.jpg" },
+    { src: "https://res.cloudinary.com/doxsjisyx/image/upload/f_auto,q_auto/v1779432456/photos-du-monde/eul9llvxwg3mrpb5mkmg.jpg" }
     ],
     lat: 9.915285,
     lng: -84.105542,
