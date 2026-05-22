@@ -155,11 +155,11 @@ export default function Navbar() {
                 autoFocus
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Costa Rica, Volcan, Toucanâ¦"
+                placeholder="Costa Rica, Volcan, Toucan→¦"
                 className="w-full bg-transparent border-b border-white/20 focus:border-or outline-none text-creme font-serif text-3xl md:text-4xl italic pb-4 placeholder:text-creme/20 transition-colors"
               />
               <p className="mt-4 text-sm text-creme/30">
-                Appuyez sur EntrÃ©e pour chercher
+                Appuyez sur Entrée pour chercher
               </p>
             </div>
           </motion.div>

@@ -34,7 +34,7 @@ export default function WorldMap() {
           </span>
         </div>
         <h2 className="font-serif font-light text-4xl md:text-5xl text-creme italic leading-snug mb-12">
-          Une carte du <em>monde explorÃ©</em>
+          Une carte du <em>monde exploré</em>
         </h2>
 
         {/* Map container */}

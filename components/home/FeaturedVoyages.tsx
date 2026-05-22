@@ -14,7 +14,7 @@ export default function FeaturedVoyages() {
         <ScrollReveal className="mb-16 md:mb-20">
           <div className="flex items-center gap-4 mb-4">
             <div className="w-8 h-px bg-or" />
-            <span className="text-[10px] tracking-[0.3em] uppercase text-or">Explorations rÃ©centes</span>
+            <span className="text-[10px] tracking-[0.3em] uppercase text-or">Explorations récentes</span>
           </div>
           <h2 className="font-serif font-light text-4xl md:text-5xl text-creme italic">
             Derniers voyages
@@ -24,7 +24,7 @@ export default function FeaturedVoyages() {
         {/* Featured grid */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-3">
 
-          {/* Large card â first voyage */}
+          {/* Large card → first voyage */}
           {FEATURED_VOYAGES[0] && (
             <ScrollReveal className="md:col-span-7 md:row-span-2" delay={0.1}>
               <Link href={`/voyages/${FEATURED_VOYAGES[0].slug}`} className="block group">
@@ -61,7 +61,7 @@ export default function FeaturedVoyages() {
 
                     {/* Hover arrow */}
                     <div className="absolute bottom-8 right-8 w-10 h-10 border border-creme/20 group-hover:border-or flex items-center justify-center transition-all duration-300 group-hover:bg-or/10">
-                      <span className="text-creme/40 group-hover:text-or transition-colors text-sm">â</span>
+                      <span className="text-creme/40 group-hover:text-or transition-colors text-sm">→</span>
                     </div>
                   </div>
                 </div>

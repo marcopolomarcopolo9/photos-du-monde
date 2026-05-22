@@ -30,10 +30,10 @@ export default function Destinations() {
             </span>
           </div>
           <h2 className="font-serif font-light text-4xl md:text-5xl text-creme italic leading-snug">
-            Pays <em>explorÃ©s</em>
+            Pays <em>explorés</em>
           </h2>
           <p className="mt-4 text-sm text-creme/45 max-w-md font-poppins font-light leading-relaxed">
-            Des volcans hawaÃ¯ens aux forÃªts primaires d'Amazonie, chaque destination rÃ©vÃ¨le un fragment de nature sauvage.
+            Des volcans hawaïens aux forêts primaires d'Amazonie, chaque destination révèle un fragment de nature sauvage.
           </p>
         </ScrollReveal>
 
@@ -76,7 +76,7 @@ export default function Destinations() {
                         {voyage.photos.length} photo{voyage.photos.length !== 1 ? 's' : ''}
                       </span>
                       <span className="text-[10px] tracking-[0.2em] uppercase text-or font-poppins">
-                        Voir â
+                        Voir →
                       </span>
                     </div>
                   </div>
@@ -102,7 +102,7 @@ export default function Destinations() {
             <span className="text-[10px] tracking-[0.3em] uppercase text-creme/60 group-hover:text-creme font-poppins transition-colors">
               Toutes les destinations
             </span>
-            <span className="text-creme/40 group-hover:text-or group-hover:translate-x-1 transition-all duration-300">â</span>
+            <span className="text-creme/40 group-hover:text-or group-hover:translate-x-1 transition-all duration-300">→</span>
           </Link>
         </ScrollReveal>
       </div>

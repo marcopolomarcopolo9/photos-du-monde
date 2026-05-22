@@ -1,94 +1,95 @@
 // @ts-nocheck
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { VOYAGES } from '@/lib/data';
+import Lightbox from '@/components/gallery/Lightbox';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 
 export default function GaleriePage() {
-  const [voyages, setVoyages] = useState([]);
-  const [allPhotos, setAllPhotos] = useState([]);
   const [filter, setFilter] = useState('all');
-  const [lightbox, setLightbox] = useState(null);
-  const [lbIndex, setLbIndex] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
-  useEffect(() => {
-    fetch('/api/voyages').then(r=>r.json()).then(d => {
-      const vs = d.voyages||[];
-      setVoyages(vs);
-      const photos = [];
-      vs.forEach(v => {
-        (v.photos||[]).forEach((url, i) => {
-          photos.push({ url, voyageId: v.id, voyageTitle: v.title, country: v.country, index: i });
-        });
-        if (v.coverImage && !(v.photos||[]).includes(v.coverImage)) {
-          photos.push({ url: v.coverImage, voyageId: v.id, voyageTitle: v.title, country: v.country, index: -1 });
-        }
-      });
-      setAllPhotos(photos);
-      setLoading(false);
-    });
-  }, []);
+  const voyages = VOYAGES.filter(v => v.published !== false);
+  const countries = [...new Set(voyages.map(v => v.country).filter(Boolean))];
 
-  const filtered = filter==='all' ? allPhotos : allPhotos.filter(p=>p.voyageId===filter);
+  // Build all photos with metadata
+  const allPhotos = voyages.flatMap(v =>
+    (v.photos || []).map((p: any, i: number) => ({
+      id: `${v.slug}-${i}`,
+      src: typeof p === 'string' ? p : p.src,
+      alt: v.title,
+      location: v.city || '',
+      country: v.country || '',
+      continent: v.continent || '',
+      date: v.startDate || '',
+      width: 1200,
+      height: 800,
+      voyageSlug: v.slug,
+    }))
+  );
 
-  const openLb = (idx) => { setLbIndex(idx); setLightbox(filtered[idx]); };
-  const closeLb = () => setLightbox(null);
-  const prevLb = () => { const i=(lbIndex-1+filtered.length)%filtered.length; setLbIndex(i); setLightbox(filtered[i]); };
-  const nextLb = () => { const i=(lbIndex+1)%filtered.length; setLbIndex(i); setLightbox(filtered[i]); };
-
-  useEffect(() => {
-    if (!lightbox) return;
-    const h = (e) => {
-      if (e.key==='Escape') closeLb();
-      if (e.key==='ArrowLeft') prevLb();
-      if (e.key==='ArrowRight') nextLb();
-    };
-    window.addEventListener('keydown', h);
-    return () => window.removeEventListener('keydown', h);
-  }, [lightbox, lbIndex]);
+  const filtered = filter === 'all' ? allPhotos : allPhotos.filter(p => p.country === filter);
 
   return (
-    <div style={{minHeight:'100vh',background:'#080808',color:'rgba(255,255,255,0.85)',paddingTop:'80px'}}>
-      {lightbox && (
-        <div style={{position:'fixed',inset:0,zIndex:1000,background:'rgba(0,0,0,0.97)',display:'flex',alignItems:'center',justifyContent:'center'}} onClick={closeLb}>
-          <button style={{position:'fixed',top:'20px',right:'28px',background:'none',border:'none',color:'rgba(255,255,255,0.5)',fontSize:'28px',cursor:'pointer',zIndex:1001}} onClick={closeLb}>&#10005;</button>
-          <button style={{position:'fixed',left:'20px',top:'50%',transform:'translateY(-50%)',background:'none',border:'none',color:'rgba(255,255,255,0.4)',fontSize:'40px',cursor:'pointer',zIndex:1001,padding:'8px'}} onClick={e=>{e.stopPropagation();prevLb();}}>&#8249;</button>
-          <img src={lightbox.url} alt={lightbox.voyageTitle} style={{maxWidth:'90vw',maxHeight:'90vh',objectFit:'contain'}} onClick={e=>e.stopPropagation()}/>
-          <button style={{position:'fixed',right:'20px',top:'50%',transform:'translateY(-50%)',background:'none',border:'none',color:'rgba(255,255,255,0.4)',fontSize:'40px',cursor:'pointer',zIndex:1001,padding:'8px'}} onClick={e=>{e.stopPropagation();nextLb();}}>&#8250;</button>
-          <div style={{position:'fixed',bottom:'24px',left:'50%',transform:'translateX(-50%)',textAlign:'center',zIndex:1001}}>
-            <p style={{fontSize:'12px',letterSpacing:'0.15em',textTransform:'uppercase',color:'rgba(255,255,255,0.5)',marginBottom:'4px'}}>{lightbox.voyageTitle} &middot; {lightbox.country}</p>
-            <p style={{fontSize:'10px',color:'rgba(255,255,255,0.25)'}}>{lbIndex+1} / {filtered.length}</p>
+    <div className="min-h-screen bg-noir pt-28 pb-24">
+      <div className="max-w-screen-xl mx-auto px-6 md:px-10">
+
+        <ScrollReveal className="mb-12">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="w-8 h-px bg-or" />
+            <span className="text-[10px] tracking-[0.3em] uppercase text-or font-poppins">
+              {filtered.length} photo{filtered.length !== 1 ? 's' : ''}
+            </span>
           </div>
-        </div>
-      )}
+          <h1 className="font-serif font-light text-5xl md:text-6xl text-creme italic">Galerie</h1>
+        </ScrollReveal>
 
-      <div style={{padding:'clamp(48px,8vw,100px) clamp(24px,6vw,80px) 48px',maxWidth:'1400px',margin:'0 auto'}}>
-        <span style={{fontSize:'9px',letterSpacing:'0.3em',textTransform:'uppercase',color:'rgba(212,175,55,0.6)',display:'block',marginBottom:'12px'}}>Collection photographique</span>
-        <h1 style={{fontFamily:'"Cormorant Garamond","Playfair Display",Georgia,serif',fontSize:'clamp(36px,6vw,72px)',fontWeight:300,color:'rgba(255,255,255,0.88)',letterSpacing:'-0.02em',lineHeight:1.05}}>Galerie</h1>
+        {/* Filters */}
+        {countries.length > 1 && (
+          <div className="flex flex-wrap gap-2 mb-10">
+            <button onClick={() => setFilter('all')}
+              className={`text-[10px] tracking-[0.2em] uppercase px-4 py-2 border transition-colors font-poppins ${filter === 'all' ? 'border-or text-or' : 'border-white/10 text-creme/40 hover:text-creme/70'}`}>
+              Tous
+            </button>
+            {countries.map(c => (
+              <button key={c} onClick={() => setFilter(c)}
+                className={`text-[10px] tracking-[0.2em] uppercase px-4 py-2 border transition-colors font-poppins ${filter === c ? 'border-or text-or' : 'border-white/10 text-creme/40 hover:text-creme/70'}`}>
+                {c}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {filtered.length === 0 ? (
+          <div className="text-center py-24 text-creme/30 font-poppins text-sm">
+            Aucune photo — ajoutez des photos depuis l'admin.
+          </div>
+        ) : (
+          <div className="masonry-grid">
+            {filtered.map((photo, i) => (
+              <div key={photo.id} className="photo-card cursor-pointer group relative overflow-hidden bg-noir-mid"
+                onClick={() => setLightboxIndex(i)}>
+                <div className="img-zoom">
+                  <Image src={photo.src} alt={photo.alt} width={800} height={600}
+                    className="w-full h-auto" sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw" />
+                </div>
+                <div className="photo-overlay absolute inset-0 bg-gradient-to-t from-noir/80 to-transparent flex flex-col justify-end p-3">
+                  <p className="font-serif italic text-sm text-creme/90">{photo.alt}</p>
+                  <p className="text-[10px] text-creme/50 mt-0.5 font-poppins">{photo.location}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {lightboxIndex !== null && (
+          <Lightbox photos={filtered} currentIndex={lightboxIndex}
+            onClose={() => setLightboxIndex(null)} onNavigate={setLightboxIndex} />
+        )}
       </div>
-
-      <div style={{padding:'0 clamp(24px,6vw,80px) 40px',maxWidth:'1400px',margin:'0 auto',display:'flex',gap:'4px',flexWrap:'wrap'}}>
-        {[{k:'all',l:'Tout ('+allPhotos.length+')'},...voyages.map(v=>({k:v.id,l:v.title+' ('+(v.photos||[]).length+')'}))].map(f=>(
-          <button key={f.k} onClick={()=>setFilter(f.k)} style={{padding:'7px 18px',fontSize:'10px',letterSpacing:'0.15em',textTransform:'uppercase',cursor:'pointer',border:'1px solid',borderColor:filter===f.k?'rgba(212,175,55,0.5)':'rgba(255,255,255,0.08)',background:filter===f.k?'rgba(212,175,55,0.08)':'transparent',color:filter===f.k?'rgba(212,175,55,0.9)':'rgba(255,255,255,0.35)',borderRadius:'2px'}}>{f.l}</button>
-        ))}
-      </div>
-
-      {loading && <p style={{textAlign:'center',color:'rgba(255,255,255,0.25)',fontSize:'13px',padding:'60px 0'}}>Chargement...</p>}
-
-      {!loading && filtered.length>0 && (
-        <div style={{columns:'3 300px',columnGap:'6px',padding:'0 clamp(24px,6vw,80px) 80px',maxWidth:'1400px',margin:'0 auto'}}>
-          {filtered.map((photo, idx) => (
-            <div key={idx} style={{breakInside:'avoid',marginBottom:'6px',overflow:'hidden',cursor:'pointer',position:'relative'}} onClick={()=>openLb(idx)}
-              onMouseOver={e=>{const img=e.currentTarget.querySelector('img');if(img){img.style.transform='scale(1.04)';img.style.filter='brightness(1)';}}}
-              onMouseOut={e=>{const img=e.currentTarget.querySelector('img');if(img){img.style.transform='scale(1)';img.style.filter='brightness(0.9)';}}}
-            >
-              <img src={photo.url} alt={photo.voyageTitle} style={{width:'100%',display:'block',transition:'transform 0.6s ease,filter 0.4s ease',filter:'brightness(0.9)'}} loading="lazy"/>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {!loading && filtered.length===0 && <div style={{textAlign:'center',padding:'80px 0'}}><p style={{fontSize:'14px',color:'rgba(255,255,255,0.3)'}}>Aucune photo</p></div>}
     </div>
   );
 }
