@@ -1,115 +1,133 @@
 // @ts-nocheck
+'use client';
 import Image from 'next/image';
 import Link from 'next/link';
 import { FEATURED_VOYAGES } from '@/lib/data';
-import ScrollReveal from '@/components/ui/ScrollReveal';
-import { Calendar, Camera, MapPin } from 'lucide-react';
+import { useState } from 'react';
 
 export default function FeaturedVoyages() {
-  return (
-    <section className="bg-noir py-24 md:py-32">
-      <div className="max-w-screen-xl mx-auto px-6 md:px-10">
+  const voyages = FEATURED_VOYAGES.slice(0, 4);
+  const [hovered, setHovered] = useState<string | null>(null);
 
-        {/* Section header */}
-        <ScrollReveal className="mb-16 md:mb-20">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-8 h-px bg-or" />
-            <span className="text-[10px] tracking-[0.3em] uppercase text-or">Explorations récentes</span>
+  if (!voyages.length) return null;
+
+  const main = voyages[0];
+  const others = voyages.slice(1);
+
+  const getYear = (d: string) => {
+    if (!d) return '';
+    const m = d.match(/\d{4}/);
+    return m ? m[0] : '';
+  };
+
+  const getImg = (v: any) => v.heroImage || v.coverImage || '';
+
+  return (
+    <section style={{ background: '#070707', padding: '0' }}>
+
+      {/* ── Header ── */}
+      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '80px 40px 48px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '12px' }}>
+            <div style={{ width: '32px', height: '1px', background: '#c4962a' }} />
+            <span style={{ fontSize: '10px', letterSpacing: '0.32em', color: '#c4962a', textTransform: 'uppercase', fontFamily: 'system-ui' }}>Explorations</span>
           </div>
-          <h2 className="font-serif font-light text-4xl md:text-5xl text-creme italic">
+          <h2 style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', fontSize: 'clamp(2rem,4vw,3.2rem)', fontWeight: 300, color: '#f5f0e8', fontStyle: 'italic', margin: 0, lineHeight: 1.1 }}>
             Derniers voyages
           </h2>
-        </ScrollReveal>
+        </div>
+        <Link href="/voyages" style={{ fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(245,240,232,0.4)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '10px', transition: 'color .3s', fontFamily: 'system-ui' }}
+          onMouseEnter={e => (e.currentTarget.style.color = '#c4962a')}
+          onMouseLeave={e => (e.currentTarget.style.color = 'rgba(245,240,232,0.4)')}>
+          Tout voir
+          <span style={{ display: 'block', width: '32px', height: '1px', background: 'currentColor' }} />
+        </Link>
+      </div>
 
-        {/* Featured grid */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-3">
+      {/* ── Main layout ── */}
+      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 40px 80px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3px' }}>
 
-          {/* Large card → first voyage */}
-          {FEATURED_VOYAGES[0] && (
-            <ScrollReveal className="md:col-span-7 md:row-span-2" delay={0.1}>
-              <Link href={`/voyages/${FEATURED_VOYAGES[0].slug}`} className="block group">
-                <div className="relative h-[420px] md:h-[560px] overflow-hidden img-zoom">
-                  <Image
-                    src={FEATURED_VOYAGES[0].heroImage}
-                    alt={FEATURED_VOYAGES[0].title}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                    sizes="(max-width: 768px) 100vw, 58vw"
-                  />
-                  {/* Gradient */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-noir via-noir/30 to-transparent" />
+        {/* Big card left */}
+        {main && (
+          <Link href={`/voyages/${main.slug || main.id}`} style={{ display: 'block', textDecoration: 'none', position: 'relative', overflow: 'hidden', aspectRatio: '3/4', gridRow: 'span 2' }}
+            onMouseEnter={() => setHovered(main.slug || main.id)}
+            onMouseLeave={() => setHovered(null)}>
+            <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${getImg(main)})`, backgroundSize: 'cover', backgroundPosition: 'center', transition: 'transform 0.8s cubic-bezier(0.22,1,0.36,1)', transform: hovered === (main.slug||main.id) ? 'scale(1.04)' : 'scale(1)' }} />
+            {/* Gradient */}
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.2) 50%, transparent 100%)' }} />
+            {/* Number */}
+            <div style={{ position: 'absolute', top: '24px', left: '24px', fontFamily: '"Cormorant Garamond",serif', fontSize: '13px', color: 'rgba(196,150,42,0.6)', letterSpacing: '0.2em' }}>01</div>
+            {/* Content */}
+            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '32px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+                <div style={{ width: '20px', height: '1px', background: '#c4962a' }} />
+                <span style={{ fontSize: '10px', letterSpacing: '0.28em', color: '#c4962a', textTransform: 'uppercase', fontFamily: 'system-ui' }}>{main.country} {getYear(main.startDate || main.date) && `· ${getYear(main.startDate||main.date)}`}</span>
+              </div>
+              <h3 style={{ fontFamily: '"Cormorant Garamond",serif', fontSize: 'clamp(1.6rem,3vw,2.4rem)', fontWeight: 300, color: '#f5f0e8', fontStyle: 'italic', margin: '0 0 12px', lineHeight: 1.15 }}>
+                {main.title}
+              </h3>
+              <p style={{ fontSize: '13px', color: 'rgba(245,240,232,0.5)', margin: '0 0 20px', lineHeight: 1.7, maxWidth: '380px', fontFamily: 'system-ui' }}>
+                {(main.description || '').slice(0, 100)}{main.description?.length > 100 ? '...' : ''}
+              </p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', opacity: hovered === (main.slug||main.id) ? 1 : 0, transition: 'opacity .4s' }}>
+                <span style={{ fontSize: '11px', letterSpacing: '0.2em', color: '#c4962a', textTransform: 'uppercase', fontFamily: 'system-ui' }}>Découvrir</span>
+                <div style={{ width: '40px', height: '1px', background: '#c4962a' }} />
+              </div>
+            </div>
+          </Link>
+        )}
 
-                  {/* Content */}
-                  <div className="absolute inset-0 flex flex-col justify-end p-8">
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="badge">{FEATURED_VOYAGES[0].country}</span>
-                    </div>
-                    <h3 className="font-serif text-3xl md:text-4xl text-creme italic font-light leading-tight mb-2">
-                      {FEATURED_VOYAGES[0].title}
-                    </h3>
-                    <p className="text-sm text-creme/60 mb-5 max-w-sm leading-relaxed line-clamp-2">
-                      {FEATURED_VOYAGES[0].subtitle || FEATURED_VOYAGES[0].description || ''}
-                    </p>
-                    <div className="flex items-center gap-5 text-creme/40">
-                      <span className="flex items-center gap-1.5 text-xs">
-                        <Camera size={12} /> {FEATURED_VOYAGES[0].photos.length} photos
-                      </span>
-                      <span className="flex items-center gap-1.5 text-xs">
-                        <Calendar size={12} /> {FEATURED_VOYAGES[0].duration} jours
-                      </span>
-                    </div>
-
-                    {/* Hover arrow */}
-                    <div className="absolute bottom-8 right-8 w-10 h-10 border border-creme/20 group-hover:border-or flex items-center justify-center transition-all duration-300 group-hover:bg-or/10">
-                      <span className="text-creme/40 group-hover:text-or transition-colors text-sm">→</span>
-                    </div>
-                  </div>
+        {/* Right column — stacked cards */}
+        <div style={{ display: 'grid', gridTemplateRows: '1fr 1fr', gap: '3px' }}>
+          {others.slice(0, 2).map((v, i) => (
+            <Link key={v.slug||v.id} href={`/voyages/${v.slug||v.id}`} style={{ display: 'block', textDecoration: 'none', position: 'relative', overflow: 'hidden' }}
+              onMouseEnter={() => setHovered(v.slug||v.id)}
+              onMouseLeave={() => setHovered(null)}>
+              <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${getImg(v)})`, backgroundSize: 'cover', backgroundPosition: 'center', transition: 'transform 0.7s cubic-bezier(0.22,1,0.36,1)', transform: hovered === (v.slug||v.id) ? 'scale(1.05)' : 'scale(1)' }} />
+              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.15) 60%, transparent 100%)' }} />
+              {/* Number */}
+              <div style={{ position: 'absolute', top: '20px', left: '20px', fontFamily: '"Cormorant Garamond",serif', fontSize: '13px', color: 'rgba(196,150,42,0.6)', letterSpacing: '0.2em' }}>0{i+2}</div>
+              <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '24px 28px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                <div>
+                  <span style={{ fontSize: '10px', letterSpacing: '0.28em', color: '#c4962a', textTransform: 'uppercase', display: 'block', marginBottom: '6px', fontFamily: 'system-ui' }}>{v.country}</span>
+                  <h3 style={{ fontFamily: '"Cormorant Garamond",serif', fontSize: 'clamp(1.2rem,2.5vw,1.7rem)', fontWeight: 300, color: '#f5f0e8', fontStyle: 'italic', margin: 0, lineHeight: 1.2 }}>
+                    {v.title}
+                  </h3>
                 </div>
-              </Link>
-            </ScrollReveal>
-          )}
-
-          {/* Smaller cards */}
-          {FEATURED_VOYAGES.slice(1, 3).map((voyage, i) => (
-            <ScrollReveal key={voyage.id} className="md:col-span-5" delay={0.2 + i * 0.1}>
-              <Link href={`/voyages/${voyage.slug}`} className="block group">
-                <div className="relative h-64 md:h-[268px] overflow-hidden img-zoom">
-                  <Image
-                    src={voyage.heroImage}
-                    alt={voyage.title}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                    sizes="(max-width: 768px) 100vw, 42vw"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-noir via-noir/30 to-transparent" />
-                  <div className="absolute inset-0 flex flex-col justify-end p-6">
-                    <div className="flex items-center gap-2 mb-2">
-                      <MapPin size={11} className="text-or" />
-                      <span className="text-[10px] tracking-widest uppercase text-or">{voyage.continent || voyage.country}</span>
-                    </div>
-                    <h3 className="font-serif text-xl md:text-2xl text-creme italic font-light leading-tight mb-1">
-                      {voyage.title}
-                    </h3>
-                    <p className="text-xs text-creme/50">{voyage.subtitle || voyage.description || ''}</p>
-                  </div>
+                <div style={{ width: '36px', height: '36px', border: `1px solid ${hovered === (v.slug||v.id) ? '#c4962a' : 'rgba(255,255,255,0.2)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all .3s', background: hovered === (v.slug||v.id) ? 'rgba(196,150,42,0.1)' : 'transparent', flexShrink: 0 }}>
+                  <span style={{ color: hovered === (v.slug||v.id) ? '#c4962a' : 'rgba(255,255,255,0.4)', fontSize: '14px', transition: 'color .3s' }}>→</span>
                 </div>
-              </Link>
-            </ScrollReveal>
+              </div>
+            </Link>
           ))}
         </div>
-
-        {/* View all */}
-        <ScrollReveal delay={0.3} className="mt-12 flex justify-center">
-          <Link
-            href="/voyages"
-            className="flex items-center gap-3 text-[11px] tracking-[0.25em] uppercase text-creme/60 hover:text-or transition-colors group"
-          >
-            <div className="w-8 h-px bg-current transition-all group-hover:w-16" />
-            Tous les voyages
-            <div className="w-8 h-px bg-current transition-all group-hover:w-16" />
-          </Link>
-        </ScrollReveal>
       </div>
+
+      {/* ── 4th voyage — horizontal banner ── */}
+      {others[2] && (
+        <Link href={`/voyages/${others[2].slug||others[2].id}`} style={{ display: 'block', textDecoration: 'none', position: 'relative', overflow: 'hidden', height: '220px', maxWidth: '1400px', margin: '0 auto', padding: '0 40px 80px' }}
+          onMouseEnter={() => setHovered('banner')} onMouseLeave={() => setHovered(null)}>
+          <div style={{ position: 'relative', height: '220px', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${getImg(others[2])})`, backgroundSize: 'cover', backgroundPosition: 'center 40%', transition: 'transform 0.7s ease', transform: hovered === 'banner' ? 'scale(1.03)' : 'scale(1)' }} />
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 60%, transparent 100%)' }} />
+            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', padding: '0 40px', gap: '32px' }}>
+              <span style={{ fontFamily: '"Cormorant Garamond",serif', fontSize: '13px', color: 'rgba(196,150,42,0.6)', letterSpacing: '0.2em' }}>04</span>
+              <div style={{ width: '1px', height: '60px', background: 'rgba(196,150,42,0.3)' }} />
+              <div>
+                <span style={{ fontSize: '10px', letterSpacing: '0.28em', color: '#c4962a', textTransform: 'uppercase', display: 'block', marginBottom: '8px', fontFamily: 'system-ui' }}>{others[2].country}</span>
+                <h3 style={{ fontFamily: '"Cormorant Garamond",serif', fontSize: '2rem', fontWeight: 300, color: '#f5f0e8', fontStyle: 'italic', margin: 0 }}>
+                  {others[2].title}
+                </h3>
+              </div>
+              <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '16px', opacity: hovered === 'banner' ? 1 : 0, transition: 'opacity .4s' }}>
+                <span style={{ fontSize: '11px', letterSpacing: '0.2em', color: '#c4962a', textTransform: 'uppercase', fontFamily: 'system-ui' }}>Découvrir</span>
+                <div style={{ width: '48px', height: '1px', background: '#c4962a' }} />
+              </div>
+            </div>
+          </div>
+        </Link>
+      )}
+
     </section>
   );
 }
