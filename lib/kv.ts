@@ -19,7 +19,11 @@ async function kvGet(key: string) {
     if (!res.ok) return null;
     const data = await res.json();
     if (data.result === null || data.result === undefined) return null;
-    return typeof data.result === 'string' ? JSON.parse(data.result) : data.result;
+    // Handle both string and object results
+    if (typeof data.result === 'string') {
+      try { return JSON.parse(data.result); } catch { return data.result; }
+    }
+    return data.result;
   } catch { return null; }
 }
 
@@ -35,7 +39,7 @@ async function kvSet(key: string, value: any) {
         Authorization: `Bearer ${KV_TOKEN}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(JSON.stringify(value)),
+      body: JSON.stringify(value),
     });
     return res.ok;
   } catch { return false; }
