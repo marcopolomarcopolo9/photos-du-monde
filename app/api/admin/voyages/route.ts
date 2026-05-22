@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
       description: body.description || '',
       heroImage: body.heroImage || body.coverImage || '',
       coverImage: body.heroImage || body.coverImage || '',
-      photos: (body.photos || []).map((p: any) => typeof p === 'string' ? { src: p, caption: '' } : { src: p.src || '', caption: p.caption || '' }),
+      photos: (body.photos || []).map((p: any) => typeof p === 'string' ? { src: p, caption: '', categories: [] } : { src: p.src || '', caption: p.caption || '', categories: p.categories || [] }),
       lat: body.lat || null,
       lng: body.lng || null,
       tags: body.tags || [],
@@ -61,7 +61,7 @@ export async function PUT(req: NextRequest) {
       heroImage: body.heroImage || body.coverImage || voyages[idx].heroImage || '',
       coverImage: body.heroImage || body.coverImage || voyages[idx].coverImage || '',
       photos: (body.photos || voyages[idx].photos || []).map((p: any) =>
-        typeof p === 'string' ? { src: p, caption: '' } : { src: p.src || '', caption: p.caption || '' }
+        typeof p === 'string' ? { src: p, caption: '', categories: [] } : { src: p.src || '', caption: p.caption || '', categories: p.categories || [] }
       ),
       categories: body.categories || voyages[idx].categories || [],
       waypoints: body.waypoints || voyages[idx].waypoints || [],

@@ -184,10 +184,32 @@ function PhotoGrid({ photos, onChange, onZoom }) {
               </div>
               <input
                 value={typeof photos[i] === 'object' ? (photos[i].caption || '') : ''}
-                onChange={e => { const u=[...photos]; u[i]={src, caption:e.target.value}; onChange(u); }}
-                placeholder="Légende photo (optionnel)..."
+                onChange={e => { const u=[...photos]; u[i]={...(typeof u[i]==='object'?u[i]:{src}), src, caption:e.target.value}; onChange(u); }}
+                placeholder="Légende (optionnel)..."
                 style={{ width:'100%', padding:'6px 8px', background:'#0a0a0a', border:'none', borderTop:'1px solid #1a1a1a', color:'#777', fontSize:'11px', outline:'none', boxSizing:'border-box', fontStyle:'italic', fontFamily:'Georgia,serif' }}
               />
+              {/* Per-photo category tags */}
+              <div style={{ padding:'6px 8px', background:'#080808', borderTop:'1px solid #111', display:'flex', flexWrap:'wrap', gap:'4px' }}>
+                {['volcans','forets','plages','montagnes','deserts','faune','flore','villes','culture'].map(cat => {
+                  const photoObj = typeof photos[i] === 'object' ? photos[i] : { src };
+                  const selected = (photoObj.categories || []).includes(cat);
+                  const emojis: Record<string,string> = { volcans:'🌋', forets:'🌿', plages:'🏖', montagnes:'⛰', deserts:'🏜', faune:'🦜', flore:'🌸', villes:'🏙', culture:'🎭' };
+                  return (
+                    <button key={cat} type="button"
+                      onClick={() => {
+                        const u=[...photos];
+                        const obj = typeof u[i]==='object' ? u[i] : { src };
+                        const cats = obj.categories || [];
+                        u[i] = { ...obj, categories: selected ? cats.filter((c: string)=>c!==cat) : [...cats, cat] };
+                        onChange(u);
+                      }}
+                      style={{ padding:'2px 6px', background: selected ? 'rgba(196,150,42,0.2)' : 'transparent', border:`1px solid ${selected?'#c4962a':'#222'}`, borderRadius:'4px', color: selected?'#c4962a':'#444', cursor:'pointer', fontSize:'10px', transition:'all .15s' }}
+                      title={cat}>
+                      {emojis[cat]}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           );
         })}
