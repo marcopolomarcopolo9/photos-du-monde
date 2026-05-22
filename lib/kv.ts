@@ -4,8 +4,8 @@
 import { HOMEPAGE_CONFIG } from './homepage';
 import { VOYAGES as STATIC_VOYAGES } from './data';
 
-const KV_URL = process.env.KV_REST_API_URL;
-const KV_TOKEN = process.env.KV_REST_API_TOKEN;
+const KV_URL = process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL;
+const KV_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN;
 
 const isKvAvailable = () => !!(KV_URL && KV_TOKEN);
 
