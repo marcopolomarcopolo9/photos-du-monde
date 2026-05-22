@@ -45,8 +45,8 @@ export default function Destinations() {
                 {/* Image */}
                 <div className="relative h-72 overflow-hidden">
                   <Image
-                    src={voyage.heroImage}
-                    alt={voyage.heroImageAlt}
+                    src={voyage.heroImage || voyage.coverImage || ''}
+                    alt={voyage.title}
                     fill
                     className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
@@ -61,14 +61,14 @@ export default function Destinations() {
                     <div className="flex items-center gap-2 mb-2 translate-y-1 group-hover:translate-y-0 transition-transform duration-300">
                       <MapPin size={10} className="text-or" />
                       <span className="text-[9px] tracking-[0.3em] uppercase text-or font-poppins">
-                        {voyage.continent}
+                        {voyage.continent || voyage.country}
                       </span>
                     </div>
                     <h3 className="font-serif italic text-xl md:text-2xl text-creme font-light leading-tight mb-1">
                       {voyage.country}
                     </h3>
                     <p className="text-xs text-creme/55 font-poppins font-light leading-relaxed line-clamp-2 max-w-xs opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-400">
-                      {voyage.subtitle}
+                      {voyage.subtitle || voyage.description || voyage.city}
                     </p>
                     {/* Photo count */}
                     <div className="mt-3 flex items-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-75">

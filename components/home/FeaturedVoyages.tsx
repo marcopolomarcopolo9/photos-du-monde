@@ -31,7 +31,7 @@ export default function FeaturedVoyages() {
                 <div className="relative h-[420px] md:h-[560px] overflow-hidden img-zoom">
                   <Image
                     src={FEATURED_VOYAGES[0].heroImage}
-                    alt={FEATURED_VOYAGES[0].heroImageAlt}
+                    alt={FEATURED_VOYAGES[0].title}
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                     sizes="(max-width: 768px) 100vw, 58vw"
@@ -48,7 +48,7 @@ export default function FeaturedVoyages() {
                       {FEATURED_VOYAGES[0].title}
                     </h3>
                     <p className="text-sm text-creme/60 mb-5 max-w-sm leading-relaxed line-clamp-2">
-                      {FEATURED_VOYAGES[0].subtitle}
+                      {FEATURED_VOYAGES[0].subtitle || FEATURED_VOYAGES[0].description || ''}
                     </p>
                     <div className="flex items-center gap-5 text-creme/40">
                       <span className="flex items-center gap-1.5 text-xs">
@@ -76,7 +76,7 @@ export default function FeaturedVoyages() {
                 <div className="relative h-64 md:h-[268px] overflow-hidden img-zoom">
                   <Image
                     src={voyage.heroImage}
-                    alt={voyage.heroImageAlt}
+                    alt={voyage.title}
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                     sizes="(max-width: 768px) 100vw, 42vw"
@@ -85,12 +85,12 @@ export default function FeaturedVoyages() {
                   <div className="absolute inset-0 flex flex-col justify-end p-6">
                     <div className="flex items-center gap-2 mb-2">
                       <MapPin size={11} className="text-or" />
-                      <span className="text-[10px] tracking-widest uppercase text-or">{voyage.continent}</span>
+                      <span className="text-[10px] tracking-widest uppercase text-or">{voyage.continent || voyage.country}</span>
                     </div>
                     <h3 className="font-serif text-xl md:text-2xl text-creme italic font-light leading-tight mb-1">
                       {voyage.title}
                     </h3>
-                    <p className="text-xs text-creme/50">{voyage.subtitle}</p>
+                    <p className="text-xs text-creme/50">{voyage.subtitle || voyage.description || ''}</p>
                   </div>
                 </div>
               </Link>
