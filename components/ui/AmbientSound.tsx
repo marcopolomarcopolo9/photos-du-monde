@@ -34,10 +34,10 @@ export default function AmbientSound() {
       // Remove all listeners once started
       events.forEach(e => window.removeEventListener(e, handler));
     };
-    // Wait 2s for loader to finish, then attach listeners
+    // Wait 500ms for loader, then start on any interaction
     const t = setTimeout(() => {
       events.forEach(e => window.addEventListener(e, handler, { passive: true }));
-    }, 2000);
+    }, 500);
     return () => {
       clearTimeout(t);
       events.forEach(e => window.removeEventListener(e, handler));

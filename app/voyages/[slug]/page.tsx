@@ -53,12 +53,17 @@ export default function VoyagePage({ params }: Props) {
   const voyage = VOYAGES.find(v => v.slug === params.slug);
   if (!voyage) notFound();
 
-  const startDate = new Date(voyage.startDate).toLocaleDateString('fr-FR', {
-    day: 'numeric', month: 'long', year: 'numeric',
-  });
-  const endDate = voyage.endDate ? new Date(voyage.endDate).toLocaleDateString('fr-FR', {
-    day: 'numeric', month: 'long', year: 'numeric',
-  }) : '';
+  // Only show year
+  const getYear = (dateStr: string) => {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    if (!isNaN(d.getTime())) return String(d.getFullYear());
+    // If it's already just a year like "2024"
+    const match = dateStr.match(/\d{4}/);
+    return match ? match[0] : dateStr;
+  };
+
+  const year = getYear(voyage.startDate);
   const photos = normalizePhotos(voyage);
 
   return (
@@ -82,22 +87,28 @@ export default function VoyagePage({ params }: Props) {
             <ScrollReveal delay={0.1} className="gold-line mb-10" />
             <ScrollReveal delay={0.15}>
               <div className="flex flex-wrap gap-8 mb-16">
+                {year && (
+                  <div>
+                    <div className="text-[10px] tracking-widest uppercase text-or mb-1">Année</div>
+                    <div className="text-sm text-creme/70">{year}</div>
+                  </div>
+                )}
                 <div>
-                  <div className="text-[10px] tracking-widest uppercase text-or mb-1">Départ</div>
-                  <div className="text-sm text-creme/70">{startDate}</div>
+                  <div className="text-[10px] tracking-widest uppercase text-or mb-1">Pays</div>
+                  <div className="text-sm text-creme/70">{voyage.country}</div>
                 </div>
-                <div>
-                  <div className="text-[10px] tracking-widest uppercase text-or mb-1">Retour</div>
-                  <div className="text-sm text-creme/70">{endDate}</div>
-                </div>
-                <div>
-                  <div className="text-[10px] tracking-widest uppercase text-or mb-1">Durée</div>
-                  <div className="text-sm text-creme/70">{voyage.duration} jours</div>
-                </div>
-                <div>
-                  <div className="text-[10px] tracking-widest uppercase text-or mb-1">Région</div>
-                  <div className="text-sm text-creme/70">{voyage.city}{voyage.region ? `, ${voyage.region}` : ''}</div>
-                </div>
+                {(voyage.city) && (
+                  <div>
+                    <div className="text-[10px] tracking-widest uppercase text-or mb-1">Région</div>
+                    <div className="text-sm text-creme/70">{voyage.city}{voyage.region ? `, ${voyage.region}` : ''}</div>
+                  </div>
+                )}
+                {(voyage.photos || []).length > 0 && (
+                  <div>
+                    <div className="text-[10px] tracking-widest uppercase text-or mb-1">Photos</div>
+                    <div className="text-sm text-creme/70">{voyage.photos.length}</div>
+                  </div>
+                )}
               </div>
             </ScrollReveal>
 
