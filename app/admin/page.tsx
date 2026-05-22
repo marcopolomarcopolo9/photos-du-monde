@@ -59,13 +59,36 @@ function Inp({ value, onChange, placeholder, type, multiline, rows, style }) {
 // Compress image before upload — max 1920px, WebP quality 0.82
 // Typical result: 4MB photo → 200-400KB, no visible quality loss
 
-async function uploadFile(file) {
-  const fd = new FormData();
-  fd.append('file', file);
+// Resize to max 2000px before upload — stays under Vercel 4.5MB body limit
+async function resizeImage(file: File): Promise<File> {
+  const MAX = 2000;
+  return new Promise(resolve => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      if (img.width <= MAX && img.height <= MAX) { resolve(file); return; }
+      const ratio = Math.min(MAX / img.width, MAX / img.height);
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(img.width * ratio);
+      canvas.height = Math.round(img.height * ratio);
+      canvas.getContext('2d')!.drawImage(img, 0, 0, canvas.width, canvas.height);
+      canvas.toBlob(blob => {
+        if (!blob) { resolve(file); return; }
+        resolve(new File([blob], file.name, { type: 'image/jpeg' }));
+      }, 'image/jpeg', 0.88);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); resolve(file); };
+    img.src = url;
+  });
+}
 
+async function uploadFile(file) {
+  const resized = await resizeImage(file);
+  const fd = new FormData();
+  fd.append('file', resized);
   const res = await fetch('/api/admin/upload', { method: 'POST', body: fd });
   const data = await res.json();
-
   if (data.url) return data.url;
   throw new Error(data.error || 'Upload échoué');
 }
