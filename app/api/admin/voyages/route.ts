@@ -2,6 +2,9 @@
 import { NextResponse } from 'next/server';
 import { VOYAGES } from '../../../../lib/data';
 
+export const dynamic = 'force-dynamic';
+
+
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const REPO = 'marcopolomarcopolo9/photos-du-monde';
 const BRANCH = 'main';

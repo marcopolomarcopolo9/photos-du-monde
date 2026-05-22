@@ -1,13 +1,17 @@
 // @ts-nocheck
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { HOMEPAGE_CONFIG } from '../../../../lib/homepage';
+
+export const dynamic = 'force-dynamic';
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const REPO = 'marcopolomarcopolo9/photos-du-monde';
 const FILE_PATH = 'lib/homepage.ts';
 
 export async function GET() {
-  return NextResponse.json({ config: HOMEPAGE_CONFIG });
+  return NextResponse.json({ config: HOMEPAGE_CONFIG }, {
+    headers: { 'Cache-Control': 'no-store' }
+  });
 }
 
 export async function PUT(req) {
