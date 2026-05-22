@@ -5,6 +5,7 @@ export const CATEGORIES = [
   { slug: 'montagnes',  label: 'Montagnes',  emoji: '⛰', description: 'Sommets, cols et paysages alpins' },
   { slug: 'deserts',    label: 'Déserts',    emoji: '🏜', description: 'Dunes, steppes et terres arides' },
   { slug: 'faune',      label: 'Faune',      emoji: '🦜', description: 'Oiseaux, mammifères et vie sauvage' },
+  { slug: 'flore',      label: 'Flore',      emoji: '🌸', description: 'Plantes, fleurs et végétation du monde' },
   { slug: 'villes',     label: 'Villes',     emoji: '🏙', description: 'Cultures, architectures et vie urbaine' },
   { slug: 'culture',    label: 'Culture',    emoji: '🎭', description: 'Traditions, peuples et patrimoine' },
 ] as const;

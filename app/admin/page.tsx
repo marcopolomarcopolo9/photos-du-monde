@@ -414,8 +414,8 @@ export default function AdminPage() {
               </Field>
               <Field label="Catégories (multi-sélection)">
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                  {['volcans','forets','plages','montagnes','deserts','faune','villes','culture'].map(cat => {
-                    const labels: Record<string,string> = { volcans:'🌋 Volcans', forets:'🌿 Forêts', plages:'🏖 Plages', montagnes:'⛰ Montagnes', deserts:'🏜 Déserts', faune:'🦜 Faune', villes:'🏙 Villes', culture:'🎭 Culture' };
+                  {['volcans','forets','plages','montagnes','deserts','faune','flore','villes','culture'].map(cat => {
+                    const labels: Record<string,string> = { volcans:'🌋 Volcans', forets:'🌿 Forêts', plages:'🏖 Plages', montagnes:'⛰ Montagnes', deserts:'🏜 Déserts', faune:'🦜 Faune', flore:'🌸 Flore', villes:'🏙 Villes', culture:'🎭 Culture' };
                     const selected = (editingVoyage.categories || []).includes(cat);
                     return (
                       <button key={cat} type="button"
