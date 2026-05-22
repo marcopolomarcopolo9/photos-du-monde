@@ -59,9 +59,9 @@ export interface Voyage {
 }
 
 export type Continent =
-  | 'AmÃ©rique du Sud'
-  | 'AmÃ©rique Centrale'
-  | 'AmÃ©rique du Nord'
+  | 'Amérique du Sud'
+  | 'Amérique Centrale'
+  | 'Amérique du Nord'
   | 'Europe'
   | 'Asie'
   | 'Afrique'

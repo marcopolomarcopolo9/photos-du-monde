@@ -62,25 +62,31 @@ function Inp({ value, onChange, placeholder, type, multiline, rows, style }) {
 // Resize to max 2000px before upload — stays under Vercel 4.5MB body limit
 async function resizeImage(file: File): Promise<File> {
   const MAX = 2000;
-  return new Promise(resolve => {
-    const img = new Image();
-    const url = URL.createObjectURL(file);
-    img.onload = () => {
-      URL.revokeObjectURL(url);
-      if (img.width <= MAX && img.height <= MAX) { resolve(file); return; }
-      const ratio = Math.min(MAX / img.width, MAX / img.height);
-      const canvas = document.createElement('canvas');
-      canvas.width = Math.round(img.width * ratio);
-      canvas.height = Math.round(img.height * ratio);
-      canvas.getContext('2d')!.drawImage(img, 0, 0, canvas.width, canvas.height);
-      canvas.toBlob(blob => {
-        if (!blob) { resolve(file); return; }
-        resolve(new File([blob], file.name, { type: 'image/jpeg' }));
-      }, 'image/jpeg', 0.88);
-    };
-    img.onerror = () => { URL.revokeObjectURL(url); resolve(file); };
-    img.src = url;
-  });
+  try {
+    return await new Promise(resolve => {
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        if (img.width <= MAX && img.height <= MAX) { resolve(file); return; }
+        const ratio = Math.min(MAX / img.width, MAX / img.height);
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(img.width * ratio);
+        canvas.height = Math.round(img.height * ratio);
+        const ctx = canvas.getContext('2d');
+        if (!ctx) { resolve(file); return; }
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        canvas.toBlob(blob => {
+          if (!blob || blob.size >= file.size) { resolve(file); return; }
+          resolve(new File([blob], file.name, { type: 'image/jpeg' }));
+        }, 'image/jpeg', 0.88);
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); resolve(file); };
+      img.src = url;
+    });
+  } catch {
+    return file; // Always fallback to original if anything fails
+  }
 }
 
 async function uploadFile(file) {

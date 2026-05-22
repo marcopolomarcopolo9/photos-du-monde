@@ -39,10 +39,10 @@ export function generateMetadata({ params }: Props): Metadata {
   const voyage = VOYAGES.find(v => v.slug === params.slug);
   if (!voyage) return {};
   return {
-    title: `${voyage.title} âÂÂ ${voyage.country}`,
+    title: `${voyage.title} â— ${voyage.country}`,
     description: voyage.description.slice(0, 160),
     openGraph: {
-      title: `${voyage.title} âÂÂ Photos du Monde`,
+      title: `${voyage.title} â— Photos du Monde`,
       description: voyage.subtitle,
       images: [{ url: voyage.heroImage }],
     },
@@ -187,10 +187,10 @@ export default function VoyagePage({ params }: Props) {
           <div className="gold-line mb-10" />
           <div className="flex justify-between items-center">
             <Link href="/voyages" className="flex items-center gap-3 text-[11px] tracking-widest uppercase text-creme/50 hover:text-or transition-colors">
-              âÂÂ Tous les voyages
+              ← Tous les voyages
             </Link>
             <Link href="/galerie" className="flex items-center gap-3 text-[11px] tracking-widest uppercase text-creme/50 hover:text-or transition-colors">
-              Galerie compl âÂÂ
+              Galerie complète →
             </Link>
           </div>
         </div>
