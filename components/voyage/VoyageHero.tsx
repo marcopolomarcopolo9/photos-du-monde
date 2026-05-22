@@ -1,86 +1,140 @@
 // @ts-nocheck
-import Image from 'next/image';
+'use client';
+import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
-import { Calendar, Clock, Camera, MapPin } from 'lucide-react';
-import type { Voyage } from '@/lib/types';
 
-interface Props {
-  voyage: Voyage;
-}
+export default function VoyageHero({ voyage }: { voyage: any }) {
+  const [scrollY, setScrollY] = useState(0);
+  const [loaded, setLoaded] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
 
-export default function VoyageHero({ voyage }: Props) {
-  const start = new Date(voyage.startDate).toLocaleDateString('fr-FR', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  });
+  useEffect(() => {
+    setLoaded(true);
+    const onScroll = () => setScrollY(window.scrollY);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const img = voyage.heroImage || voyage.coverImage || '';
+  const getYear = (d: string) => { if (!d) return ''; const m = String(d).match(/\d{4}/); return m ? m[0] : ''; };
+  const year = getYear(voyage.startDate || voyage.date || '');
 
   return (
-    <section className="relative h-[75vh] min-h-[500px] overflow-hidden bg-noir">
-      {/* Letterbox */}
-      <div className="absolute top-0 left-0 right-0 h-14 bg-noir z-20" />
-      <div className="absolute bottom-0 left-0 right-0 h-14 bg-noir z-20" />
+    <section ref={sectionRef} style={{ position: 'relative', height: '100vh', minHeight: '600px', overflow: 'hidden', display: 'flex', alignItems: 'flex-end' }}>
+      
+      {/* Background with parallax */}
+      {img && (
+        <div style={{
+          position: 'absolute', inset: '-15%',
+          backgroundImage: `url(${img})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          transform: `translateY(${scrollY * 0.4}px)`,
+          willChange: 'transform',
+          transition: 'opacity 1.2s ease',
+          opacity: loaded ? 1 : 0,
+        }} />
+      )}
+      {!img && <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg,#0a1208,#080808)' }} />}
 
-      {/* Hero image */}
-      <div className="absolute inset-0 z-0">
-        <Image
-          src={voyage.heroImage}
-          alt={voyage.heroImageAlt}
-          fill
-          priority
-          className="object-cover scale-[1.02]"
-          sizes="100vw"
-        />
-      </div>
-
-      {/* Gradient */}
-      <div className="absolute inset-0 z-10 bg-gradient-to-t from-noir via-noir/50 to-noir/20" />
-      <div className="absolute inset-0 z-10 bg-gradient-to-r from-noir/60 via-transparent to-transparent" />
+      {/* Cinematic overlays */}
+      <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.35)', zIndex: 1 }} />
+      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 40%, rgba(0,0,0,0.1) 100%)', zIndex: 1 }} />
+      {/* Letterbox bars */}
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '80px', background: 'linear-gradient(to bottom, rgba(0,0,0,0.6), transparent)', zIndex: 1 }} />
 
       {/* Content */}
-      <div className="relative z-30 h-full flex flex-col justify-end pb-20 md:pb-24 px-6 md:px-14 max-w-screen-xl mx-auto">
-        {/* Breadcrumb */}
-        <div className="flex items-center gap-2 mb-5 text-[10px] tracking-widest uppercase text-creme/40">
-          <Link href="/voyages" className="hover:text-or transition-colors">Voyages</Link>
-          <span>/</span>
-          <span className="text-creme/60">{voyage.country}</span>
+      <div style={{ position: 'relative', zIndex: 2, width: '100%', maxWidth: '1400px', margin: '0 auto', padding: '0 clamp(24px,6vw,80px) clamp(48px,8vh,96px)' }}>
+        
+        {/* Back link */}
+        <div style={{
+          position: 'absolute', top: '-420px', left: 'clamp(24px,6vw,80px)',
+          opacity: loaded ? 1 : 0, transform: loaded ? 'translateY(0)' : 'translateY(-10px)',
+          transition: 'all 0.8s ease 0.2s',
+        }}>
+          <Link href="/voyages" style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'rgba(255,255,255,0.45)', textDecoration: 'none', fontSize: '10px', letterSpacing: '0.3em', textTransform: 'uppercase', fontFamily: 'system-ui' }}
+            onMouseEnter={e => e.currentTarget.style.color = '#c4962a'}
+            onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.45)'}>
+            ← Destinations
+          </Link>
         </div>
 
-        {/* Category tags */}
-        <div className="flex flex-wrap gap-2 mb-5">
-          {(voyage.categories||[]).map((cat) => (
-            <span key={cat} className="badge">{cat}</span>
-          ))}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', alignItems: 'flex-end', gap: '40px' }}>
+          <div>
+            {/* Eyebrow */}
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '20px',
+              opacity: loaded ? 1 : 0, transform: loaded ? 'translateY(0)' : 'translateY(20px)',
+              transition: 'all 0.8s ease 0.1s',
+            }}>
+              <div style={{ width: '40px', height: '1px', background: '#c4962a' }} />
+              <span style={{ fontSize: '10px', letterSpacing: '0.35em', color: '#c4962a', textTransform: 'uppercase', fontFamily: 'system-ui' }}>
+                {voyage.country}{year ? ` · ${year}` : ''}
+              </span>
+            </div>
+
+            {/* Title */}
+            <h1 style={{
+              fontFamily: '"Cormorant Garamond", Georgia, serif',
+              fontSize: 'clamp(2.4rem, 7vw, 6rem)',
+              fontWeight: 300, fontStyle: 'italic',
+              color: '#f5f0e8', margin: '0 0 24px', lineHeight: 1.05,
+              opacity: loaded ? 1 : 0, transform: loaded ? 'translateY(0)' : 'translateY(30px)',
+              transition: 'all 1s ease 0.25s',
+            }}>
+              {voyage.title}
+            </h1>
+
+            {/* Description */}
+            {voyage.description && (
+              <p style={{
+                fontFamily: 'system-ui', fontSize: '14px', color: 'rgba(245,240,232,0.55)',
+                maxWidth: '520px', lineHeight: 1.9, margin: 0,
+                opacity: loaded ? 1 : 0, transform: loaded ? 'translateY(0)' : 'translateY(20px)',
+                transition: 'all 0.9s ease 0.4s',
+              }}>
+                {voyage.description.slice(0, 180)}{voyage.description.length > 180 ? '...' : ''}
+              </p>
+            )}
+          </div>
+
+          {/* Stats sidebar */}
+          <div style={{
+            display: 'flex', flexDirection: 'column', gap: '20px', alignItems: 'flex-end',
+            opacity: loaded ? 1 : 0, transform: loaded ? 'translateX(0)' : 'translateX(20px)',
+            transition: 'all 0.9s ease 0.5s',
+          }}>
+            {voyage.city && (
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ fontSize: '9px', letterSpacing: '0.3em', color: '#c4962a', textTransform: 'uppercase', fontFamily: 'system-ui', marginBottom: '4px' }}>Région</div>
+                <div style={{ fontSize: '13px', color: 'rgba(245,240,232,0.7)', fontFamily: 'system-ui' }}>{voyage.city}</div>
+              </div>
+            )}
+            {(voyage.photos || []).length > 0 && (
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ fontSize: '9px', letterSpacing: '0.3em', color: '#c4962a', textTransform: 'uppercase', fontFamily: 'system-ui', marginBottom: '4px' }}>Photos</div>
+                <div style={{ fontSize: '13px', color: 'rgba(245,240,232,0.7)', fontFamily: 'system-ui' }}>{voyage.photos.length}</div>
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Title */}
-        <h1 className="font-serif font-light text-4xl md:text-6xl lg:text-7xl text-creme italic leading-tight mb-4">
-          {voyage.title}
-        </h1>
-        <p className="text-lg md:text-xl text-creme/60 font-light mb-8">
-          {voyage.subtitle}
-        </p>
-
-        {/* Meta strip */}
-        <div className="flex flex-wrap gap-6 text-xs text-creme/40">
-          <span className="flex items-center gap-2">
-            <MapPin size={12} className="text-or" />
-            {voyage.city}{voyage.region ? `, ${voyage.region}` : ''}
-          </span>
-          <span className="flex items-center gap-2">
-            <Calendar size={12} className="text-or" />
-            {start}
-          </span>
-          <span className="flex items-center gap-2">
-            <Clock size={12} className="text-or" />
-            {voyage.duration} jours
-          </span>
-          <span className="flex items-center gap-2">
-            <Camera size={12} className="text-or" />
-            {voyage.photos.length} photographies
-          </span>
+        {/* Scroll indicator */}
+        <div style={{
+          position: 'absolute', bottom: 'clamp(24px,4vh,48px)', left: '50%', transform: 'translateX(-50%)',
+          display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px',
+          opacity: loaded ? 0.4 : 0, transition: 'opacity 1s ease 1s',
+        }}>
+          <div style={{ width: '1px', height: '40px', background: 'linear-gradient(to bottom, rgba(196,150,42,0.8), transparent)', animation: 'scrollPulse 2s ease-in-out infinite' }} />
         </div>
       </div>
+
+      <style>{`
+        @keyframes scrollPulse {
+          0%, 100% { opacity: 0.4; transform: scaleY(1); }
+          50% { opacity: 1; transform: scaleY(1.3); }
+        }
+      `}</style>
     </section>
   );
 }
