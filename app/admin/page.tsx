@@ -172,14 +172,22 @@ function PhotoGrid({ photos, onChange, onZoom }) {
         {photos.map((p, i) => {
           const src = typeof p === 'string' ? p : p.src;
           return (
-            <div key={i} style={{ position: 'relative', borderRadius: '8px', overflow: 'hidden', background: '#0d0d0d', border: '1px solid #2a2a2a', aspectRatio: '4/3' }}>
-              <img src={src} alt="" onClick={() => onZoom && onZoom(i)} style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: onZoom ? 'zoom-in' : 'default' }} />
-              <div style={{ position: 'absolute', top: '3px', left: '5px', background: 'rgba(0,0,0,.65)', color: '#aaa', fontSize: '10px', padding: '2px 5px', borderRadius: '3px' }}>{i + 1}</div>
-              <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, display: 'flex', gap: '3px', padding: '5px', justifyContent: 'center', background: 'linear-gradient(to top,rgba(0,0,0,.8),transparent)' }}>
-                <button onClick={() => moveLeft(i)} style={{ background: 'rgba(0,0,0,.7)', border: 'none', color: '#fff', width: '24px', height: '24px', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>&#8592;</button>
-                <button onClick={() => moveRight(i)} style={{ background: 'rgba(0,0,0,.7)', border: 'none', color: '#fff', width: '24px', height: '24px', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>&#8594;</button>
-                <button onClick={() => remove(i)} style={{ background: 'rgba(180,20,20,.8)', border: 'none', color: '#fff', width: '24px', height: '24px', borderRadius: '4px', cursor: 'pointer', fontSize: '14px' }}>&#215;</button>
+            <div key={i} style={{ borderRadius: '8px', overflow: 'hidden', background: '#0d0d0d', border: '1px solid #2a2a2a' }}>
+              <div style={{ position: 'relative', aspectRatio: '4/3', overflow: 'hidden' }}>
+                <img src={src} alt="" onClick={() => onZoom && onZoom(i)} style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: onZoom ? 'zoom-in' : 'default', display: 'block' }} />
+                <div style={{ position: 'absolute', top: '3px', left: '5px', background: 'rgba(0,0,0,.65)', color: '#aaa', fontSize: '10px', padding: '2px 5px', borderRadius: '3px' }}>{i + 1}</div>
+                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, display: 'flex', gap: '3px', padding: '5px', justifyContent: 'center', background: 'linear-gradient(to top,rgba(0,0,0,.8),transparent)' }}>
+                  <button onClick={() => moveLeft(i)} style={{ background: 'rgba(0,0,0,.7)', border: 'none', color: '#fff', width: '24px', height: '24px', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>&#8592;</button>
+                  <button onClick={() => moveRight(i)} style={{ background: 'rgba(0,0,0,.7)', border: 'none', color: '#fff', width: '24px', height: '24px', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>&#8594;</button>
+                  <button onClick={() => remove(i)} style={{ background: 'rgba(180,20,20,.8)', border: 'none', color: '#fff', width: '24px', height: '24px', borderRadius: '4px', cursor: 'pointer', fontSize: '14px' }}>&#215;</button>
+                </div>
               </div>
+              <input
+                value={typeof photos[i] === 'object' ? (photos[i].caption || '') : ''}
+                onChange={e => { const u=[...photos]; u[i]={src, caption:e.target.value}; onChange(u); }}
+                placeholder="Légende photo (optionnel)..."
+                style={{ width:'100%', padding:'6px 8px', background:'#0a0a0a', border:'none', borderTop:'1px solid #1a1a1a', color:'#777', fontSize:'11px', outline:'none', boxSizing:'border-box', fontStyle:'italic', fontFamily:'Georgia,serif' }}
+              />
             </div>
           );
         })}
@@ -404,8 +412,25 @@ export default function AdminPage() {
               <Field label="Date">
                 <Inp value={editingVoyage.startDate || editingVoyage.date || ''} onChange={v => setEditingVoyage(p => ({ ...p, startDate: v, date: v }))} placeholder="2024-03" />
               </Field>
-              <Field label="Tags (virgules)">
-                <Inp value={(editingVoyage.tags || []).join(', ')} onChange={v => setEditingVoyage(p => ({ ...p, tags: v.split(',').map(s => s.trim()).filter(Boolean) }))} placeholder="Forêt, Volcans" />
+              <Field label="Catégories (multi-sélection)">
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                  {['volcans','forets','plages','montagnes','deserts','faune','villes','culture'].map(cat => {
+                    const labels: Record<string,string> = { volcans:'🌋 Volcans', forets:'🌿 Forêts', plages:'🏖 Plages', montagnes:'⛰ Montagnes', deserts:'🏜 Déserts', faune:'🦜 Faune', villes:'🏙 Villes', culture:'🎭 Culture' };
+                    const selected = (editingVoyage.categories || []).includes(cat);
+                    return (
+                      <button key={cat} type="button"
+                        onClick={() => setEditingVoyage(p => ({
+                          ...p,
+                          categories: selected
+                            ? (p.categories||[]).filter((c: string) => c !== cat)
+                            : [...(p.categories||[]), cat]
+                        }))}
+                        style={{ padding: '6px 14px', background: selected ? 'rgba(196,150,42,0.15)' : '#0d0d0d', border: `1px solid ${selected ? '#c4962a' : '#2a2a2a'}`, borderRadius: '6px', color: selected ? '#c4962a' : '#555', cursor: 'pointer', fontSize: '12px', transition: 'all .2s' }}>
+                        {labels[cat]}
+                      </button>
+                    );
+                  })}
+                </div>
               </Field>
               <Field label="Latitude (centre carte)">
                 <Inp value={editingVoyage.lat != null ? String(editingVoyage.lat) : ''} onChange={v => setEditingVoyage(p => ({ ...p, lat: parseFloat(v) || null }))} placeholder="9.7489" />

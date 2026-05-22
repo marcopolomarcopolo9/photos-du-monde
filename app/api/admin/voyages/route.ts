@@ -32,10 +32,12 @@ async function writeDataFile(voyages, sha, message) {
 function buildDataTs(voyages) {
   const lines = voyages.map(v => {
     const photos = (v.photos||[]).map(p => {
-      const src = typeof p === 'string' ? p : p.src;
-      return `    { src: ${JSON.stringify(src)} }`;
+      const src = typeof p === 'string' ? p : (p.src || '');
+      const caption = typeof p === 'object' ? (p.caption || '') : '';
+      return `    { src: ${JSON.stringify(src)}, caption: ${JSON.stringify(caption)} }`;
     }).join(',\n');
     const tags = (v.tags||[]).map(t => JSON.stringify(t)).join(', ');
+    const categories = (v.categories||[]).map(c => JSON.stringify(c)).join(', ');
     const waypoints = (v.waypoints||[]).map(w =>
       `    { lat: ${w.lat}, lng: ${w.lng}, label: ${JSON.stringify(w.label||'')}, day: ${w.day||null} }`
     ).join(',\n');
@@ -51,6 +53,7 @@ function buildDataTs(voyages) {
     lat: ${v.lat !== undefined ? v.lat : null},
     lng: ${v.lng !== undefined ? v.lng : null},
     tags: [${tags}],
+    categories: [${categories}],
     published: ${v.published !== false},
     waypoints: [\n${waypoints}\n    ]
   }`;

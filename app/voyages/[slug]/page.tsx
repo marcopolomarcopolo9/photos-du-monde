@@ -194,15 +194,72 @@ export default function VoyagePage({ params }: Props) {
           </div>
         )}
 
-        <div className="mt-24 md:mt-32">
+        {/* Categories badges */}
+        {(voyage.categories || []).length > 0 && (
+          <div className="mt-10 mb-6">
+            <div className="flex flex-wrap gap-2">
+              {(voyage.categories || []).map((cat: string) => {
+                const { CATEGORIES } = require('@/lib/categories');
+                const catData = CATEGORIES.find((c: any) => c.slug === cat);
+                return (
+                  <a key={cat} href={`/categories/${cat}`}
+                    className="flex items-center gap-1.5 px-3 py-1.5 border border-or/30 hover:border-or hover:bg-or/5 transition-all text-[10px] tracking-[0.15em] uppercase text-or/70 hover:text-or font-poppins">
+                    <span>{catData?.emoji || '📷'}</span>
+                    <span>{catData?.label || cat}</span>
+                  </a>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Similar voyages */}
+        {(() => {
+          const { VOYAGES } = require('@/lib/data');
+          const similar = VOYAGES.filter((v: any) =>
+            v.published !== false &&
+            (v.slug || v.id) !== (voyage.slug || voyage.id) &&
+            (
+              v.country === voyage.country ||
+              (v.categories || []).some((c: string) => (voyage.categories || []).includes(c))
+            )
+          ).slice(0, 3);
+          if (!similar.length) return null;
+          return (
+            <div className="mt-16 pt-12 border-t border-white/5">
+              <div className="flex items-center gap-4 mb-8">
+                <div className="w-8 h-px bg-or" />
+                <span className="text-[10px] tracking-[0.3em] uppercase text-or font-poppins">Voyages similaires</span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {similar.map((v: any) => (
+                  <a key={v.slug||v.id} href={`/voyages/${v.slug||v.id}`} className="group block relative overflow-hidden">
+                    <div className="relative h-44 overflow-hidden bg-noir-mid">
+                      {(v.heroImage||v.coverImage) && (
+                        <img src={v.heroImage||v.coverImage} alt={v.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-noir/85 to-transparent" />
+                      <div className="absolute inset-0 flex flex-col justify-end p-4">
+                        <span className="text-[9px] tracking-[0.25em] uppercase text-or mb-1 font-poppins">{v.country}</span>
+                        <h3 className="font-serif italic text-base text-creme font-light">{v.title}</h3>
+                      </div>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
+
+        <div className="mt-16 md:mt-24">
           <div className="gold-line mb-10" />
           <div className="flex justify-between items-center">
-            <Link href="/voyages" className="flex items-center gap-3 text-[11px] tracking-widest uppercase text-creme/50 hover:text-or transition-colors">
+            <a href="/voyages" className="flex items-center gap-3 text-[11px] tracking-widest uppercase text-creme/50 hover:text-or transition-colors font-poppins">
               ← Tous les voyages
-            </Link>
-            <Link href="/galerie" className="flex items-center gap-3 text-[11px] tracking-widest uppercase text-creme/50 hover:text-or transition-colors">
+            </a>
+            <a href="/galerie" className="flex items-center gap-3 text-[11px] tracking-widest uppercase text-creme/50 hover:text-or transition-colors font-poppins">
               Galerie complète →
-            </Link>
+            </a>
           </div>
         </div>
       </div>
