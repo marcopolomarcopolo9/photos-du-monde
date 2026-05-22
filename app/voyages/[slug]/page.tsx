@@ -39,10 +39,10 @@ export function generateMetadata({ params }: Props): Metadata {
   const voyage = VOYAGES.find(v => v.slug === params.slug);
   if (!voyage) return {};
   return {
-    title: `${voyage.title} Ã¢ÂÂ ${voyage.country}`,
+    title: `${voyage.title} âÂÂ ${voyage.country}`,
     description: voyage.description.slice(0, 160),
     openGraph: {
-      title: `${voyage.title} Ã¢ÂÂ Photos du Monde`,
+      title: `${voyage.title} âÂÂ Photos du Monde`,
       description: voyage.subtitle,
       images: [{ url: voyage.heroImage }],
     },
@@ -83,7 +83,7 @@ export default function VoyagePage({ params }: Props) {
             <ScrollReveal delay={0.15}>
               <div className="flex flex-wrap gap-8 mb-16">
                 <div>
-                  <div className="text-[10px] tracking-widest uppercase text-or mb-1">DÃÂ©part</div>
+                  <div className="text-[10px] tracking-widest uppercase text-or mb-1">Départ</div>
                   <div className="text-sm text-creme/70">{startDate}</div>
                 </div>
                 <div>
@@ -91,11 +91,11 @@ export default function VoyagePage({ params }: Props) {
                   <div className="text-sm text-creme/70">{endDate}</div>
                 </div>
                 <div>
-                  <div className="text-[10px] tracking-widest uppercase text-or mb-1">DurÃÂ©e</div>
+                  <div className="text-[10px] tracking-widest uppercase text-or mb-1">Durée</div>
                   <div className="text-sm text-creme/70">{voyage.duration} jours</div>
                 </div>
                 <div>
-                  <div className="text-[10px] tracking-widest uppercase text-or mb-1">RÃÂ©gion</div>
+                  <div className="text-[10px] tracking-widest uppercase text-or mb-1">Région</div>
                   <div className="text-sm text-creme/70">{voyage.city}{voyage.region ? `, ${voyage.region}` : ''}</div>
                 </div>
               </div>
@@ -187,10 +187,10 @@ export default function VoyagePage({ params }: Props) {
           <div className="gold-line mb-10" />
           <div className="flex justify-between items-center">
             <Link href="/voyages" className="flex items-center gap-3 text-[11px] tracking-widest uppercase text-creme/50 hover:text-or transition-colors">
-              Ã¢ÂÂ Tous les voyages
+              âÂÂ Tous les voyages
             </Link>
             <Link href="/galerie" className="flex items-center gap-3 text-[11px] tracking-widest uppercase text-creme/50 hover:text-or transition-colors">
-              Galerie complÃÂ¨te Ã¢ÂÂ
+              Galerie compl âÂÂ
             </Link>
           </div>
         </div>

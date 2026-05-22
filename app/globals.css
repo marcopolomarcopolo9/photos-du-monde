@@ -62,3 +62,41 @@ button {
 .font-serif {
   font-family: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
 }
+
+/* ── Masonry gallery ── */
+.masonry-grid {
+  column-count: 2;
+  column-gap: 10px;
+}
+@media (min-width: 768px) {
+  .masonry-grid { column-count: 3; column-gap: 12px; }
+}
+@media (min-width: 1280px) {
+  .masonry-grid { column-count: 4; column-gap: 14px; }
+}
+.photo-card {
+  break-inside: avoid;
+  margin-bottom: 10px;
+  display: block;
+}
+@media (min-width: 768px) {
+  .photo-card { margin-bottom: 12px; }
+}
+.photo-card .img-zoom img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 380px;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+.photo-card:hover .img-zoom img {
+  transform: scale(1.03);
+}
+.photo-overlay {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.photo-card:hover .photo-overlay {
+  opacity: 1;
+}
