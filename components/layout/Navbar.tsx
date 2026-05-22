@@ -56,9 +56,14 @@ export default function Navbar() {
                 className="w-1.5 h-1.5 rounded-full bg-or"
                 whileHover={{ scale: 1.8 }}
               />
-              <span className="font-serif text-base md:text-lg font-light tracking-[0.2em] uppercase text-creme">
-                Photos du Monde
-              </span>
+              <div className="flex flex-col leading-tight">
+                <span className="font-serif text-base md:text-lg font-light tracking-[0.2em] uppercase text-creme">
+                  Photos du Monde
+                </span>
+                <span className="text-[10px] tracking-[0.15em] text-or/60 italic font-serif" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
+                  by Rolf Etter
+                </span>
+              </div>
             </Link>
 
             {/* Desktop nav */}
