@@ -1,265 +1,160 @@
 // @ts-nocheck
-import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { CheckCircle } from 'lucide-react';
-import { VOYAGES } from '@/lib/data';
+import Image from 'next/image';
+import { getVoyages } from '@/lib/kv';
+import { CATEGORIES } from '@/lib/categories';
 import VoyageHero from '@/components/voyage/VoyageHero';
 import VoyageMapLeaflet from '@/components/voyage/VoyageMap';
-import AnecdoteCard from '@/components/voyage/AnecdoteCard';
 import MasonryGrid from '@/components/gallery/MasonryGrid';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 
-interface Props {
-  params: { slug: string };
-}
+export const dynamic = 'force-dynamic';
 
-export function generateStaticParams() {
-  return VOYAGES.map((v) => ({ slug: v.slug }));
-}
+interface Props { params: { slug: string } }
 
-// Normalize photos from new data structure
-function normalizePhotos(voyage: any) {
-  return (voyage.photos || []).map((p: any, i: number) => ({
+export default async function VoyagePage({ params }: Props) {
+  const voyages = await getVoyages().catch(() => []);
+  const voyage = voyages.find((v: any) => (v.slug || v.id) === params.slug);
+  if (!voyage || voyage.published === false) notFound();
+
+  const getYear = (d: string) => { if (!d) return ''; const m = d.match(/\d{4}/); return m ? m[0] : d; };
+  const year = getYear(voyage.startDate || voyage.date || '');
+
+  const photos = (voyage.photos || []).map((p: any, i: number) => ({
     id: `${voyage.slug}-p${i}`,
     src: typeof p === 'string' ? p : (p.src || ''),
-    alt: p.alt || voyage.title,
-    location: p.location || voyage.city || '',
+    alt: typeof p === 'object' && p.caption ? p.caption : voyage.title,
+    caption: typeof p === 'object' ? (p.caption || '') : '',
+    location: voyage.city || '',
     country: voyage.country || '',
     continent: voyage.continent || '',
-    date: p.date || voyage.startDate || '',
-    width: p.width || 1200,
-    height: p.height || 800,
-    voyageSlug: voyage.slug,
-    tags: p.tags || [],
+    date: voyage.startDate || voyage.date || '',
+    width: 1200, height: 800,
+    voyageSlug: voyage.slug || voyage.id,
   }));
-}
 
-export function generateMetadata({ params }: Props): Metadata {
-  const voyage = VOYAGES.find(v => v.slug === params.slug);
-  if (!voyage) return {};
-  return {
-    title: `${voyage.title} â— ${voyage.country}`,
-    description: voyage.description.slice(0, 160),
-    openGraph: {
-      title: `${voyage.title} â— Photos du Monde`,
-      description: voyage.subtitle,
-      images: [{ url: voyage.heroImage }],
-    },
-  };
-}
-
-export default function VoyagePage({ params }: Props) {
-  const voyage = VOYAGES.find(v => v.slug === params.slug);
-  if (!voyage) notFound();
-
-  // Only show year
-  const getYear = (dateStr: string) => {
-    if (!dateStr) return '';
-    const d = new Date(dateStr);
-    if (!isNaN(d.getTime())) return String(d.getFullYear());
-    // If it's already just a year like "2024"
-    const match = dateStr.match(/\d{4}/);
-    return match ? match[0] : dateStr;
-  };
-
-  const year = getYear(voyage.startDate);
-  const photos = normalizePhotos(voyage);
+  // Similar voyages
+  const similar = voyages.filter((v: any) =>
+    v.published !== false &&
+    (v.slug || v.id) !== (voyage.slug || voyage.id) &&
+    (v.country === voyage.country || (v.categories || []).some((c: string) => (voyage.categories || []).includes(c)))
+  ).slice(0, 3);
 
   return (
     <div className="bg-noir min-h-screen">
       <VoyageHero voyage={voyage} />
 
-      <div className="max-w-screen-xl mx-auto px-6 md:px-10 py-20 md:py-28">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
+      <div className="max-w-screen-xl mx-auto px-6 md:px-10 py-16 md:py-24">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
 
+          {/* Main content */}
           <div className="lg:col-span-2">
             <ScrollReveal>
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-8 h-px bg-or" />
-                <span className="text-[10px] tracking-[0.3em] uppercase text-or">Le voyage</span>
-              </div>
-              <p className="text-creme/70 text-base leading-[1.9] mb-12 max-w-2xl">
-                {voyage.description}
-              </p>
-            </ScrollReveal>
-
-            <ScrollReveal delay={0.1} className="gold-line mb-10" />
-            <ScrollReveal delay={0.15}>
-              <div className="flex flex-wrap gap-8 mb-16">
-                {year && (
-                  <div>
-                    <div className="text-[10px] tracking-widest uppercase text-or mb-1">Année</div>
-                    <div className="text-sm text-creme/70">{year}</div>
-                  </div>
-                )}
-                <div>
-                  <div className="text-[10px] tracking-widest uppercase text-or mb-1">Pays</div>
-                  <div className="text-sm text-creme/70">{voyage.country}</div>
-                </div>
-                {(voyage.city) && (
-                  <div>
-                    <div className="text-[10px] tracking-widest uppercase text-or mb-1">Région</div>
-                    <div className="text-sm text-creme/70">{voyage.city}{voyage.region ? `, ${voyage.region}` : ''}</div>
-                  </div>
-                )}
-                {(voyage.photos || []).length > 0 && (
-                  <div>
-                    <div className="text-[10px] tracking-widest uppercase text-or mb-1">Photos</div>
-                    <div className="text-sm text-creme/70">{voyage.photos.length}</div>
-                  </div>
-                )}
+              {/* Stats */}
+              <div className="flex flex-wrap gap-8 mb-12">
+                {year && <div><div className="text-[10px] tracking-widest uppercase text-or mb-1">Année</div><div className="text-sm text-creme/70">{year}</div></div>}
+                <div><div className="text-[10px] tracking-widest uppercase text-or mb-1">Pays</div><div className="text-sm text-creme/70">{voyage.country}</div></div>
+                {voyage.city && <div><div className="text-[10px] tracking-widest uppercase text-or mb-1">Région</div><div className="text-sm text-creme/70">{voyage.city}</div></div>}
+                {photos.length > 0 && <div><div className="text-[10px] tracking-widest uppercase text-or mb-1">Photos</div><div className="text-sm text-creme/70">{photos.length}</div></div>}
               </div>
             </ScrollReveal>
 
-            {(voyage.anecdotes||[]).length > 0 && (
-              <div className="mb-16">
-                <ScrollReveal>
-                  <div className="flex items-center gap-4 mb-10">
-                    <div className="w-8 h-px bg-or" />
-                    <h2 className="font-serif italic text-2xl text-creme">Anecdotes de terrain</h2>
-                  </div>
-                </ScrollReveal>
-                <div className="flex flex-col gap-8">
-                  {(voyage.anecdotes||[]).map((anecdote, i) => (
-                    <AnecdoteCard key={anecdote.id} anecdote={anecdote} index={i} />
-                  ))}
-                </div>
+            {/* Description */}
+            {voyage.description && (
+              <ScrollReveal delay={0.1}>
+                <p className="text-creme/65 leading-[1.9] text-base mb-12 font-poppins font-light max-w-2xl">{voyage.description}</p>
+              </ScrollReveal>
+            )}
+
+            {/* Categories */}
+            {(voyage.categories || []).length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-12">
+                {(voyage.categories || []).map((cat: string) => {
+                  const catData = CATEGORIES.find((c: any) => c.slug === cat);
+                  return (
+                    <Link key={cat} href={`/categories/${cat}`}
+                      className="flex items-center gap-1.5 px-3 py-1.5 border border-or/30 hover:border-or hover:bg-or/5 transition-all text-[10px] tracking-[0.15em] uppercase text-or/70 hover:text-or font-poppins">
+                      <span>{catData?.emoji || '📷'}</span>
+                      <span>{catData?.label || cat}</span>
+                    </Link>
+                  );
+                })}
               </div>
             )}
           </div>
 
+          {/* Sidebar */}
           <div className="lg:col-span-1">
             <div className="sticky top-24 flex flex-col gap-6">
-              <ScrollReveal direction="right">
-                <div>
-                  <div className="text-[10px] tracking-[0.3em] uppercase text-or mb-4">Itinéraire</div>
-                  <VoyageMapLeaflet
-                    waypoints={voyage.waypoints || []}
-                    country={voyage.country}
-                    centerLat={voyage.lat}
-                    centerLng={voyage.lng}
-                  />
-                  {(voyage.waypoints||[]).length > 0 && (
-                    <div className="mt-3 flex flex-col gap-2">
-                      {(voyage.waypoints||[]).map((wp, i) => (
-                        <div key={i} className="flex items-center gap-3 text-xs text-creme/50">
-                          <div className="w-5 h-5 rounded-full border border-or/50 flex items-center justify-center text-or text-[9px] flex-shrink-0">{i+1}</div>
-                          <span>{wp.label}</span>
-                          {wp.day && <span className="text-creme/30">· Jour {wp.day}</span>}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </ScrollReveal>
-
-              {(voyage.tips||[]).length > 0 && (
-                <ScrollReveal direction="right" delay={0.1}>
-                  <div className="bg-noir-mid border border-white/5 p-6 md:p-8">
-                    <div className="text-[10px] tracking-[0.3em] uppercase text-or mb-6">
-                      Conseils pratiques
-                    </div>
-                    <ul className="flex flex-col gap-3">
-                      {(voyage.tips||[]).map((tip, i) => (
-                        <li key={i} className="flex items-start gap-3 text-sm text-creme/55 leading-relaxed">
-                          <CheckCircle size={13} className="text-or mt-1 flex-shrink-0" />
-                          {tip}
-                        </li>
-                      ))}
-                    </ul>
+              {(voyage.waypoints || []).length > 0 || voyage.lat ? (
+                <ScrollReveal direction="right">
+                  <div>
+                    <div className="text-[10px] tracking-[0.3em] uppercase text-or mb-4 font-poppins">Itinéraire</div>
+                    <VoyageMapLeaflet waypoints={voyage.waypoints || []} country={voyage.country} centerLat={voyage.lat} centerLng={voyage.lng} />
+                    {(voyage.waypoints || []).length > 0 && (
+                      <div className="mt-3 flex flex-col gap-2">
+                        {(voyage.waypoints || []).map((wp: any, i: number) => (
+                          <div key={i} className="flex items-center gap-3 text-xs text-creme/50 font-poppins">
+                            <div className="w-5 h-5 rounded-full border border-or/50 flex items-center justify-center text-or text-[9px] flex-shrink-0">{i+1}</div>
+                            <span>{wp.label}</span>
+                            {wp.day && <span className="text-creme/30">· Jour {wp.day}</span>}
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </ScrollReveal>
-              )}
+              ) : null}
             </div>
           </div>
         </div>
 
+        {/* Photos gallery */}
         {photos.length > 0 && (
-          <div className="mt-20 md:mt-28">
+          <div className="mt-16">
             <ScrollReveal>
-              <div className="flex items-center justify-between mb-10">
-                <div>
-                  <div className="flex items-center gap-4 mb-3">
-                    <div className="w-8 h-px bg-or" />
-                    <span className="text-[10px] tracking-[0.3em] uppercase text-or">
-                      {photos.length} photographies
-                    </span>
-                  </div>
-                  <h2 className="font-serif italic text-3xl text-creme">Galerie du voyage</h2>
-                </div>
+              <div className="flex items-center gap-4 mb-10">
+                <div className="w-8 h-px bg-or" />
+                <span className="text-[10px] tracking-[0.3em] uppercase text-or font-poppins">{photos.length} photographies</span>
               </div>
             </ScrollReveal>
             <MasonryGrid photos={photos} showFilters={false} />
           </div>
         )}
 
-        {/* Categories badges */}
-        {(voyage.categories || []).length > 0 && (
-          <div className="mt-10 mb-6">
-            <div className="flex flex-wrap gap-2">
-              {(voyage.categories || []).map((cat: string) => {
-                const { CATEGORIES } = require('@/lib/categories');
-                const catData = CATEGORIES.find((c: any) => c.slug === cat);
-                return (
-                  <a key={cat} href={`/categories/${cat}`}
-                    className="flex items-center gap-1.5 px-3 py-1.5 border border-or/30 hover:border-or hover:bg-or/5 transition-all text-[10px] tracking-[0.15em] uppercase text-or/70 hover:text-or font-poppins">
-                    <span>{catData?.emoji || '📷'}</span>
-                    <span>{catData?.label || cat}</span>
-                  </a>
-                );
-              })}
+        {/* Similar voyages */}
+        {similar.length > 0 && (
+          <div className="mt-20 pt-12 border-t border-white/5">
+            <div className="flex items-center gap-4 mb-8">
+              <div className="w-8 h-px bg-or" />
+              <span className="text-[10px] tracking-[0.3em] uppercase text-or font-poppins">Voyages similaires</span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {similar.map((v: any) => (
+                <Link key={v.slug||v.id} href={`/voyages/${v.slug||v.id}`} className="group block relative overflow-hidden">
+                  <div className="relative h-44 overflow-hidden bg-noir-mid">
+                    {(v.heroImage||v.coverImage) && (
+                      <Image src={v.heroImage||v.coverImage} alt={v.title} fill className="object-cover transition-transform duration-500 group-hover:scale-105" sizes="33vw" />
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-noir/85 to-transparent" />
+                    <div className="absolute inset-0 flex flex-col justify-end p-4">
+                      <span className="text-[9px] tracking-[0.25em] uppercase text-or mb-1 font-poppins">{v.country}</span>
+                      <h3 className="font-serif italic text-base text-creme font-light">{v.title}</h3>
+                    </div>
+                  </div>
+                </Link>
+              ))}
             </div>
           </div>
         )}
 
-        {/* Similar voyages */}
-        {(() => {
-          const { VOYAGES } = require('@/lib/data');
-          const similar = VOYAGES.filter((v: any) =>
-            v.published !== false &&
-            (v.slug || v.id) !== (voyage.slug || voyage.id) &&
-            (
-              v.country === voyage.country ||
-              (v.categories || []).some((c: string) => (voyage.categories || []).includes(c))
-            )
-          ).slice(0, 3);
-          if (!similar.length) return null;
-          return (
-            <div className="mt-16 pt-12 border-t border-white/5">
-              <div className="flex items-center gap-4 mb-8">
-                <div className="w-8 h-px bg-or" />
-                <span className="text-[10px] tracking-[0.3em] uppercase text-or font-poppins">Voyages similaires</span>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                {similar.map((v: any) => (
-                  <a key={v.slug||v.id} href={`/voyages/${v.slug||v.id}`} className="group block relative overflow-hidden">
-                    <div className="relative h-44 overflow-hidden bg-noir-mid">
-                      {(v.heroImage||v.coverImage) && (
-                        <img src={v.heroImage||v.coverImage} alt={v.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                      )}
-                      <div className="absolute inset-0 bg-gradient-to-t from-noir/85 to-transparent" />
-                      <div className="absolute inset-0 flex flex-col justify-end p-4">
-                        <span className="text-[9px] tracking-[0.25em] uppercase text-or mb-1 font-poppins">{v.country}</span>
-                        <h3 className="font-serif italic text-base text-creme font-light">{v.title}</h3>
-                      </div>
-                    </div>
-                  </a>
-                ))}
-              </div>
-            </div>
-          );
-        })()}
-
-        <div className="mt-16 md:mt-24">
+        {/* Navigation */}
+        <div className="mt-16">
           <div className="gold-line mb-10" />
           <div className="flex justify-between items-center">
-            <a href="/voyages" className="flex items-center gap-3 text-[11px] tracking-widest uppercase text-creme/50 hover:text-or transition-colors font-poppins">
-              ← Tous les voyages
-            </a>
-            <a href="/galerie" className="flex items-center gap-3 text-[11px] tracking-widest uppercase text-creme/50 hover:text-or transition-colors font-poppins">
-              Galerie complète →
-            </a>
+            <Link href="/voyages" className="text-[11px] tracking-widest uppercase text-creme/50 hover:text-or transition-colors font-poppins">← Tous les voyages</Link>
+            <Link href="/galerie" className="text-[11px] tracking-widest uppercase text-creme/50 hover:text-or transition-colors font-poppins">Galerie complète →</Link>
           </div>
         </div>
       </div>

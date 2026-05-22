@@ -1,23 +1,23 @@
 // @ts-nocheck
 import Link from 'next/link';
 import Image from 'next/image';
-import { VOYAGES } from '@/lib/data';
+import { getVoyages } from '@/lib/kv';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import type { Metadata } from 'next';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Destinations — Photos du Monde',
-  description: 'Tous les voyages photographiques — Costa Rica, Hawaï, Amazonie, Galápagos.',
+  description: 'Tous les voyages photographiques.',
 };
 
-export default function VoyagesPage() {
-  const voyages = VOYAGES.filter(v => v.published !== false);
-  const countries = [...new Set(voyages.map(v => v.country).filter(Boolean))];
+export default async function VoyagesPage() {
+  const voyages = await getVoyages().then(vs => vs.filter((v: any) => v.published !== false)).catch(() => []);
 
   return (
     <div className="min-h-screen bg-noir pt-28 pb-24">
       <div className="max-w-screen-xl mx-auto px-6 md:px-10">
-
         <ScrollReveal className="mb-16">
           <div className="flex items-center gap-4 mb-4">
             <div className="w-8 h-px bg-or" />
@@ -29,12 +29,12 @@ export default function VoyagesPage() {
         </ScrollReveal>
 
         {voyages.length === 0 ? (
-          <div className="text-center py-24 text-creme/30 font-poppins">
+          <div className="text-center py-24 text-creme/30 font-poppins text-sm">
             Aucun voyage publié pour le moment.
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {voyages.map((v, i) => {
+            {voyages.map((v: any, i: number) => {
               const img = v.heroImage || v.coverImage || '';
               return (
                 <ScrollReveal key={v.slug || v.id} delay={i * 0.06}>
@@ -49,9 +49,7 @@ export default function VoyagesPage() {
                       )}
                       <div className="absolute inset-0 bg-gradient-to-t from-noir/90 via-noir/20 to-transparent" />
                       <div className="absolute inset-0 flex flex-col justify-end p-6">
-                        <span className="text-[9px] tracking-[0.3em] uppercase text-or font-poppins mb-1">
-                          {v.country}
-                        </span>
+                        <span className="text-[9px] tracking-[0.3em] uppercase text-or font-poppins mb-1">{v.country}</span>
                         <h2 className="font-serif italic text-xl text-creme font-light">{v.title}</h2>
                         {v.city && <p className="text-xs text-creme/50 mt-1 font-poppins">{v.city}</p>}
                       </div>
