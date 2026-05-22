@@ -46,6 +46,3 @@ export const VOYAGES = [
     ]
   }
 ];
-
-export const FEATURED_VOYAGES = VOYAGES.filter(v => v.published !== false);
-export const ALL_PHOTOS = VOYAGES.flatMap(v => (v.photos || []).map((p: any) => ({ ...p, voyageSlug: v.slug, country: v.country, location: v.city, date: v.startDate })));
