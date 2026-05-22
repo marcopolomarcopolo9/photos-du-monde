@@ -60,24 +60,14 @@ function Inp({ value, onChange, placeholder, type, multiline, rows, style }) {
 // Typical result: 4MB photo → 200-400KB, no visible quality loss
 
 async function uploadFile(file) {
-  const sigRes = await fetch('/api/admin/upload', { method: 'POST' });
-  if (!sigRes.ok) throw new Error('Erreur serveur');
-  const { signature, timestamp, api_key, cloud_name, folder } = await sigRes.json();
-
   const fd = new FormData();
   fd.append('file', file);
-  fd.append('api_key', api_key);
-  fd.append('timestamp', String(timestamp));
-  fd.append('signature', signature);
-  fd.append('folder', folder);
 
-  const res = await fetch(
-    `https://api.cloudinary.com/v1_1/${cloud_name}/image/upload`,
-    { method: 'POST', body: fd }
-  );
+  const res = await fetch('/api/admin/upload', { method: 'POST', body: fd });
   const data = await res.json();
-  if (!data.secure_url) throw new Error(data.error?.message || 'Échec upload');
-  return data.secure_url;
+
+  if (data.url) return data.url;
+  throw new Error(data.error || 'Upload échoué');
 }
 
 /* ─── Lightbox zoom ─── */
