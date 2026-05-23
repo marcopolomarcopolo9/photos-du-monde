@@ -71,9 +71,9 @@ export default function WorldMap() {
         }[dir];
 
         const icon = L.divIcon({
-          html: `<div style="position:relative;width:8px;height:8px;">
-            <div class="pm-dot" style="width:8px;height:8px;border-radius:50%;background:#c4962a;cursor:pointer;position:relative;z-index:2;"></div>
-            <div class="pm-badge" style="position:absolute;${badgeStyle}background:rgba(8,8,8,0.88);border:1px solid rgba(196,150,42,0.4);padding:4px 9px;white-space:nowrap;z-index:3;pointer-events:none;transition:border-color .2s;">
+          html: `<div style="position:relative;width:8px;height:8px;cursor:pointer;">
+            <div class="pm-dot" style="width:8px;height:8px;border-radius:50%;background:#c4962a;position:relative;z-index:2;"></div>
+            <div class="pm-badge" style="position:absolute;${badgeStyle}background:rgba(8,8,8,0.88);border:1px solid rgba(196,150,42,0.4);padding:4px 9px;white-space:nowrap;z-index:3;cursor:pointer;transition:border-color .2s;">
               <div style="font-size:10px;letter-spacing:0.15em;color:#f5f0e8;text-transform:uppercase;font-family:system-ui;">${pt.country}</div>
               <div style="font-size:9px;color:#c4962a;font-family:system-ui;margin-top:1px;">${pt.photos} photos</div>
             </div>
