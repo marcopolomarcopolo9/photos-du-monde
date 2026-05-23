@@ -19,27 +19,30 @@ export default function AmbientSound() {
       setPlaying(true);
       let v = 0;
       const fade = setInterval(() => {
-        v = Math.min(v + 0.006, 0.22);
+        v = Math.min(v + 0.008, 0.22);
         audio.volume = v;
         if (v >= 0.22) clearInterval(fade);
       }, 80);
-    }).catch(() => {});
+    }).catch(() => {
+      // Browser blocked — reset so next interaction tries again
+      startedRef.current = false;
+    });
   };
 
   useEffect(() => {
     const events = ['pointerdown', 'touchstart', 'mousemove', 'scroll', 'keydown', 'click'];
+    
     const handler = () => {
-      if (startedRef.current) return;
-      startSound();
-      // Remove all listeners once started
-      events.forEach(e => window.removeEventListener(e, handler));
+      if (!startedRef.current) startSound();
     };
-    // Wait 500ms for loader, then start on any interaction
-    const t = setTimeout(() => {
+
+    // Try immediately in case document is already interactive
+    const timer = setTimeout(() => {
       events.forEach(e => window.addEventListener(e, handler, { passive: true }));
-    }, 500);
+    }, 300);
+
     return () => {
-      clearTimeout(t);
+      clearTimeout(timer);
       events.forEach(e => window.removeEventListener(e, handler));
     };
   }, []);
@@ -51,7 +54,7 @@ export default function AmbientSound() {
     if (playing) {
       let v = audio.volume;
       const fade = setInterval(() => {
-        v = Math.max(0, v - 0.015);
+        v = Math.max(0, v - 0.02);
         audio.volume = v;
         if (v <= 0) { audio.pause(); clearInterval(fade); }
       }, 50);
@@ -62,7 +65,7 @@ export default function AmbientSound() {
         setPlaying(true);
         let v = 0;
         const fade = setInterval(() => {
-          v = Math.min(v + 0.01, 0.22);
+          v = Math.min(v + 0.012, 0.22);
           audio.volume = v;
           if (v >= 0.22) clearInterval(fade);
         }, 60);
@@ -74,13 +77,13 @@ export default function AmbientSound() {
     <>
       <button onClick={toggle} title={playing ? 'Couper le son' : 'Ambiance sonore'}
         style={{
-          position:'fixed', bottom:'28px', right:'28px', zIndex:9000,
-          width:'44px', height:'44px', borderRadius:'50%',
-          background:'rgba(8,8,8,0.88)',
-          border:`1px solid ${playing ? 'rgba(196,150,42,0.6)' : 'rgba(255,255,255,0.15)'}`,
+          position: 'fixed', bottom: '28px', right: '28px', zIndex: 9000,
+          width: '44px', height: '44px', borderRadius: '50%',
+          background: 'rgba(8,8,8,0.88)',
+          border: `1px solid ${playing ? 'rgba(196,150,42,0.6)' : 'rgba(255,255,255,0.15)'}`,
           color: playing ? '#c4962a' : 'rgba(255,255,255,0.4)',
-          cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center',
-          backdropFilter:'blur(8px)', transition:'all 0.3s ease',
+          cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          backdropFilter: 'blur(8px)', transition: 'all 0.3s ease',
           boxShadow: playing ? '0 0 16px rgba(196,150,42,0.15)' : 'none',
         }}>
         {playing ? (
@@ -96,8 +99,8 @@ export default function AmbientSound() {
           </svg>
         )}
         {playing && <>
-          <span style={{position:'absolute',inset:'-5px',borderRadius:'50%',border:'1px solid rgba(196,150,42,0.25)',animation:'ra 2.5s ease-out infinite',pointerEvents:'none'}}/>
-          <span style={{position:'absolute',inset:'-11px',borderRadius:'50%',border:'1px solid rgba(196,150,42,0.1)',animation:'ra 2.5s ease-out 1s infinite',pointerEvents:'none'}}/>
+          <span style={{ position:'absolute', inset:'-5px', borderRadius:'50%', border:'1px solid rgba(196,150,42,0.25)', animation:'ra 2.5s ease-out infinite', pointerEvents:'none' }}/>
+          <span style={{ position:'absolute', inset:'-11px', borderRadius:'50%', border:'1px solid rgba(196,150,42,0.1)', animation:'ra 2.5s ease-out 1s infinite', pointerEvents:'none' }}/>
         </>}
       </button>
       <style>{`@keyframes ra{0%{transform:scale(.9);opacity:.8}100%{transform:scale(1.5);opacity:0}}`}</style>
