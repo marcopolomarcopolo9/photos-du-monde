@@ -19,7 +19,7 @@ function VoyageCard({ v, index }) {
     if (isHovered && allImgs.length > 1) {
       intervalRef.current = setInterval(() => {
         setCurrent(c => (c + 1) % allImgs.length);
-      }, 1200);
+      }, 2400);
     } else {
       clearInterval(intervalRef.current);
       setCurrent(0);
@@ -64,7 +64,7 @@ function VoyageCard({ v, index }) {
       )}
 
       {/* Content */}
-      <div style={{ position: 'absolute', bottom: '14px', left: '12px', right: '12px', padding: '16px 18px', zIndex: 3, border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(0,0,0,0.52)', backdropFilter: 'blur(4px)' }}>
+      <div style={{ position: 'absolute', bottom: '14px', left: '12px', right: '12px', padding: '16px 18px', zIndex: 3, border: '1px solid rgba(255,255,255,0.25)', background: 'transparent' }}>
         <h3 style={{ fontFamily: '"Cormorant Garamond",serif', fontSize: '28px', fontWeight: 300, fontStyle: 'italic', color: '#f5f0e8', margin: '0 0 10px', lineHeight: 1.1, textShadow: '0 1px 8px rgba(0,0,0,0.8)', transition: 'transform .4s', transform: isHovered ? 'translateY(-4px)' : 'translateY(0)' }}>
           {v.title}
         </h3>
