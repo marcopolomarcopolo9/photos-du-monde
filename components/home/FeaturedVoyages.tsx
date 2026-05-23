@@ -19,7 +19,7 @@ function VoyageCard({ v, index }) {
     if (isHovered && allImgs.length > 1) {
       intervalRef.current = setInterval(() => {
         setCurrent(c => (c + 1) % allImgs.length);
-      }, 4800);
+      }, 3000);
     } else {
       clearInterval(intervalRef.current);
       setCurrent(0);
@@ -59,13 +59,13 @@ function VoyageCard({ v, index }) {
       {/* Progress bar */}
       {isHovered && allImgs.length > 1 && (
         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '2px', background: 'rgba(255,255,255,0.1)', zIndex: 4 }}>
-          <div key={current} style={{ height: '100%', background: '#c4962a', width: '100%', animation: 'progress 4.8s linear forwards' }} />
+          <div key={current} style={{ height: '100%', background: '#c4962a', width: '100%', animation: 'progress 3s linear forwards' }} />
         </div>
       )}
 
       {/* Content */}
-      <div style={{ position: 'absolute', bottom: '14px', left: '12px', right: '12px', padding: '16px 18px', zIndex: 3, border: '1.5px solid rgba(255,255,255,0.35)', background: 'rgba(0,0,0,0.25)', backdropFilter: 'blur(6px)' }}>
-        <h3 style={{ fontFamily: '"Cormorant Garamond",serif', fontSize: '42px', fontWeight: 300, fontStyle: 'italic', color: '#f5f0e8', margin: '0 0 10px', lineHeight: 1.1, textShadow: '0 1px 8px rgba(0,0,0,0.8)', transition: 'transform .4s', transform: isHovered ? 'translateY(-4px)' : 'translateY(0)' }}>
+      <div style={{ position: 'absolute', bottom: '12px', left: '10px', right: '10px', padding: '12px 14px', zIndex: 3, border: '1.5px solid rgba(255,255,255,0.35)', background: 'rgba(0,0,0,0.25)', backdropFilter: 'blur(6px)' }}>
+        <h3 style={{ fontFamily: '"Cormorant Garamond",serif', fontSize: '32px', fontWeight: 300, fontStyle: 'italic', color: '#f5f0e8', margin: '0 0 10px', lineHeight: 1.1, textShadow: '0 1px 8px rgba(0,0,0,0.8)', transition: 'transform .4s', transform: isHovered ? 'translateY(-4px)' : 'translateY(0)' }}>
           {v.title}
         </h3>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
