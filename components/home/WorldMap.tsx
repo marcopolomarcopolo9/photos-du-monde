@@ -87,13 +87,7 @@ export default function WorldMap() {
         
         marker.on('click', () => { window.location.href = `/voyages/${pt.slug}`; });
         
-        marker.on('mouseover', () => {
-          map.flyTo([pt.lat, pt.lng], 2.5, { duration: 1.2, easeLinearity: 0.3 });
-        });
-        
-        marker.on('mouseout', () => {
-          map.flyTo([20, 10], 2, { duration: 1.2, easeLinearity: 0.3 });
-        });
+
       });
     });
 
