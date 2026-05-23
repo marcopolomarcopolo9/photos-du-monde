@@ -13,8 +13,8 @@ export default function FeaturedVoyages() {
       .then(d => {
         // Sort by most recent date
         const sorted = (d.voyages || []).sort((a, b) => {
-          const da = new Date(a.startDate || a.date || '2000').getTime();
-          const db = new Date(b.startDate || b.date || '2000').getTime();
+          const da = new Date(a.startDate || a.date || '2000-01-01').getTime() || 0;
+          const db = new Date(b.startDate || b.date || '2000-01-01').getTime() || 0;
           return db - da;
         });
         setVoyages(sorted);
