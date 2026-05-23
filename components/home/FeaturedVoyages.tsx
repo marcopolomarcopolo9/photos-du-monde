@@ -28,32 +28,32 @@ export default function FeaturedVoyages() {
   const getImg = (v) => v.heroImage || v.coverImage || '';
   const getYear = (v) => String(v.startDate||v.date||'').match(/\d{4}/)?.[0] || '';
 
-  const cols = voyages.length === 1 ? '1fr' : voyages.length === 2 ? '1fr 1fr' : 'repeat(3, 1fr)';
+          const cols = voyages.length === 1 ? '1fr' : voyages.length === 2 ? '1fr 1fr' : 'repeat(3, 1fr)';
 
   return (
-    <section style={{ background: '#080808', paddingBottom: '120px' }}>
+    <section style={{ background: '#080808', paddingBottom: '100px' }}>
 
       {/* Header */}
-      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '100px 48px 56px' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '80px 48px 48px' }}>
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
           <div>
-            <p style={{ fontFamily: 'system-ui', fontSize: '10px', letterSpacing: '0.4em', color: '#c4962a', textTransform: 'uppercase', margin: '0 0 14px' }}>
+            <p style={{ fontFamily: 'system-ui', fontSize: '10px', letterSpacing: '0.4em', color: '#c4962a', textTransform: 'uppercase', margin: '0 0 12px' }}>
               — {voyages.length} Destination{voyages.length > 1 ? 's' : ''}
             </p>
-            <h2 style={{ fontFamily: '"Cormorant Garamond",Georgia,serif', fontSize: 'clamp(3rem,6vw,5.5rem)', fontWeight: 300, color: '#f5f0e8', fontStyle: 'italic', margin: 0, lineHeight: 0.95 }}>
+            <h2 style={{ fontFamily: '"Cormorant Garamond",Georgia,serif', fontSize: 'clamp(2.4rem,5vw,4.5rem)', fontWeight: 300, color: '#f5f0e8', fontStyle: 'italic', margin: 0, lineHeight: 0.95 }}>
               Voyages
             </h2>
           </div>
-          <Link href="/voyages" style={{ fontFamily: 'system-ui', fontSize: '10px', letterSpacing: '0.3em', color: 'rgba(245,240,232,0.25)', textDecoration: 'none', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '16px', paddingBottom: '8px' }}
+          <Link href="/voyages" style={{ fontFamily: 'system-ui', fontSize: '10px', letterSpacing: '0.3em', color: 'rgba(245,240,232,0.25)', textDecoration: 'none', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '14px', paddingBottom: '6px' }}
             onMouseEnter={e => e.currentTarget.style.color = '#c4962a'}
             onMouseLeave={e => e.currentTarget.style.color = 'rgba(245,240,232,0.25)'}>
-            Voir tout <span style={{ display: 'block', width: '48px', height: '1px', background: 'currentColor' }} />
+            Voir tout <span style={{ display: 'block', width: '40px', height: '1px', background: 'currentColor' }} />
           </Link>
         </div>
       </div>
 
       {/* Grid */}
-      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 48px' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 48px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: cols, gap: '3px' }}>
           {voyages.map((v, i) => {
             const img = getImg(v);
@@ -62,7 +62,7 @@ export default function FeaturedVoyages() {
 
             return (
               <Link key={v.slug||v.id} href={`/voyages/${v.slug||v.id}`}
-                style={{ display: 'block', textDecoration: 'none', position: 'relative', overflow: 'hidden', aspectRatio: '3/4' }}
+                style={{ display: 'block', textDecoration: 'none', position: 'relative', overflow: 'hidden', aspectRatio: '4/5' }}
                 onMouseEnter={() => setHovered(i)}
                 onMouseLeave={() => setHovered(null)}>
 
