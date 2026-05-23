@@ -43,9 +43,8 @@ export default function VoyageMap({ waypoints, country, centerLat, centerLng }: 
         // Style 1: dashed line
         L.polyline(latlngs, {
           color: '#c4962a',
-          weight: 1.5,
-          opacity: 0.7,
-          dashArray: '5 9',
+          weight: 1,
+          opacity: 0.5,
         }).addTo(map);
 
         map.fitBounds(L.latLngBounds(latlngs), { padding: [48, 48] });
@@ -66,6 +65,12 @@ export default function VoyageMap({ waypoints, country, centerLat, centerLng }: 
         const marker = L.marker([pt.lat, pt.lng], {
           icon: xIcon(i === 0),
         }).addTo(map);
+
+        // Label
+        L.tooltip({ permanent: true, direction: 'right', offset: [10, 0] })
+          .setContent(`<span style="font-size:9px;letter-spacing:0.18em;color:rgba(245,240,232,0.65);text-transform:uppercase;font-family:system-ui;background:transparent;border:none;box-shadow:none;">${pt.label}</span>`)
+          .setLatLng([pt.lat, pt.lng])
+          .addTo(map);
 
         marker.bindPopup(`
           <div style="background:#111;border:1px solid #2a2a2a;padding:10px 14px;font-family:system-ui;color:#f5f0e8;min-width:120px;">
@@ -90,6 +95,8 @@ export default function VoyageMap({ waypoints, country, centerLat, centerLng }: 
         .custom-popup .leaflet-popup-content-wrapper { background:transparent!important; border:none!important; box-shadow:none!important; padding:0!important; }
         .custom-popup .leaflet-popup-content { margin:0!important; }
         .custom-popup .leaflet-popup-tip { background:#111!important; }
+        .leaflet-tooltip { background:transparent!important; border:none!important; box-shadow:none!important; padding:0!important; }
+        .leaflet-tooltip::before { display:none!important; }
       `}</style>
       <div ref={mapRef} style={{ width:'100%', height:'400px', background:'#0d0d0d' }} />
     </div>
