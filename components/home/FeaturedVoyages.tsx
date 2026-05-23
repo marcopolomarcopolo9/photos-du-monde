@@ -27,92 +27,83 @@ export default function FeaturedVoyages() {
   const getImg = (v) => v.heroImage || v.coverImage || '';
   const getYear = (v) => String(v.startDate||v.date||'').match(/\d{4}/)?.[0] || '';
 
+  const cols = voyages.length === 1 ? '1fr' : voyages.length === 2 ? '1fr 1fr' : 'repeat(3, 1fr)';
+
   return (
     <section style={{ background: '#080808', paddingBottom: '120px' }}>
 
-      {/* ── Section title ── */}
-      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '100px 48px 64px' }}>
+      {/* Header */}
+      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '100px 48px 56px' }}>
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
           <div>
-            <p style={{ fontFamily: 'system-ui', fontSize: '10px', letterSpacing: '0.4em', color: '#c4962a', textTransform: 'uppercase', margin: '0 0 16px' }}>
-              — {voyages.length} Destinations
+            <p style={{ fontFamily: 'system-ui', fontSize: '10px', letterSpacing: '0.4em', color: '#c4962a', textTransform: 'uppercase', margin: '0 0 14px' }}>
+              — {voyages.length} Destination{voyages.length > 1 ? 's' : ''}
             </p>
-            <h2 style={{ fontFamily: '"Cormorant Garamond",Georgia,serif', fontSize: 'clamp(3rem,6vw,5.5rem)', fontWeight: 300, color: '#f5f0e8', fontStyle: 'italic', margin: 0, lineHeight: 0.95, letterSpacing: '-0.01em' }}>
+            <h2 style={{ fontFamily: '"Cormorant Garamond",Georgia,serif', fontSize: 'clamp(3rem,6vw,5.5rem)', fontWeight: 300, color: '#f5f0e8', fontStyle: 'italic', margin: 0, lineHeight: 0.95 }}>
               Voyages
             </h2>
           </div>
-          <Link href="/voyages" style={{ fontFamily: 'system-ui', fontSize: '10px', letterSpacing: '0.3em', color: 'rgba(245,240,232,0.25)', textDecoration: 'none', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '16px', paddingBottom: '8px', transition: 'color .3s' }}
+          <Link href="/voyages" style={{ fontFamily: 'system-ui', fontSize: '10px', letterSpacing: '0.3em', color: 'rgba(245,240,232,0.25)', textDecoration: 'none', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '16px', paddingBottom: '8px' }}
             onMouseEnter={e => e.currentTarget.style.color = '#c4962a'}
             onMouseLeave={e => e.currentTarget.style.color = 'rgba(245,240,232,0.25)'}>
-            Voir tout
-            <span style={{ display: 'block', width: '48px', height: '1px', background: 'currentColor' }} />
+            Voir tout <span style={{ display: 'block', width: '48px', height: '1px', background: 'currentColor' }} />
           </Link>
         </div>
       </div>
 
-      {/* ── Voyages list ── */}
+      {/* Grid */}
       <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 48px' }}>
-        {voyages.map((v, i) => {
-          const img = getImg(v);
-          const year = getYear(v);
-          const num = String(i + 1).padStart(2, '0');
-          const isHov = hovered === i;
+        <div style={{ display: 'grid', gridTemplateColumns: cols, gap: '3px' }}>
+          {voyages.map((v, i) => {
+            const img = getImg(v);
+            const year = getYear(v);
+            const isHov = hovered === i;
 
-          return (
-            <Link key={v.slug||v.id} href={`/voyages/${v.slug||v.id}`}
-              style={{ display: 'grid', gridTemplateColumns: '64px 1fr 320px', alignItems: 'center', gap: '0', textDecoration: 'none', padding: '28px 0', borderTop: '1px solid rgba(255,255,255,0.06)', transition: 'background .3s', cursor: 'pointer' }}
-              onMouseEnter={() => setHovered(i)}
-              onMouseLeave={() => setHovered(null)}>
+            return (
+              <Link key={v.slug||v.id} href={`/voyages/${v.slug||v.id}`}
+                style={{ display: 'block', textDecoration: 'none', position: 'relative', overflow: 'hidden', aspectRatio: '3/4' }}
+                onMouseEnter={() => setHovered(i)}
+                onMouseLeave={() => setHovered(null)}>
 
-              {/* Number */}
-              <span style={{ fontFamily: '"Cormorant Garamond",serif', fontSize: '13px', color: isHov ? '#c4962a' : 'rgba(196,150,42,0.3)', letterSpacing: '0.15em', transition: 'color .3s', paddingTop: '2px' }}>
-                {num}
-              </span>
+                {/* Image */}
+                {img ? (
+                  <Image src={img} alt={v.title} fill
+                    style={{ objectFit: 'cover', transition: 'transform 0.7s cubic-bezier(0.22,1,0.36,1)', transform: isHov ? 'scale(1.05)' : 'scale(1)' }}
+                    sizes="(max-width: 768px) 100vw, 33vw" />
+                ) : (
+                  <div style={{ position: 'absolute', inset: 0, background: '#111' }} />
+                )}
 
-              {/* Title + meta */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
-                <div>
-                  <h3 style={{ fontFamily: '"Cormorant Garamond",serif', fontSize: 'clamp(1.6rem,3vw,2.6rem)', fontWeight: 300, fontStyle: 'italic', color: isHov ? '#f5f0e8' : 'rgba(245,240,232,0.75)', margin: 0, lineHeight: 1, transition: 'color .3s' }}>
+                {/* Overlay */}
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.1) 100%)', transition: 'opacity .4s', opacity: isHov ? 1 : 0.85 }} />
+
+                {/* Number top left */}
+                <div style={{ position: 'absolute', top: '20px', left: '22px', fontFamily: '"Cormorant Garamond",serif', fontSize: '12px', color: 'rgba(196,150,42,0.5)', letterSpacing: '0.2em' }}>
+                  {String(i + 1).padStart(2, '0')}
+                </div>
+
+                {/* Content bottom — titre en haut, pays en bas */}
+                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '24px 22px' }}>
+                  <h3 style={{ fontFamily: '"Cormorant Garamond",serif', fontSize: 'clamp(1.3rem,2.2vw,1.8rem)', fontWeight: 300, fontStyle: 'italic', color: '#f5f0e8', margin: '0 0 10px', lineHeight: 1.15, transition: 'transform .4s', transform: isHov ? 'translateY(-4px)' : 'translateY(0)' }}>
                     {v.title}
                   </h3>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginTop: '8px' }}>
-                    <span style={{ fontFamily: 'system-ui', fontSize: '10px', letterSpacing: '0.25em', color: '#c4962a', textTransform: 'uppercase' }}>
-                      {v.country}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <div style={{ width: '16px', height: '1px', background: '#c4962a' }} />
+                    <span style={{ fontFamily: 'system-ui', fontSize: '9px', letterSpacing: '0.3em', color: '#c4962a', textTransform: 'uppercase' }}>
+                      {v.country}{year ? ` · ${year}` : ''}
                     </span>
-                    {year && <>
-                      <span style={{ width: '3px', height: '3px', borderRadius: '50%', background: 'rgba(255,255,255,0.15)', display: 'inline-block' }} />
-                      <span style={{ fontFamily: 'system-ui', fontSize: '10px', letterSpacing: '0.2em', color: 'rgba(255,255,255,0.3)' }}>{year}</span>
-                    </>}
-                    {(v.photos||[]).length > 0 && <>
-                      <span style={{ width: '3px', height: '3px', borderRadius: '50%', background: 'rgba(255,255,255,0.15)', display: 'inline-block' }} />
-                      <span style={{ fontFamily: 'system-ui', fontSize: '10px', color: 'rgba(255,255,255,0.2)' }}>{v.photos.length} photos</span>
-                    </>}
+                  </div>
+
+                  {/* Arrow on hover */}
+                  <div style={{ marginTop: '14px', opacity: isHov ? 1 : 0, transform: isHov ? 'translateY(0)' : 'translateY(6px)', transition: 'all .3s', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ fontFamily: 'system-ui', fontSize: '10px', letterSpacing: '0.2em', color: '#c4962a', textTransform: 'uppercase' }}>Découvrir</span>
+                    <div style={{ width: '32px', height: '1px', background: '#c4962a' }} />
                   </div>
                 </div>
-
-                {/* Arrow */}
-                <span style={{ fontFamily: 'system-ui', fontSize: '18px', color: '#c4962a', opacity: isHov ? 1 : 0, transform: isHov ? 'translateX(0)' : 'translateX(-8px)', transition: 'all .3s', marginLeft: '8px' }}>
-                  →
-                </span>
-              </div>
-
-              {/* Thumbnail — appears on hover */}
-              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <div style={{ position: 'relative', width: isHov ? '280px' : '220px', height: isHov ? '160px' : '120px', overflow: 'hidden', transition: 'all .4s cubic-bezier(0.22,1,0.36,1)', opacity: isHov ? 1 : 0.35 }}>
-                  {img ? (
-                    <Image src={img} alt={v.title} fill style={{ objectFit: 'cover', transition: 'transform .6s ease', transform: isHov ? 'scale(1.05)' : 'scale(1)' }} sizes="320px" />
-                  ) : (
-                    <div style={{ width: '100%', height: '100%', background: '#111' }} />
-                  )}
-                  <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.2)' }} />
-                </div>
-              </div>
-            </Link>
-          );
-        })}
-
-        {/* Last line */}
-        <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }} />
+              </Link>
+            );
+          })}
+        </div>
       </div>
     </section>
   );
