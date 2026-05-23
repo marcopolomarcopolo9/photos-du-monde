@@ -71,7 +71,7 @@ export default function FeaturedVoyages() {
 
             {/* Image */}
             <div style={{
-              position: 'absolute', inset: '-8%',
+              position: 'absolute', inset: 0,
               backgroundImage: getImg(main) ? `url(${getImg(main)})` : 'none',
               background: !getImg(main) ? 'linear-gradient(135deg,#0f1a0a,#080808)' : undefined,
               backgroundSize: 'cover', backgroundPosition: 'center',
@@ -131,7 +131,7 @@ export default function FeaturedVoyages() {
                 onMouseLeave={() => setHovered(null)}>
 
                 <div style={{
-                  position: 'absolute', inset: '-8%',
+                  position: 'absolute', inset: 0,
                   backgroundImage: getImg(v) ? `url(${getImg(v)})` : 'none',
                   background: !getImg(v) ? '#0d0d0d' : undefined,
                   backgroundSize: 'cover', backgroundPosition: 'center',
