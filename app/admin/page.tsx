@@ -225,7 +225,7 @@ function PhotoGrid({ photos, onChange, onZoom }) {
                         u[i] = { ...obj, categories: selected ? cats.filter((c: string)=>c!==cat) : [...cats, cat] };
                         onChange(u);
                       }}
-                      style={{ padding:'2px 6px', background: selected ? 'rgba(196,150,42,0.2)' : 'transparent', border:`1px solid ${selected?'#c4962a':'#222'}`, borderRadius:'4px', color: selected?'#c4962a':'#444', cursor:'pointer', fontSize:'10px', transition:'all .15s' }}
+                      style={{ padding:'2px 6px', background: selected ? 'rgba(196,150,42,0.2)' : 'transparent', border:`1px solid ${selected?'#c4962a':'#222'}`, borderRadius:'4px', color: selected?'#c4962a':'#444', cursor:'pointer', fontSize:'12px', transition:'all .15s', fontFamily:'Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, sans-serif' }}
                       title={cat}>
                       {emojis[cat]}
                     </button>

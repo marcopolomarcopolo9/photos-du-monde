@@ -77,7 +77,7 @@ const PhotoCard = memo(({ photo, index, onClick }: { photo: Photo; index: number
       </div>
 
       {/* Caption */}
-      {photo.caption && (
+      {photo.caption && photo.caption.trim() && (
         <div className="px-2 pt-1.5 pb-2 bg-noir/95">
           <p className="text-[11px] text-creme/45 leading-relaxed font-poppins italic">{photo.caption}</p>
         </div>
