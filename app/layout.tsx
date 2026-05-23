@@ -18,6 +18,11 @@ const poppins = Poppins({
 const BASE_URL = 'https://photos-du-monde-7zog.vercel.app';
 
 export const metadata: Metadata = {
+  icons: {
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+    apple: '/favicon.svg',
+  },
   metadataBase: new URL(BASE_URL),
   title: {
     default: 'Photos du Monde — Voyage Photographique par Rolf Etter',
