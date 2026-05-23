@@ -45,7 +45,7 @@ export default function WorldMap() {
 
       // Fit bounds
       const bounds = L.latLngBounds(pts.map(p => [p.lat, p.lng]));
-      map.fitBounds(bounds, { padding: [70, 70], maxZoom: 5 });
+      map.fitBounds(bounds, { padding: [40, 40], maxZoom: 6 });
 
       // Smart direction to avoid overlap
       // For each point, check if another point is nearby and offset badge direction
@@ -119,7 +119,7 @@ export default function WorldMap() {
           .leaflet-tile { filter: brightness(0.18) saturate(0.3) sepia(0.2); }
           .pm-dot:hover { transform: scale(1.8); }
         `}</style>
-        <div ref={mapRef} style={{ width: '100%', height: '400px', background: '#0a0a0a' }} />
+        <div ref={mapRef} style={{ width: '100%', height: '500px', background: '#0a0a0a' }} />
       </div>
     </section>
   );
