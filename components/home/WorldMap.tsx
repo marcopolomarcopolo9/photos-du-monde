@@ -1,291 +1,106 @@
 // @ts-nocheck
 'use client';
-
-import { useState } from 'react';
-import Link from 'next/link';
-import { VOYAGES } from '@/lib/data';
-
-// Convert lat/lng to SVG coordinates (Robinson-like simple projection)
-function toXY(lat: number, lng: number): { x: number; y: number } {
-  const width = 1000;
-  const height = 500;
-  const x = (lng + 180) * (width / 360);
-  const y = (90 - lat) * (height / 180);
-  return { x, y };
-}
+import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function WorldMap() {
-  const [hovered, setHovered] = useState<string | null>(null);
+  const mapRef = useRef(null);
+  const instanceRef = useRef(null);
+  const [voyages, setVoyages] = useState([]);
 
-  const voyagesWithCoords = VOYAGES.filter(
-    (v) => v.coordinates && (v.coordinates.lat !== 0 || v.coordinates.lng !== 0)
-  );
+  useEffect(() => {
+    fetch('/api/voyages')
+      .then(r => r.json())
+      .then(d => setVoyages(d.voyages || []))
+      .catch(() => {});
+  }, []);
 
-  const hoveredVoyage = voyagesWithCoords.find((v) => v.slug === hovered);
+  useEffect(() => {
+    if (!mapRef.current || !voyages.length || instanceRef.current) return;
+
+    import('leaflet').then(Lm => {
+      const L = Lm.default;
+
+      const pts = voyages.map(v => ({
+        lat: v.lat || (v.country?.toLowerCase().includes('norvège') || v.country?.toLowerCase().includes('norvege') ? 78.2 : null),
+        lng: v.lng || (v.country?.toLowerCase().includes('norvège') || v.country?.toLowerCase().includes('norvege') ? 15.6 : null),
+        title: v.title,
+        country: v.country,
+        slug: v.slug || v.id,
+        photos: (v.photos || []).length,
+      })).filter(p => p.lat && p.lng);
+
+      if (!pts.length) return;
+
+      const map = L.map(mapRef.current, {
+        center: [25, 10],
+        zoom: 2,
+        zoomControl: false,
+        attributionControl: false,
+        scrollWheelZoom: false,
+      });
+      instanceRef.current = map;
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(map);
+
+      pts.forEach(pt => {
+        const icon = L.divIcon({
+          html: `<div class="pm-marker">
+            <div class="pm-dot"></div>
+            <div class="pm-badge">
+              <div class="pm-badge-name">${pt.country}</div>
+              <div class="pm-badge-photos">${pt.photos} photos</div>
+            </div>
+          </div>`,
+          iconSize: [120, 50],
+          iconAnchor: [60, 4],
+          className: '',
+        });
+
+        L.marker([pt.lat, pt.lng], { icon }).addTo(map)
+          .on('click', () => {
+            window.location.href = `/voyages/${pt.slug}`;
+          });
+      });
+    });
+
+    return () => {
+      if (instanceRef.current) { instanceRef.current.remove(); instanceRef.current = null; }
+    };
+  }, [voyages]);
+
+  if (!voyages.length) return null;
 
   return (
-    <section className="bg-noir-soft py-24 md:py-32 overflow-hidden">
-      <div className="max-w-screen-xl mx-auto px-6 md:px-10">
-        {/* Header */}
-        <div className="flex items-center gap-4 mb-4">
-          <div className="w-8 h-px bg-or" />
-          <span className="text-[10px] tracking-[0.3em] uppercase text-or font-poppins">
-            Les destinations
+    <section style={{ background: '#070707', padding: '0 0 80px' }}>
+      {/* Header */}
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '80px 48px 40px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '12px' }}>
+          <div style={{ width: '36px', height: '1px', background: '#c4962a' }} />
+          <span style={{ fontSize: '10px', letterSpacing: '0.36em', color: '#c4962a', textTransform: 'uppercase', fontFamily: 'system-ui' }}>
+            {voyages.length} destination{voyages.length > 1 ? 's' : ''} · {voyages.reduce((a, v) => a + (v.photos || []).length, 0)} photos
           </span>
         </div>
-        <h2 className="font-serif font-light text-4xl md:text-5xl text-creme italic leading-snug mb-12">
-          Une carte du <em>monde exploré</em>
+        <h2 style={{ fontFamily: '"Cormorant Garamond",Georgia,serif', fontSize: 'clamp(1.8rem,4vw,3.2rem)', fontWeight: 300, color: '#f5f0e8', fontStyle: 'italic', margin: 0 }}>
+          Le monde exploré
         </h2>
+      </div>
 
-        {/* Map container */}
-        <div className="relative rounded-sm overflow-hidden border border-white/5">
-          {/* World map SVG background */}
-          <svg
-            viewBox="0 0 1000 500"
-            className="w-full"
-            style={{ background: 'linear-gradient(180deg, #0d1a0d 0%, #0a1208 100%)' }}
-          >
-            {/* Simple continent outlines */}
-            {/* North America */}
-            <path
-              d="M 130 80 L 155 70 L 185 75 L 220 65 L 245 75 L 260 95 L 255 115 L 240 130 L 230 160 L 215 175 L 200 200 L 185 230 L 170 240 L 155 235 L 145 220 L 140 200 L 120 185 L 110 165 L 105 140 L 110 115 L 125 95 Z"
-              fill="#1a3d14"
-              fillOpacity="0.4"
-              stroke="#2d6a22"
-              strokeWidth="0.8"
-              strokeOpacity="0.5"
-            />
-            {/* Greenland */}
-            <path
-              d="M 195 35 L 215 30 L 230 38 L 225 52 L 210 58 L 195 50 Z"
-              fill="#1a3d14"
-              fillOpacity="0.3"
-              stroke="#2d6a22"
-              strokeWidth="0.6"
-              strokeOpacity="0.4"
-            />
-            {/* South America */}
-            <path
-              d="M 200 250 L 220 240 L 245 245 L 260 260 L 265 285 L 260 315 L 250 345 L 235 375 L 220 395 L 205 400 L 195 390 L 190 365 L 195 335 L 190 305 L 185 275 L 190 255 Z"
-              fill="#1a3d14"
-              fillOpacity="0.4"
-              stroke="#2d6a22"
-              strokeWidth="0.8"
-              strokeOpacity="0.5"
-            />
-            {/* Europe */}
-            <path
-              d="M 455 75 L 475 68 L 495 72 L 510 80 L 515 95 L 505 108 L 490 115 L 475 112 L 460 105 L 450 90 Z"
-              fill="#1a3d14"
-              fillOpacity="0.4"
-              stroke="#2d6a22"
-              strokeWidth="0.8"
-              strokeOpacity="0.5"
-            />
-            {/* Africa */}
-            <path
-              d="M 460 145 L 490 135 L 520 140 L 540 160 L 548 190 L 545 225 L 535 260 L 520 295 L 505 325 L 490 340 L 475 338 L 460 320 L 448 290 L 442 255 L 440 220 L 442 185 L 448 160 Z"
-              fill="#1a3d14"
-              fillOpacity="0.4"
-              stroke="#2d6a22"
-              strokeWidth="0.8"
-              strokeOpacity="0.5"
-            />
-            {/* Asia */}
-            <path
-              d="M 510 75 L 560 65 L 620 60 L 680 68 L 730 75 L 770 85 L 790 100 L 800 120 L 790 145 L 770 160 L 745 165 L 720 158 L 700 150 L 670 155 L 640 165 L 610 160 L 580 155 L 555 145 L 530 135 L 515 118 L 508 95 Z"
-              fill="#1a3d14"
-              fillOpacity="0.4"
-              stroke="#2d6a22"
-              strokeWidth="0.8"
-              strokeOpacity="0.5"
-            />
-            {/* Indian subcontinent */}
-            <path
-              d="M 620 165 L 650 158 L 668 172 L 665 200 L 650 225 L 635 230 L 620 218 L 614 195 Z"
-              fill="#1a3d14"
-              fillOpacity="0.35"
-              stroke="#2d6a22"
-              strokeWidth="0.7"
-              strokeOpacity="0.4"
-            />
-            {/* Southeast Asia */}
-            <path
-              d="M 730 155 L 760 150 L 780 162 L 790 180 L 780 195 L 760 198 L 740 188 L 728 172 Z"
-              fill="#1a3d14"
-              fillOpacity="0.35"
-              stroke="#2d6a22"
-              strokeWidth="0.7"
-              strokeOpacity="0.4"
-            />
-            {/* Australia */}
-            <path
-              d="M 770 290 L 810 278 L 850 280 L 875 295 L 880 320 L 870 348 L 845 360 L 810 358 L 780 345 L 760 320 L 758 300 Z"
-              fill="#1a3d14"
-              fillOpacity="0.4"
-              stroke="#2d6a22"
-              strokeWidth="0.8"
-              strokeOpacity="0.5"
-            />
-
-            {/* Equator line */}
-            <line
-              x1="0"
-              y1="250"
-              x2="1000"
-              y2="250"
-              stroke="#C8A96E"
-              strokeWidth="0.4"
-              strokeOpacity="0.2"
-              strokeDasharray="4 8"
-            />
-            {/* Tropic of Cancer */}
-            <line
-              x1="0"
-              y1="203"
-              x2="1000"
-              y2="203"
-              stroke="#C8A96E"
-              strokeWidth="0.3"
-              strokeOpacity="0.1"
-              strokeDasharray="2 10"
-            />
-            {/* Tropic of Capricorn */}
-            <line
-              x1="0"
-              y1="297"
-              x2="1000"
-              y2="297"
-              stroke="#C8A96E"
-              strokeWidth="0.3"
-              strokeOpacity="0.1"
-              strokeDasharray="2 10"
-            />
-
-            {/* Grid lines */}
-            {[-60, -30, 0, 30, 60, 90, 120, 150].map((lng) => {
-              const x = (lng + 180) * (1000 / 360);
-              return (
-                <line
-                  key={lng}
-                  x1={x}
-                  y1="0"
-                  x2={x}
-                  y2="500"
-                  stroke="#ffffff"
-                  strokeWidth="0.3"
-                  strokeOpacity="0.04"
-                />
-              );
-            })}
-            {[-60, -30, 0, 30, 60].map((lat) => {
-              const y = (90 - lat) * (500 / 180);
-              return (
-                <line
-                  key={lat}
-                  x1="0"
-                  y1={y}
-                  x2="1000"
-                  y2={y}
-                  stroke="#ffffff"
-                  strokeWidth="0.3"
-                  strokeOpacity="0.04"
-                />
-              );
-            })}
-
-            {/* Voyage markers */}
-            {voyagesWithCoords.map((voyage) => {
-              const { x, y } = toXY(voyage.coordinates!.lat, voyage.coordinates!.lng);
-              const isHovered = hovered === voyage.slug;
-              return (
-                <g key={voyage.slug}>
-                  {/* Pulse ring */}
-                  {isHovered && (
-                    <circle
-                      cx={x}
-                      cy={y}
-                      r="16"
-                      fill="none"
-                      stroke="#C8A96E"
-                      strokeWidth="1"
-                      strokeOpacity="0.5"
-                    />
-                  )}
-                  {/* Outer ring */}
-                  <circle
-                    cx={x}
-                    cy={y}
-                    r={isHovered ? 7 : 5}
-                    fill="none"
-                    stroke="#C8A96E"
-                    strokeWidth={isHovered ? 1.5 : 1}
-                    strokeOpacity={isHovered ? 0.9 : 0.5}
-                    style={{ transition: 'all 0.3s ease' }}
-                  />
-                  {/* Inner dot */}
-                  <circle
-                    cx={x}
-                    cy={y}
-                    r={isHovered ? 3.5 : 2.5}
-                    fill="#C8A96E"
-                    fillOpacity={isHovered ? 1 : 0.7}
-                    style={{ transition: 'all 0.3s ease' }}
-                  />
-                  {/* Invisible hit area */}
-                  <circle
-                    cx={x}
-                    cy={y}
-                    r="18"
-                    fill="transparent"
-                    style={{ cursor: 'pointer' }}
-                    onMouseEnter={() => setHovered(voyage.slug)}
-                    onMouseLeave={() => setHovered(null)}
-                  />
-                </g>
-              );
-            })}
-          </svg>
-
-          {/* Hover tooltip */}
-          {hoveredVoyage && (
-            <div className="absolute bottom-4 left-4 bg-noir/90 backdrop-blur-sm border border-or/30 px-5 py-4 max-w-xs pointer-events-none">
-              <div className="flex items-center gap-2 mb-1">
-                <div className="w-4 h-px bg-or" />
-                <span className="text-[9px] tracking-[0.3em] uppercase text-or font-poppins">
-                  {hoveredVoyage.country}
-                </span>
-              </div>
-              <p className="font-serif italic text-creme text-lg leading-tight">
-                {hoveredVoyage.title}
-              </p>
-              <p className="text-[11px] text-creme/50 mt-1 font-poppins">
-                {hoveredVoyage.region || hoveredVoyage.city}
-              </p>
-            </div>
-          )}
-
-          {/* Corner label */}
-          <div className="absolute top-3 right-4 text-[9px] tracking-[0.25em] uppercase text-creme/20 font-poppins">
-            {voyagesWithCoords.length} destinations
-          </div>
-        </div>
-
-        {/* Destination chips */}
-        <div className="flex flex-wrap gap-3 mt-8">
-          {voyagesWithCoords.map((voyage) => (
-            <Link
-              key={voyage.slug}
-              href={`/voyages/${voyage.slug}`}
-              className="group flex items-center gap-2 border border-white/10 hover:border-or/50 px-4 py-2 transition-all duration-300"
-            >
-              <div className="w-1.5 h-1.5 rounded-full bg-or/60 group-hover:bg-or transition-colors" />
-              <span className="text-[11px] tracking-[0.15em] uppercase text-creme/60 group-hover:text-creme/90 transition-colors font-poppins">
-                {voyage.country}
-              </span>
-            </Link>
-          ))}
-        </div>
+      {/* Map */}
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 48px' }}>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+        <style>{`
+          .pm-marker { display:flex; flex-direction:column; align-items:center; gap:3px; cursor:pointer; }
+          .pm-dot { width:8px; height:8px; border-radius:50%; background:#c4962a; transition:transform .2s; }
+          .pm-marker:hover .pm-dot { transform:scale(1.6); }
+          .pm-badge { background:rgba(8,8,8,0.88); border:1px solid rgba(196,150,42,0.35); padding:4px 9px; white-space:nowrap; text-align:center; transition:border-color .2s; }
+          .pm-marker:hover .pm-badge { border-color:rgba(196,150,42,0.8); }
+          .pm-badge-name { font-size:10px; letter-spacing:0.15em; color:#f5f0e8; text-transform:uppercase; font-family:system-ui; }
+          .pm-badge-photos { font-size:9px; color:#c4962a; font-family:system-ui; margin-top:1px; }
+          .leaflet-container { background:#0a0a0a !important; }
+          .leaflet-tile { filter: brightness(0.18) saturate(0.3) sepia(0.2); }
+        `}</style>
+        <div ref={mapRef} style={{ width: '100%', height: '420px', background: '#0a0a0a' }} />
       </div>
     </section>
   );
