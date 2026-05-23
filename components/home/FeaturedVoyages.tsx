@@ -67,7 +67,7 @@ function VoyageCard({ v, index }) {
 
       {/* Content */}
       <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '20px 18px', zIndex: 3, background: 'linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 100%)' }}>
-        <h3 style={{ fontFamily: '"Cormorant Garamond",serif', fontSize: '24px', fontWeight: 300, fontStyle: 'italic', color: '#f5f0e8', margin: '0 0 10px', lineHeight: 1.1, textShadow: '0 1px 8px rgba(0,0,0,0.8)', transition: 'transform .4s', transform: isHovered ? 'translateY(-4px)' : 'translateY(0)' }}>
+        <h3 style={{ fontFamily: '"Cormorant Garamond",serif', fontSize: '28px', fontWeight: 300, fontStyle: 'italic', color: '#f5f0e8', margin: '0 0 10px', lineHeight: 1.1, textShadow: '0 1px 8px rgba(0,0,0,0.8)', transition: 'transform .4s', transform: isHovered ? 'translateY(-4px)' : 'translateY(0)' }}>
           {v.title}
         </h3>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
