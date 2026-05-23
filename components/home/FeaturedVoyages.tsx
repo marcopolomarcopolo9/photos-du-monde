@@ -108,13 +108,13 @@ export default function FeaturedVoyages() {
 
   return (
     <section style={{ background: '#080808', paddingBottom: '100px' }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: 'clamp(40px,8vw,80px) clamp(20px,5vw,48px) clamp(24px,4vw,48px)' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: 'clamp(32px,6vw,80px) clamp(16px,4vw,48px) clamp(20px,4vw,48px)' }}>
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
           <div>
             <p style={{ fontFamily: 'system-ui', fontSize: '10px', letterSpacing: '0.4em', color: '#c4962a', textTransform: 'uppercase', margin: '0 0 12px' }}>
               — {voyages.length} Destination{voyages.length > 1 ? 's' : ''}
             </p>
-            <h2 style={{ fontFamily: '"Cormorant Garamond",Georgia,serif', fontSize: 'clamp(2.4rem,5vw,4.5rem)', fontWeight: 300, color: '#f5f0e8', fontStyle: 'italic', margin: 0, lineHeight: 0.95 }}>
+            <h2 style={{ fontFamily: '"Cormorant Garamond",Georgia,serif', fontSize: 'clamp(1.8rem,6vw,4.5rem)', fontWeight: 300, color: '#f5f0e8', fontStyle: 'italic', margin: 0, lineHeight: 0.95 }}>
               Voyages
             </h2>
           </div>
@@ -125,7 +125,7 @@ export default function FeaturedVoyages() {
           </Link>
         </div>
       </div>
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 clamp(20px,5vw,48px)' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 clamp(16px,4vw,48px)' }}>
         <div className="voyage-grid">
           {voyages.map((v, i) => <VoyageCard key={v.slug||v.id} v={v} index={i} />)}
         </div>

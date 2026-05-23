@@ -43,14 +43,14 @@ export default function CategoriesPage() {
           <p className="text-creme/40 text-sm mt-3 font-poppins">Explorer par environnement ou thème</p>
         </ScrollReveal>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-3">
           {CATEGORIES.map((cat, i) => {
             const s = stats[cat.slug];
             const count = s?.count || 0;
             const cover = s?.cover || '';
             return (
               <ScrollReveal key={cat.slug} delay={i * 0.05}>
-                <Link href={`/categories/${cat.slug}`} className="group block relative overflow-hidden h-56 bg-noir-mid border border-white/5 hover:border-or/30 transition-all duration-300">
+                <Link href={`/categories/${cat.slug}`} className="group block relative overflow-hidden h-44 md:h-56 bg-noir-mid border border-white/5 hover:border-or/30 transition-all duration-300">
                   {cover && (
                     <>
                       <Image src={cover} alt={cat.label} fill className="object-cover transition-transform duration-700 group-hover:scale-105 opacity-40 group-hover:opacity-60" sizes="25vw" />

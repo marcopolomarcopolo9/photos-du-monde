@@ -64,7 +64,7 @@ export default function AboutPage() {
 
         {/* Stats */}
         <ScrollReveal className="mb-20">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 gap-3">
             {[
               { icon: Globe, value: about.countries || 32, label: 'Pays explorés' },
               { icon: Camera, value: about.photos?.toLocaleString?.('fr-FR') || '4 800', label: 'Photos prises' },
@@ -105,7 +105,7 @@ export default function AboutPage() {
           <ScrollReveal className="mb-20">
             <div className="h-px bg-white/5 mb-12" />
             <h2 className="font-serif italic text-3xl text-creme mb-10">Destinations favorites</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 gap-3">
               {favorites.map((dest: any) => (
                 <div key={dest.name} className="p-5 border border-white/5 hover:border-or/30 transition-colors group">
                   <div className="w-5 h-px bg-or mb-3 group-hover:w-8 transition-all duration-300" />

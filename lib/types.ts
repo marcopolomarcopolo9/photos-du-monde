@@ -11,6 +11,8 @@ export interface Photo {
   height: number;
   voyageSlug?: string;
   tags?: string[];
+  caption?: string;
+  categories?: string[];
 }
 
 export interface Anecdote {

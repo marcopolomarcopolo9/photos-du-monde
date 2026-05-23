@@ -44,7 +44,7 @@ export default function VoyageHero({ voyage }: { voyage: any }) {
       <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '80px', background: 'linear-gradient(to bottom, rgba(0,0,0,0.6), transparent)', zIndex: 1 }} />
 
       {/* Content */}
-      <div style={{ position: 'relative', zIndex: 2, width: '100%', maxWidth: '1400px', margin: '0 auto', padding: '0 clamp(20px,5vw,80px) clamp(32px,6vh,96px)' }}>
+      <div style={{ position: 'relative', zIndex: 2, width: '100%', maxWidth: '1400px', margin: '0 auto', padding: '0 clamp(16px,4vw,80px) clamp(24px,5vh,96px)' }}>
         
         {/* Back link */}
         <div style={{
@@ -76,7 +76,7 @@ export default function VoyageHero({ voyage }: { voyage: any }) {
             {/* Title */}
             <h1 style={{
               fontFamily: '"Cormorant Garamond", Georgia, serif',
-              fontSize: 'clamp(2.4rem, 7vw, 6rem)',
+              fontSize: 'clamp(1.8rem, 7vw, 6rem)',
               fontWeight: 300, fontStyle: 'italic',
               color: '#f5f0e8', margin: '0 0 24px', lineHeight: 1.05,
               opacity: loaded ? 1 : 0, transform: loaded ? 'translateY(0)' : 'translateY(30px)',

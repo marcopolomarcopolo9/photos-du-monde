@@ -133,3 +133,40 @@ img {
   .photo-card { margin-bottom: 6px; }
   .photo-card .img-zoom img { max-height: 240px; }
 }
+
+/* ── Mobile optimizations ── */
+@media (max-width: 640px) {
+  /* Touch targets */
+  button, a { min-height: 44px; }
+  
+  /* Smooth scrolling */
+  html { scroll-behavior: smooth; -webkit-overflow-scrolling: touch; }
+  
+  /* Masonry: 2 cols on mobile */
+  .masonry-grid { column-count: 2; column-gap: 4px; }
+  .photo-card { margin-bottom: 4px; }
+  .photo-card .img-zoom img { max-height: 200px; }
+
+  /* Voyage grid: 1 col on small, 2 on medium */
+  .voyage-grid { grid-template-columns: 1fr; gap: 3px; }
+  
+  /* No hover effects on touch */
+  .photo-card:hover .photo-overlay { opacity: 0; }
+  
+  /* Text sizes */
+  .font-serif { line-height: 1.15; }
+}
+
+@media (min-width: 480px) and (max-width: 640px) {
+  .voyage-grid { grid-template-columns: 1fr 1fr; }
+  .masonry-grid { column-count: 2; }
+}
+
+/* Tap highlight removal */
+* { -webkit-tap-highlight-color: transparent; }
+
+/* Safe areas for notched phones */
+.fixed.bottom-0, .fixed.top-0 {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
