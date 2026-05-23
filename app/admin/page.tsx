@@ -188,7 +188,13 @@ function PhotoGrid({ photos, onChange, onZoom }) {
         {photos.map((p, i) => {
           const src = typeof p === 'string' ? p : p.src;
           return (
-            <div key={i} style={{ borderRadius: '8px', overflow: 'hidden', background: '#0d0d0d', border: '1px solid #2a2a2a' }}>
+            <div key={i}
+              draggable
+              onDragStart={() => handleDragStart(i)}
+              onDragEnter={() => handleDragEnter(i)}
+              onDragEnd={handleDragEnd}
+              onDragOver={e => e.preventDefault()}
+              style={{ borderRadius: '8px', overflow: 'hidden', background: '#0d0d0d', border: '1px solid #2a2a2a', cursor: 'grab' }}>
               <div style={{ position: 'relative', aspectRatio: '4/3', overflow: 'hidden' }}>
                 <img src={src} alt="" onClick={() => onZoom && onZoom(i)} style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: onZoom ? 'zoom-in' : 'default', display: 'block' }} />
                 <div style={{ position: 'absolute', top: '3px', left: '5px', background: 'rgba(0,0,0,.65)', color: '#aaa', fontSize: '10px', padding: '2px 5px', borderRadius: '3px' }}>{i + 1}</div>
