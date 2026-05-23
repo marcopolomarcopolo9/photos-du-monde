@@ -47,9 +47,7 @@ function VoyageCard({ v, index }) {
       <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.2) 55%, rgba(0,0,0,0.05) 100%)', zIndex: 2, transition: 'opacity .4s', opacity: isHovered ? 1 : 0.85 }} />
 
       {/* Number */}
-      <div style={{ position: 'absolute', top: '16px', left: '18px', zIndex: 3, fontFamily: '"Cormorant Garamond",serif', fontSize: '11px', color: isHovered ? '#c4962a' : 'rgba(196,150,42,0.4)', letterSpacing: '0.2em', transition: 'color .3s' }}>
-        {String(index + 1).padStart(2, '0')}
-      </div>
+      <div style={{ position: 'absolute', top: '18px', left: '18px', zIndex: 3, width: '6px', height: '6px', borderRadius: '50%', background: isHovered ? '#c4962a' : 'rgba(196,150,42,0.4)', transition: 'background .3s' }} />
 
       {/* Photo counter */}
       {isHovered && allImgs.length > 1 && (
