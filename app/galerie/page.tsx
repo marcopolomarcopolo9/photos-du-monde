@@ -26,7 +26,7 @@ export default function GaleriePage() {
       src: typeof p === 'string' ? p : p.src,
       alt: (typeof p === 'object' && p.caption) ? p.caption : v.title,
       caption: typeof p === 'object' ? (p.caption || '') : '',
-      location: v.city || '',
+      location: '',
       country: v.country || '',
       date: v.startDate || '',
       width: 1200, height: 800,

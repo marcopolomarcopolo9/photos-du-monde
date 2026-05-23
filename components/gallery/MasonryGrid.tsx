@@ -65,7 +65,7 @@ const PhotoCard = memo(({ photo, index, onClick }: { photo: Photo; index: number
       {/* Hover overlay */}
       <div className="photo-overlay absolute inset-0 bg-gradient-to-t from-noir/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none flex flex-col justify-end p-3">
         {photo.alt && <p className="font-serif italic text-sm text-creme/90 leading-snug">{photo.alt}</p>}
-        {photo.caption && photo.caption.trim() && photo.location && <p className="text-[10px] text-creme/50 mt-0.5 font-poppins">{photo.location}</p>}
+        
       </div>
 
       {/* Zoom icon */}

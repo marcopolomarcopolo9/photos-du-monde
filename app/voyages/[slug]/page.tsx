@@ -52,7 +52,7 @@ export default function VoyagePage({ params }: { params: { slug: string } }) {
     alt: (typeof p === 'object' && p.caption) ? p.caption : voyage.title,
     caption: typeof p === 'object' ? (p.caption || '') : '',
     categories: typeof p === 'object' ? (p.categories || []) : [],
-    location: voyage.city || '',
+    location: '',
     country: voyage.country || '',
     date: voyage.startDate || voyage.date || '',
     width: 1200, height: 800,
@@ -87,11 +87,7 @@ export default function VoyagePage({ params }: { params: { slug: string } }) {
               </div>
             </ScrollReveal>
 
-            {voyage.description && (
-              <ScrollReveal delay={0.1}>
-                <p className="text-creme/60 leading-[1.9] text-base mb-10 font-poppins font-light max-w-2xl">{voyage.description}</p>
-              </ScrollReveal>
-            )}
+
 
           </div>
 
