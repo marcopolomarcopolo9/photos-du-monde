@@ -135,6 +135,22 @@ function Lightbox({ photos, index, onClose }) {
 
 /* ─── Photo grid with upload/reorder/delete ─── */
 function PhotoGrid({ photos, onChange, onZoom }) {
+  const dragIndex = React.useRef(null);
+  const dragOver = React.useRef(null);
+
+  const handleDragStart = (i) => { dragIndex.current = i; };
+  const handleDragEnter = (i) => { dragOver.current = i; };
+  const handleDragEnd = () => {
+    const from = dragIndex.current;
+    const to = dragOver.current;
+    if (from === null || to === null || from === to) return;
+    const updated = [...photos];
+    const [moved] = updated.splice(from, 1);
+    updated.splice(to, 0, moved);
+    onChange(updated);
+    dragIndex.current = null;
+    dragOver.current = null;
+  };
   const fileRef = useRef(null);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState([]);
@@ -190,7 +206,7 @@ function PhotoGrid({ photos, onChange, onZoom }) {
               />
               {/* Per-photo category tags */}
               <div style={{ padding:'6px 8px', background:'#080808', borderTop:'1px solid #111', display:'flex', flexWrap:'wrap', gap:'4px' }}>
-                {['volcans','forets','plages','montagnes','deserts','faune','flore','villes','culture'].map(cat => {
+                {['volcans','forets','plages','montagnes','deserts','faune','flore','villes','culture','aurores'].map(cat => {
                   const photoObj = typeof photos[i] === 'object' ? photos[i] : { src };
                   const selected = (photoObj.categories || []).includes(cat);
                   const emojis: Record<string,string> = { volcans:'🌋', forets:'🌿', plages:'🏖', montagnes:'⛰', deserts:'🏜', faune:'🦜', flore:'🌸', villes:'🏙', culture:'🎭' };

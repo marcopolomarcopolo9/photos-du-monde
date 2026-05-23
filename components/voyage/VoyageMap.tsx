@@ -40,13 +40,6 @@ export default function VoyageMap({ waypoints, country, centerLat, centerLng }: 
       }).addTo(map);
 
       if (pts.length > 1) {
-        // Style 1: dashed line
-        L.polyline(latlngs, {
-          color: '#c4962a',
-          weight: 1,
-          opacity: 0.5,
-        }).addTo(map);
-
         map.fitBounds(L.latLngBounds(latlngs), { padding: [48, 48] });
       }
 
