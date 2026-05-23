@@ -1,5 +1,6 @@
 // @ts-nocheck
 import type { Metadata } from 'next';
+import { Poppins } from 'next/font/google';
 import './globals.css';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
@@ -7,44 +8,68 @@ import AmbientSound from '@/components/ui/AmbientSound';
 import PageLoader from '@/components/ui/PageLoader';
 import CustomCursor from '@/components/ui/CustomCursor';
 
+const poppins = Poppins({
+  subsets: ['latin'],
+  weight: ['300', '400', '500'],
+  variable: '--font-poppins',
+  display: 'swap',
+});
+
+const BASE_URL = 'https://photos-du-monde-7zog.vercel.app';
 
 export const metadata: Metadata = {
+  metadataBase: new URL(BASE_URL),
   title: {
-    default: 'Photos du Monde â Voyage Photographique',
+    default: 'Photos du Monde — Voyage Photographique par Rolf Etter',
     template: '%s | Photos du Monde',
   },
-  description:
-    'Un carnet visuel de voyages au cœur des volcans, jungles et sanctuaires d\'oiseaux du monde. Photographies immersives de Costa Rica, Galápagos, Amazonie, Islande et Hawaii.',
-  keywords: ['photographie voyage', 'volcan', 'jungle', 'oiseaux', 'Costa Rica', 'Galápagos', 'Amazonie', 'Islande'],
-  authors: [{ name: 'Photos du Monde' }],
+  description: 'Portfolio photographique de voyages — volcans, forêts tropicales, faune sauvage. Costa Rica, Japon, Chine et plus. Par Rolf Etter.',
+  keywords: [
+    'photographie voyage', 'photographe nature', 'portfolio photo',
+    'Costa Rica', 'Japon', 'Chine', 'volcans', 'forêt tropicale',
+    'faune sauvage', 'Rolf Etter', 'Photos du Monde'
+  ],
+  authors: [{ name: 'Rolf Etter', url: BASE_URL }],
+  creator: 'Rolf Etter',
+  publisher: 'Photos du Monde',
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, 'max-image-preview': 'large' },
+  },
   openGraph: {
     type: 'website',
     locale: 'fr_FR',
-    url: 'https://photosdumonde.fr',
+    url: BASE_URL,
     siteName: 'Photos du Monde',
-    title: 'Photos du Monde â Voyage Photographique',
-    description: 'Photographies immersives de voyages au cœur de la nature sauvage.',
-    images: [
-      {
-        url: 'https://images.unsplash.com/photo-1546026423-cc4642628d2b?auto=format&fit=crop&w=1200&h=630&q=80',
-        width: 1200,
-        height: 630,
-        alt: 'Photos du Monde',
-      },
-    ],
+    title: 'Photos du Monde — Voyage Photographique par Rolf Etter',
+    description: 'Portfolio photographique de voyages — volcans, forêts tropicales, faune sauvage.',
+    images: [{
+      url: `${BASE_URL}/og-image.jpg`,
+      width: 1200,
+      height: 630,
+      alt: 'Photos du Monde — Voyage Photographique',
+    }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Photos du Monde',
-    description: 'Voyages photographiques au cœur des volcans et jungles du monde.',
+    title: 'Photos du Monde — Voyage Photographique',
+    description: 'Portfolio photographique de voyages — volcans, forêts tropicales, faune sauvage. Par Rolf Etter.',
+    images: [`${BASE_URL}/og-image.jpg`],
+  },
+  alternates: {
+    canonical: BASE_URL,
   },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fr" className="scroll-smooth">
+    <html lang="fr" className={poppins.variable}>
+      <head>
+        <link rel="preconnect" href="https://res.cloudinary.com" />
+        <link rel="dns-prefetch" href="https://res.cloudinary.com" />
+      </head>
       <body className="bg-noir text-creme antialiased">
-        
         <PageLoader />
         <CustomCursor />
         <Navbar />
