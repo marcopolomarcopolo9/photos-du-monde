@@ -85,17 +85,7 @@ export default function VoyageHero({ voyage }: { voyage: any }) {
               {voyage.title}
             </h1>
 
-            {/* Description */}
-            {voyage.description && (
-              <p style={{
-                fontFamily: 'system-ui', fontSize: '14px', color: 'rgba(245,240,232,0.55)',
-                maxWidth: '520px', lineHeight: 1.9, margin: 0,
-                opacity: loaded ? 1 : 0, transform: loaded ? 'translateY(0)' : 'translateY(20px)',
-                transition: 'all 0.9s ease 0.4s',
-              }}>
-                {voyage.description.slice(0, 180)}{voyage.description.length > 180 ? '...' : ''}
-              </p>
-            )}
+
           </div>
 
           {/* Stats sidebar */}
