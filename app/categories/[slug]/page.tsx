@@ -78,7 +78,7 @@ export default function CategoryPage() {
           ← Tous les thèmes
         </Link>
         <div className="flex items-start gap-5 mb-4">
-          <span className="text-5xl">{category.emoji}</span>
+          <span className="text-5xl"></span>
           <div>
             <div className="flex items-center gap-3 mb-3">
               <div className="w-8 h-px bg-or" />

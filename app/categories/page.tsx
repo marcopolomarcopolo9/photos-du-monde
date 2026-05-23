@@ -58,11 +58,11 @@ export default function CategoriesPage() {
                   )}
                   {!cover && (
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-6xl opacity-10">{cat.emoji}</span>
+                      <span className="text-6xl opacity-10"></span>
                     </div>
                   )}
                   <div className="absolute inset-0 flex flex-col justify-end p-5">
-                    <span className="text-3xl mb-2">{cat.emoji}</span>
+                    <span className="text-3xl mb-2"></span>
                     <h2 className="font-serif italic text-xl text-creme font-light mb-1">{cat.label}</h2>
                     <p className="text-[10px] text-creme/40 font-poppins">
                       {count > 0 ? `${count} photo${count > 1 ? 's' : ''}` : 'Aucune photo encore'}

@@ -133,7 +133,6 @@ export default function VoyagePage({ params }: { params: { slug: string } }) {
                     return (
                       <button key={cat} onClick={() => setPhotoFilter(cat)}
                         className={`flex items-center gap-1.5 px-4 py-2 border transition-all font-poppins text-[10px] tracking-[0.15em] uppercase ${photoFilter === cat ? 'border-or text-or bg-or/5' : 'border-white/10 text-creme/40 hover:text-creme/70 hover:border-white/20'}`}>
-                        <span>{catData?.emoji || '📷'}</span>
                         <span>{catData?.label || cat} ({count})</span>
                       </button>
                     );
