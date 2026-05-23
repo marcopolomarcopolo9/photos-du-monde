@@ -2,19 +2,8 @@
 'use client';
 import { useEffect, useRef } from 'react';
 
-interface Waypoint {
-  lat: number;
-  lng: number;
-  label: string;
-  day?: number;
-}
-
-interface Props {
-  waypoints: Waypoint[];
-  country: string;
-  centerLat?: number;
-  centerLng?: number;
-}
+interface Waypoint { lat: number; lng: number; label: string; day?: number; }
+interface Props { waypoints: Waypoint[]; country: string; centerLat?: number; centerLng?: number; }
 
 export default function VoyageMap({ waypoints, country, centerLat, centerLng }: Props) {
   const mapRef = useRef(null);
@@ -24,102 +13,71 @@ export default function VoyageMap({ waypoints, country, centerLat, centerLng }: 
     if (!mapRef.current || instanceRef.current) return;
     if (!waypoints?.length && !centerLat) return;
 
-    let L;
-    import('leaflet').then(mod => {
-      L = mod.default;
-
-      // Fix default icon
+    import('leaflet').then(L => {
+      L = L.default;
       delete L.Icon.Default.prototype._getIconUrl;
-      L.Icon.Default.mergeOptions({
-        iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-        iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-        shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-      });
 
       const pts = waypoints?.length ? waypoints : [{ lat: centerLat, lng: centerLng, label: country }];
+      const latlngs = pts.map(p => [p.lat, p.lng]);
 
-      // Center & zoom
       const lats = pts.map(p => p.lat);
       const lngs = pts.map(p => p.lng);
-      const centerLt = (Math.min(...lats) + Math.max(...lats)) / 2;
-      const centerLn = (Math.min(...lngs) + Math.max(...lngs)) / 2;
+      const cLat = (Math.min(...lats) + Math.max(...lats)) / 2;
+      const cLng = (Math.min(...lngs) + Math.max(...lngs)) / 2;
 
       const map = L.map(mapRef.current, {
-        center: [centerLt, centerLn],
+        center: [cLat, cLng],
         zoom: pts.length === 1 ? 7 : 6,
-        zoomControl: true,
+        zoomControl: false,
         scrollWheelZoom: false,
         attributionControl: false,
       });
-
       instanceRef.current = map;
 
-      // Dark tile layer
+      // Dark CartoDB tiles
       L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        attribution: '© OpenStreetMap © CARTO',
         maxZoom: 18,
       }).addTo(map);
 
-      // Draw route line
       if (pts.length > 1) {
-        const latlngs = pts.map(p => [p.lat, p.lng]);
+        // Style 1: dashed line
         L.polyline(latlngs, {
           color: '#c4962a',
-          weight: 2.5,
-          opacity: 0.8,
-          dashArray: '6, 8',
+          weight: 1.5,
+          opacity: 0.7,
+          dashArray: '5 9',
         }).addTo(map);
 
-        // Fit bounds with padding
-        const bounds = L.latLngBounds(latlngs);
-        map.fitBounds(bounds, { padding: [48, 48] });
+        map.fitBounds(L.latLngBounds(latlngs), { padding: [48, 48] });
       }
 
-      // Custom marker icon
-      const makeIcon = (num, isFirst, isLast) => L.divIcon({
-        html: `<div style="
-          width:${isFirst || isLast ? 32 : 24}px;
-          height:${isFirst || isLast ? 32 : 24}px;
-          background:${isFirst ? '#c4962a' : isLast ? '#c4962a' : '#1a1a1a'};
-          border:2px solid ${isFirst || isLast ? '#f5f0e8' : '#c4962a'};
-          border-radius:50%;
-          display:flex;
-          align-items:center;
-          justify-content:center;
-          color:${isFirst || isLast ? '#0a0a0a' : '#c4962a'};
-          font-size:10px;
-          font-weight:700;
-          font-family:system-ui;
-          box-shadow:0 2px 12px rgba(0,0,0,0.6);
-        ">${num}</div>`,
+      // X cross marker
+      const xIcon = (isFirst) => L.divIcon({
+        html: `<svg width="${isFirst ? 18 : 14}" height="${isFirst ? 18 : 14}" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+          <line x1="2" y1="2" x2="14" y2="14" stroke="#c4962a" stroke-width="${isFirst ? 2.2 : 1.8}" stroke-linecap="round"/>
+          <line x1="14" y1="2" x2="2" y2="14" stroke="#c4962a" stroke-width="${isFirst ? 2.2 : 1.8}" stroke-linecap="round"/>
+        </svg>`,
+        iconSize: [isFirst ? 18 : 14, isFirst ? 18 : 14],
+        iconAnchor: [isFirst ? 9 : 7, isFirst ? 9 : 7],
         className: '',
-        iconSize: [isFirst || isLast ? 32 : 24, isFirst || isLast ? 32 : 24],
-        iconAnchor: [isFirst || isLast ? 16 : 12, isFirst || isLast ? 16 : 12],
       });
 
-      // Add markers
       pts.forEach((pt, i) => {
-        const isFirst = i === 0;
-        const isLast = i === pts.length - 1;
         const marker = L.marker([pt.lat, pt.lng], {
-          icon: makeIcon(i + 1, isFirst, isLast),
+          icon: xIcon(i === 0),
         }).addTo(map);
 
-        const dayInfo = pt.day ? `Jour ${pt.day}` : `Étape ${i + 1}`;
         marker.bindPopup(`
-          <div style="background:#111;border:1px solid #2a2a2a;border-radius:8px;padding:12px 14px;min-width:140px;font-family:system-ui;color:#f5f0e8">
-            <div style="color:#c4962a;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:4px">${dayInfo}</div>
-            <div style="font-size:14px;font-weight:500">${pt.label || 'Étape'}</div>
+          <div style="background:#111;border:1px solid #2a2a2a;padding:10px 14px;font-family:system-ui;color:#f5f0e8;min-width:120px;">
+            <div style="color:#c4962a;font-size:9px;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:4px;">${pt.day ? `Jour ${pt.day}` : `Étape ${i+1}`}</div>
+            <div style="font-size:13px;">${pt.label || ''}</div>
           </div>
         `, { className: 'custom-popup' });
       });
     });
 
     return () => {
-      if (instanceRef.current) {
-        instanceRef.current.remove();
-        instanceRef.current = null;
-      }
+      if (instanceRef.current) { instanceRef.current.remove(); instanceRef.current = null; }
     };
   }, [waypoints, centerLat, centerLng, country]);
 
@@ -127,35 +85,13 @@ export default function VoyageMap({ waypoints, country, centerLat, centerLng }: 
 
   return (
     <div>
-      {/* Leaflet CSS */}
       <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
       <style>{`
-        .custom-popup .leaflet-popup-content-wrapper {
-          background: transparent !important;
-          border: none !important;
-          box-shadow: none !important;
-          padding: 0 !important;
-        }
-        .custom-popup .leaflet-popup-content {
-          margin: 0 !important;
-        }
-        .custom-popup .leaflet-popup-tip {
-          background: #111 !important;
-        }
-        .leaflet-control-zoom {
-          border: 1px solid #2a2a2a !important;
-          background: #111 !important;
-        }
-        .leaflet-control-zoom a {
-          background: #111 !important;
-          color: #c4962a !important;
-          border-color: #2a2a2a !important;
-        }
-        .leaflet-control-zoom a:hover {
-          background: #1a1a1a !important;
-        }
+        .custom-popup .leaflet-popup-content-wrapper { background:transparent!important; border:none!important; box-shadow:none!important; padding:0!important; }
+        .custom-popup .leaflet-popup-content { margin:0!important; }
+        .custom-popup .leaflet-popup-tip { background:#111!important; }
       `}</style>
-      <div ref={mapRef} style={{ width:'100%', height:'420px', borderRadius:'4px', background:'#0d0d0d' }} />
+      <div ref={mapRef} style={{ width:'100%', height:'400px', background:'#0d0d0d' }} />
     </div>
   );
 }
