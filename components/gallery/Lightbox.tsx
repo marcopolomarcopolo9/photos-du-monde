@@ -3,7 +3,7 @@
 import { useEffect, useCallback, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import { X, ChevronLeft, ChevronRight, MapPin, Calendar, ZoomIn, ZoomOut, Download } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, MapPin, Calendar, ZoomIn, ZoomOut } from 'lucide-react';
 import type { Photo } from '@/lib/types';
 
 interface Props {
@@ -119,17 +119,6 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
               title="Infos (I)"
               className="w-9 h-9 flex items-center justify-center text-creme/50 hover:text-or border border-white/10 hover:border-or/40 transition-all text-[11px] font-poppins"
             >i</button>
-            <a
-              href={photo.src}
-              download
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={e => e.stopPropagation()}
-              title="Télécharger"
-              className="w-9 h-9 flex items-center justify-center text-creme/50 hover:text-or border border-white/10 hover:border-or/40 transition-all"
-            >
-              <Download size={14} />
-            </a>
             <button
               onClick={onClose}
               title="Fermer (Esc)"
@@ -204,7 +193,7 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
                 transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`,
               }}
               priority
-              draggable={false}
+              draggable={false} onContextMenu={e => e.preventDefault()}
             />
           </motion.div>
         </div>

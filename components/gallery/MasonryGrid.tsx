@@ -121,7 +121,7 @@ export default function MasonryGrid({ photos, showFilters = true }: Props) {
           className="masonry-grid"
         >
           {filtered.map((photo, i) => (
-            <PhotoCard key={photo.id || photo.src} photo={photo} index={i} onClick={() => openLightbox(i)} />
+            <PhotoCard key={photo.id || photo.src} photo={photo} index={i} onClick={() => openLightbox(i)} onContextMenu={e => e.preventDefault()} />
           ))}
         </motion.div>
       </AnimatePresence>
