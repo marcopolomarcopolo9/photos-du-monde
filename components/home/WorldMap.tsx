@@ -21,8 +21,8 @@ export default function WorldMap() {
       const L = Lm.default;
 
       const pts = voyages.map(v => ({
-        lat: v.lat || (v.country?.toLowerCase().includes('norv') ? 78.22 : null),
-        lng: v.lng || (v.country?.toLowerCase().includes('norv') ? 15.63 : null),
+        lat: v.lat || null,
+        lng: v.lng || null,
         title: v.title,
         country: v.country?.trim(),
         slug: v.slug || v.id,
@@ -88,7 +88,7 @@ export default function WorldMap() {
         marker.on('click', () => { window.location.href = `/voyages/${pt.slug}`; });
         
         marker.on('mouseover', () => {
-          map.flyTo([pt.lat, pt.lng], 3.5, { duration: 1.2, easeLinearity: 0.3 });
+          map.flyTo([pt.lat, pt.lng], 2.5, { duration: 1.2, easeLinearity: 0.3 });
         });
         
         marker.on('mouseout', () => {
