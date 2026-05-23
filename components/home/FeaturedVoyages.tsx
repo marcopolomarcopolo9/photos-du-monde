@@ -62,7 +62,7 @@ export default function FeaturedVoyages() {
 
             return (
               <Link key={v.slug||v.id} href={`/voyages/${v.slug||v.id}`}
-                style={{ display: 'block', textDecoration: 'none', position: 'relative', overflow: 'hidden', aspectRatio: '4/5' }}
+                style={{ display: 'block', textDecoration: 'none', position: 'relative', overflow: 'hidden', aspectRatio: '3/4', maxHeight: '420px' }}
                 onMouseEnter={() => setHovered(i)}
                 onMouseLeave={() => setHovered(null)}>
 
