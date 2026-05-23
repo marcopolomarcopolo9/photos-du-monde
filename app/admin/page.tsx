@@ -135,8 +135,8 @@ function Lightbox({ photos, index, onClose }) {
 
 /* ─── Photo grid with upload/reorder/delete ─── */
 function PhotoGrid({ photos, onChange, onZoom }) {
-  const dragIndex = React.useRef(null);
-  const dragOver = React.useRef(null);
+  const dragIndex = useRef(null);
+  const dragOver = useRef(null);
 
   const handleDragStart = (i) => { dragIndex.current = i; };
   const handleDragEnter = (i) => { dragOver.current = i; };
