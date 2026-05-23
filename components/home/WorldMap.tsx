@@ -43,6 +43,19 @@ export default function WorldMap() {
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(map);
 
+      // Lines between destinations
+      if (pts.length > 1) {
+        L.polyline(pts.map(p => [p.lat, p.lng]), {
+          color: 'rgba(196,150,42,0.2)',
+          weight: 1,
+          dashArray: '4 8',
+        }).addTo(map);
+      }
+
+      // Autozoom to fit all points
+      const bounds = L.latLngBounds(pts.map(p => [p.lat, p.lng]));
+      map.fitBounds(bounds, { padding: [60, 60], maxZoom: 5 });
+
       pts.forEach(pt => {
         const icon = L.divIcon({
           html: `<div class="pm-marker">
