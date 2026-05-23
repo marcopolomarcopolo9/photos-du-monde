@@ -8,7 +8,7 @@ export const CATEGORIES = [
   { slug: 'flore',      label: 'Flore',            emoji: '🌸', description: 'Plantes, fleurs et végétation du monde' },
   { slug: 'villes',     label: 'Villes',           emoji: '🏙️', description: 'Cultures, architectures et vie urbaine' },
   { slug: 'culture',    label: 'Culture',          emoji: '🎭', description: 'Traditions, peuples et patrimoine' },
-  { slug: 'aurores',    label: 'Aurores boréales', emoji: '✨', description: 'Lumières polaires et ciels nordiques' },
+  { slug: 'aurores',    label: 'Aurores boréales', emoji: '🌌', description: 'Lumières polaires et ciels nordiques' },
 ] as const;
 
 export type CategorySlug = typeof CATEGORIES[number]['slug'];
