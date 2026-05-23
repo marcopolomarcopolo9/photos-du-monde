@@ -2,6 +2,7 @@
 'use client';
 import Link from 'next/link';
 import Image from 'next/image';
+import { cloudinaryUrl } from '@/lib/cloudinary';
 import { useState, useEffect } from 'react';
 
 export default function FeaturedVoyages() {
@@ -67,7 +68,7 @@ export default function FeaturedVoyages() {
 
                 {/* Image */}
                 {img ? (
-                  <Image src={img} alt={v.title} fill
+                  <Image src={cloudinaryUrl(img)} alt={v.title} fill
                     style={{ objectFit: 'cover', transition: 'transform 0.7s cubic-bezier(0.22,1,0.36,1)', transform: isHov ? 'scale(1.05)' : 'scale(1)' }}
                     sizes="(max-width: 768px) 100vw, 33vw" />
                 ) : (

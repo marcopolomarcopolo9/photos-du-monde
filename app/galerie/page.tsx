@@ -2,6 +2,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { cloudinaryUrl } from '@/lib/cloudinary';
 import Lightbox from '@/components/gallery/Lightbox';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 
@@ -65,7 +66,7 @@ export default function GaleriePage() {
             {filtered.map((photo, i) => (
               <div key={photo.id} className="photo-card cursor-pointer group relative overflow-hidden bg-noir-mid" onClick={() => setLightboxIndex(i)}>
                 <div className="img-zoom">
-                  <Image src={photo.src} alt={photo.alt} width={800} height={600} className="w-full h-auto" sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw" />
+                  <Image src={cloudinaryUrl(photo.src)} alt={photo.alt} width={800} height={600} className="w-full h-auto" sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw" />
                 </div>
                 {photo.caption && (
                   <div className="px-2 pt-1.5 pb-2">

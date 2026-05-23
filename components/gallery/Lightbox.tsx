@@ -3,6 +3,7 @@
 import { useEffect, useCallback, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
+import { cloudinaryUrl } from '@/lib/cloudinary';
 import { X, ChevronLeft, ChevronRight, MapPin, Calendar, ZoomIn, ZoomOut } from 'lucide-react';
 import type { Photo } from '@/lib/types';
 
@@ -180,7 +181,7 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
             onMouseMove={handleMouseMove}
           >
             <Image
-              src={photo.src}
+              src={cloudinaryUrl(photo.src)}
               alt={photo.alt || ''}
               width={photo.width || 1200}
               height={photo.height || 800}

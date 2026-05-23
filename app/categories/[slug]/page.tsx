@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Image from 'next/image';
+import { cloudinaryUrl } from '@/lib/cloudinary';
 import Link from 'next/link';
 import { CATEGORIES, getCategoryBySlug } from '@/lib/categories';
 import Lightbox from '@/components/gallery/Lightbox';
@@ -133,7 +134,7 @@ export default function CategoryPage() {
               {filteredPhotos.map((photo, i) => (
                 <div key={photo.id} className="photo-card group">
                   <div className="relative overflow-hidden cursor-zoom-in" onClick={() => setLightbox(i)}>
-                    <Image src={photo.src} alt={photo.alt} width={800} height={600}
+                    <Image src={cloudinaryUrl(photo.src)} alt={photo.alt} width={800} height={600}
                       className="w-full h-auto block transition-transform duration-500 group-hover:scale-[1.03]"
                       sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw" />
                     <div className="absolute inset-0 bg-gradient-to-t from-noir/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />

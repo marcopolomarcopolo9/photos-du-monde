@@ -2,6 +2,7 @@
 'use client';
 import { useState, useCallback, memo } from 'react';
 import Image from 'next/image';
+import { cloudinaryUrl } from '@/lib/cloudinary';
 import { motion, AnimatePresence } from 'framer-motion';
 import Lightbox from './Lightbox';
 import type { Photo } from '@/lib/types';
@@ -51,7 +52,7 @@ const PhotoCard = memo(({ photo, index, onClick }: { photo: Photo; index: number
 
       <div className="img-zoom overflow-hidden">
         <Image
-          src={photo.src}
+          src={cloudinaryUrl(photo.src)}
           alt={photo.alt || ''}
           width={photo.width || 800}
           height={photo.height || 600}
