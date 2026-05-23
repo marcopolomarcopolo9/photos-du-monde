@@ -32,7 +32,7 @@ export default function WorldMap() {
       if (!pts.length) return;
 
       const map = L.map(mapRef.current, {
-        center: [25, 10],
+        center: [20, 10],
         zoom: 2,
         zoomControl: false,
         attributionControl: false,
@@ -45,7 +45,7 @@ export default function WorldMap() {
 
       // Fit bounds
       const bounds = L.latLngBounds(pts.map(p => [p.lat, p.lng]));
-      map.fitBounds(bounds, { padding: [40, 40], maxZoom: 6 });
+      map.setView([20, 10], 2);
 
       // Smart direction to avoid overlap
       // For each point, check if another point is nearby and offset badge direction
@@ -88,11 +88,11 @@ export default function WorldMap() {
         marker.on('click', () => { window.location.href = `/voyages/${pt.slug}`; });
         
         marker.on('mouseover', () => {
-          map.flyTo([pt.lat, pt.lng], 5, { duration: 0.8, easeLinearity: 0.5 });
+          map.flyTo([pt.lat, pt.lng], 4, { duration: 1, easeLinearity: 0.25 });
         });
         
         marker.on('mouseout', () => {
-          map.flyToBounds(bounds, { padding: [40, 40], maxZoom: 6, duration: 0.8 });
+          map.flyToBounds(bounds, { padding: [40, 40], maxZoom: 3, duration: 1 });
         });
       });
     });
@@ -127,7 +127,7 @@ export default function WorldMap() {
           .leaflet-tile { filter: brightness(0.18) saturate(0.3) sepia(0.2); }
           .pm-dot:hover { transform: scale(1.8); }
         `}</style>
-        <div ref={mapRef} style={{ width: '100%', height: '500px', background: '#0a0a0a' }} />
+        <div ref={mapRef} style={{ width: '100%', height: '520px', background: '#0a0a0a' }} />
       </div>
     </section>
   );
