@@ -1,7 +1,6 @@
 // @ts-nocheck
 'use client';
 import { useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
 
 export default function WorldMap() {
   const mapRef = useRef(null);
@@ -22,10 +21,10 @@ export default function WorldMap() {
       const L = Lm.default;
 
       const pts = voyages.map(v => ({
-        lat: v.lat || (v.country?.toLowerCase().includes('norvège') || v.country?.toLowerCase().includes('norvege') ? 78.2 : null),
-        lng: v.lng || (v.country?.toLowerCase().includes('norvège') || v.country?.toLowerCase().includes('norvege') ? 15.6 : null),
+        lat: v.lat || (v.country?.toLowerCase().includes('norv') ? 78.22 : null),
+        lng: v.lng || (v.country?.toLowerCase().includes('norv') ? 15.63 : null),
         title: v.title,
-        country: v.country,
+        country: v.country?.trim(),
         slug: v.slug || v.id,
         photos: (v.photos || []).length,
       })).filter(p => p.lat && p.lng);
@@ -38,42 +37,55 @@ export default function WorldMap() {
         zoomControl: false,
         attributionControl: false,
         scrollWheelZoom: false,
+        dragging: true,
       });
       instanceRef.current = map;
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(map);
 
-      // Lines between destinations
-      if (pts.length > 1) {
-        L.polyline(pts.map(p => [p.lat, p.lng]), {
-          color: 'rgba(196,150,42,0.2)',
-          weight: 1,
-          dashArray: '4 8',
-        }).addTo(map);
-      }
-
-      // Autozoom to fit all points
+      // Fit bounds
       const bounds = L.latLngBounds(pts.map(p => [p.lat, p.lng]));
-      map.fitBounds(bounds, { padding: [60, 60], maxZoom: 5 });
+      map.fitBounds(bounds, { padding: [70, 70], maxZoom: 5 });
 
-      pts.forEach(pt => {
+      // Smart direction to avoid overlap
+      // For each point, check if another point is nearby and offset badge direction
+      const getDirection = (pt, all) => {
+        const nearby = all.filter(o => o !== pt && Math.abs(o.lat - pt.lat) < 15 && Math.abs(o.lng - pt.lng) < 30);
+        if (!nearby.length) return 'bottom';
+        const avgLat = nearby.reduce((a, o) => a + o.lat, 0) / nearby.length;
+        const avgLng = nearby.reduce((a, o) => a + o.lng, 0) / nearby.length;
+        if (pt.lat > avgLat) return 'top';
+        if (pt.lng < avgLng) return 'left';
+        return 'right';
+      };
+
+      pts.forEach((pt, i) => {
+        const dir = getDirection(pt, pts);
+
+        // Badge positioning based on direction
+        const badgeStyle = {
+          top:    'bottom:14px;left:50%;transform:translateX(-50%);',
+          bottom: 'top:14px;left:50%;transform:translateX(-50%);',
+          left:   'top:50%;right:14px;transform:translateY(-50%);',
+          right:  'top:50%;left:14px;transform:translateY(-50%);',
+        }[dir];
+
         const icon = L.divIcon({
-          html: `<div class="pm-marker">
-            <div class="pm-dot"></div>
-            <div class="pm-badge">
-              <div class="pm-badge-name">${pt.country}</div>
-              <div class="pm-badge-photos">${pt.photos} photos</div>
+          html: `<div style="position:relative;width:8px;height:8px;">
+            <div class="pm-dot" style="width:8px;height:8px;border-radius:50%;background:#c4962a;cursor:pointer;position:relative;z-index:2;"></div>
+            <div class="pm-badge" style="position:absolute;${badgeStyle}background:rgba(8,8,8,0.88);border:1px solid rgba(196,150,42,0.4);padding:4px 9px;white-space:nowrap;z-index:3;pointer-events:none;transition:border-color .2s;">
+              <div style="font-size:10px;letter-spacing:0.15em;color:#f5f0e8;text-transform:uppercase;font-family:system-ui;">${pt.country}</div>
+              <div style="font-size:9px;color:#c4962a;font-family:system-ui;margin-top:1px;">${pt.photos} photos</div>
             </div>
           </div>`,
-          iconSize: [120, 50],
-          iconAnchor: [60, 4],
+          iconSize: [8, 8],
+          iconAnchor: [4, 4],
           className: '',
         });
 
-        L.marker([pt.lat, pt.lng], { icon }).addTo(map)
-          .on('click', () => {
-            window.location.href = `/voyages/${pt.slug}`;
-          });
+        L.marker([pt.lat, pt.lng], { icon })
+          .addTo(map)
+          .on('click', () => { window.location.href = `/voyages/${pt.slug}`; });
       });
     });
 
@@ -84,14 +96,15 @@ export default function WorldMap() {
 
   if (!voyages.length) return null;
 
+  const totalPhotos = voyages.reduce((a, v) => a + (v.photos || []).length, 0);
+
   return (
-    <section style={{ background: '#070707', padding: '0 0 80px' }}>
-      {/* Header */}
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '80px 48px 40px' }}>
+    <section style={{ background: '#070707', padding: '0 0 0' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '80px 48px 36px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '12px' }}>
           <div style={{ width: '36px', height: '1px', background: '#c4962a' }} />
           <span style={{ fontSize: '10px', letterSpacing: '0.36em', color: '#c4962a', textTransform: 'uppercase', fontFamily: 'system-ui' }}>
-            {voyages.length} destination{voyages.length > 1 ? 's' : ''} · {voyages.reduce((a, v) => a + (v.photos || []).length, 0)} photos
+            {voyages.length} destination{voyages.length > 1 ? 's' : ''} · {totalPhotos} photos
           </span>
         </div>
         <h2 style={{ fontFamily: '"Cormorant Garamond",Georgia,serif', fontSize: 'clamp(1.8rem,4vw,3.2rem)', fontWeight: 300, color: '#f5f0e8', fontStyle: 'italic', margin: 0 }}>
@@ -99,21 +112,14 @@ export default function WorldMap() {
         </h2>
       </div>
 
-      {/* Map */}
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 48px' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 48px 0' }}>
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
         <style>{`
-          .pm-marker { display:flex; flex-direction:column; align-items:center; gap:3px; cursor:pointer; }
-          .pm-dot { width:8px; height:8px; border-radius:50%; background:#c4962a; transition:transform .2s; }
-          .pm-marker:hover .pm-dot { transform:scale(1.6); }
-          .pm-badge { background:rgba(8,8,8,0.88); border:1px solid rgba(196,150,42,0.35); padding:4px 9px; white-space:nowrap; text-align:center; transition:border-color .2s; }
-          .pm-marker:hover .pm-badge { border-color:rgba(196,150,42,0.8); }
-          .pm-badge-name { font-size:10px; letter-spacing:0.15em; color:#f5f0e8; text-transform:uppercase; font-family:system-ui; }
-          .pm-badge-photos { font-size:9px; color:#c4962a; font-family:system-ui; margin-top:1px; }
           .leaflet-container { background:#0a0a0a !important; }
           .leaflet-tile { filter: brightness(0.18) saturate(0.3) sepia(0.2); }
+          .pm-dot:hover { transform: scale(1.8); }
         `}</style>
-        <div ref={mapRef} style={{ width: '100%', height: '420px', background: '#0a0a0a' }} />
+        <div ref={mapRef} style={{ width: '100%', height: '400px', background: '#0a0a0a' }} />
       </div>
     </section>
   );
