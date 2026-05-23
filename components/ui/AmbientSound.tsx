@@ -77,7 +77,7 @@ export default function AmbientSound() {
     <>
       <button onClick={toggle} title={playing ? 'Couper le son' : 'Ambiance sonore'}
         style={{
-          position: 'fixed', bottom: '28px', right: '28px', zIndex: 9000,
+          position: 'fixed', bottom: 'max(28px, env(safe-area-inset-bottom, 28px))', right: '20px', zIndex: 9000,
           width: '44px', height: '44px', borderRadius: '50%',
           background: 'rgba(8,8,8,0.88)',
           border: `1px solid ${playing ? 'rgba(196,150,42,0.6)' : 'rgba(255,255,255,0.15)'}`,

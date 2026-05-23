@@ -17,6 +17,12 @@ const poppins = Poppins({
 
 const BASE_URL = 'https://photos-du-monde-7zog.vercel.app';
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+};
+
 export const metadata: Metadata = {
   icons: {
     icon: '/favicon.svg',

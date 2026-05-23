@@ -195,6 +195,11 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
               }}
               priority
               draggable={false} onContextMenu={e => e.preventDefault()}
+        onTouchStart={(e) => { (window as any)._lbTouchX = e.touches[0].clientX; }}
+        onTouchEnd={(e) => {
+          const dx = e.changedTouches[0].clientX - ((window as any)._lbTouchX || 0);
+          if (Math.abs(dx) > 50) dx > 0 ? onNavigate(currentIndex - 1 < 0 ? photos.length - 1 : currentIndex - 1) : onNavigate((currentIndex + 1) % photos.length);
+        }}
             />
           </motion.div>
         </div>

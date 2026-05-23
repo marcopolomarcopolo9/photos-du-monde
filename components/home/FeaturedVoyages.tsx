@@ -106,11 +106,11 @@ export default function FeaturedVoyages() {
 
   if (!voyages.length) return null;
 
-  const cols = voyages.length === 1 ? '1fr' : voyages.length === 2 ? '1fr 1fr' : 'repeat(3, 1fr)';
+  const cols = '1fr'; // handled by CSS
 
   return (
     <section style={{ background: '#080808', paddingBottom: '100px' }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '80px 48px 48px' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: 'clamp(40px,8vw,80px) clamp(20px,5vw,48px) clamp(24px,4vw,48px)' }}>
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
           <div>
             <p style={{ fontFamily: 'system-ui', fontSize: '10px', letterSpacing: '0.4em', color: '#c4962a', textTransform: 'uppercase', margin: '0 0 12px' }}>
@@ -127,8 +127,8 @@ export default function FeaturedVoyages() {
           </Link>
         </div>
       </div>
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 48px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: cols, gap: '3px' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 clamp(20px,5vw,48px)' }}>
+        <div className="voyage-grid">
           {voyages.map((v, i) => <VoyageCard key={v.slug||v.id} v={v} index={i} />)}
         </div>
       </div>

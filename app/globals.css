@@ -113,3 +113,23 @@ img {
   pointer-events: none;
   -webkit-user-drag: none;
 }
+
+/* ── Voyage grid responsive ── */
+.voyage-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3px;
+}
+@media (min-width: 640px) {
+  .voyage-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (min-width: 1024px) {
+  .voyage-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* ── Mobile general fixes ── */
+@media (max-width: 640px) {
+  .masonry-grid { column-count: 2; column-gap: 6px; }
+  .photo-card { margin-bottom: 6px; }
+  .photo-card .img-zoom img { max-height: 240px; }
+}

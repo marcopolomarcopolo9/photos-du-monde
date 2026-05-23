@@ -44,7 +44,7 @@ export default function VoyageHero({ voyage }: { voyage: any }) {
       <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '80px', background: 'linear-gradient(to bottom, rgba(0,0,0,0.6), transparent)', zIndex: 1 }} />
 
       {/* Content */}
-      <div style={{ position: 'relative', zIndex: 2, width: '100%', maxWidth: '1400px', margin: '0 auto', padding: '0 clamp(24px,6vw,80px) clamp(48px,8vh,96px)' }}>
+      <div style={{ position: 'relative', zIndex: 2, width: '100%', maxWidth: '1400px', margin: '0 auto', padding: '0 clamp(20px,5vw,80px) clamp(32px,6vh,96px)' }}>
         
         {/* Back link */}
         <div style={{
