@@ -215,7 +215,7 @@ function PhotoGrid({ photos, onChange, onZoom }) {
                 {['volcans','forets','plages','montagnes','deserts','faune','flore','villes','culture','aurores'].map(cat => {
                   const photoObj = typeof photos[i] === 'object' ? photos[i] : { src };
                   const selected = (photoObj.categories || []).includes(cat);
-                  const emojis: Record<string,string> = { volcans:'🌋', forets:'🌿', plages:'🏖', montagnes:'⛰', deserts:'🏜', faune:'🦜', flore:'🌸', villes:'🏙', culture:'🎭' };
+                  const emojis: Record<string,string> = { volcans:'🌋', forets:'🌿', plages:'🏖️', montagnes:'⛰️', deserts:'🏜️', faune:'🦜', flore:'🌸', villes:'🏙️', culture:'🎭', aurores:'🌌' };
                   return (
                     <button key={cat} type="button"
                       onClick={() => {
