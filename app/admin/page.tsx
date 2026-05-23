@@ -434,26 +434,7 @@ export default function AdminPage() {
               <Field label="Date">
                 <Inp value={editingVoyage.startDate || editingVoyage.date || ''} onChange={v => setEditingVoyage(p => ({ ...p, startDate: v, date: v }))} placeholder="2024-03" />
               </Field>
-              <Field label="Catégories (multi-sélection)">
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                  {['volcans','forets','plages','montagnes','deserts','faune','flore','villes','culture'].map(cat => {
-                    const labels: Record<string,string> = { volcans:'🌋 Volcans', forets:'🌿 Forêts', plages:'🏖 Plages', montagnes:'⛰ Montagnes', deserts:'🏜 Déserts', faune:'🦜 Faune', flore:'🌸 Flore', villes:'🏙 Villes', culture:'🎭 Culture' };
-                    const selected = (editingVoyage.categories || []).includes(cat);
-                    return (
-                      <button key={cat} type="button"
-                        onClick={() => setEditingVoyage(p => ({
-                          ...p,
-                          categories: selected
-                            ? (p.categories||[]).filter((c: string) => c !== cat)
-                            : [...(p.categories||[]), cat]
-                        }))}
-                        style={{ padding: '6px 14px', background: selected ? 'rgba(196,150,42,0.15)' : '#0d0d0d', border: `1px solid ${selected ? '#c4962a' : '#2a2a2a'}`, borderRadius: '6px', color: selected ? '#c4962a' : '#555', cursor: 'pointer', fontSize: '12px', transition: 'all .2s' }}>
-                        {labels[cat]}
-                      </button>
-                    );
-                  })}
-                </div>
-              </Field>
+
               <Field label="Latitude (centre carte)">
                 <Inp value={editingVoyage.lat != null ? String(editingVoyage.lat) : ''} onChange={v => setEditingVoyage(p => ({ ...p, lat: parseFloat(v) || null }))} placeholder="9.7489" />
               </Field>

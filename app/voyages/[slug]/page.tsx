@@ -93,20 +93,7 @@ export default function VoyagePage({ params }: { params: { slug: string } }) {
               </ScrollReveal>
             )}
 
-            {/* Voyage categories */}
-            {(voyage.categories || []).length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-10">
-                {(voyage.categories || []).map((cat: string) => {
-                  const catData = CATEGORIES.find(c => c.slug === cat);
-                  return (
-                    <Link key={cat} href={`/categories/${cat}`}
-                      className="flex items-center gap-1.5 px-3 py-1.5 border border-or/30 hover:border-or hover:bg-or/5 transition-all text-[10px] tracking-[0.15em] uppercase text-or/70 hover:text-or font-poppins">
-                      <span>{catData?.emoji}</span><span>{catData?.label || cat}</span>
-                    </Link>
-                  );
-                })}
-              </div>
-            )}
+
           </div>
 
           {/* Sidebar map */}
