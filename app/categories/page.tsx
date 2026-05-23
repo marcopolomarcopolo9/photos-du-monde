@@ -18,8 +18,9 @@ export default function CategoriesPage() {
         voyages.forEach((v: any) => {
           (v.photos || []).forEach((p: any) => {
             const cats = typeof p === 'object' ? (p.categories || []) : [];
+            const photoSrc = typeof p === 'string' ? p : (p.src || '');
             cats.forEach((cat: string) => {
-              if (!s[cat]) s[cat] = { count: 0, cover: v.heroImage || v.coverImage || '' };
+              if (!s[cat]) s[cat] = { count: 0, cover: photoSrc || v.heroImage || v.coverImage || '' };
               s[cat].count++;
             });
           });
