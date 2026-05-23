@@ -108,7 +108,7 @@ export default function WorldMap() {
           </span>
         </div>
         <h2 style={{ fontFamily: '"Cormorant Garamond",Georgia,serif', fontSize: 'clamp(1.8rem,4vw,3.2rem)', fontWeight: 300, color: '#f5f0e8', fontStyle: 'italic', margin: 0 }}>
-          Le monde exploré
+          Le monde sans frontières
         </h2>
       </div>
 
