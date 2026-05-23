@@ -3,11 +3,92 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { cloudinaryUrl } from '@/lib/cloudinary';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+
+function VoyageCard({ v, index }) {
+  const [current, setCurrent] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+  const intervalRef = useRef(null);
+
+  const photos = (v.photos || []).map(p => typeof p === 'string' ? p : p.src).filter(Boolean);
+  const mainImg = v.heroImage || v.coverImage || photos[0] || '';
+  const allImgs = mainImg ? [mainImg, ...photos.filter(p => p !== mainImg)].slice(0, 6) : photos.slice(0, 6);
+  const getYear = () => String(v.startDate || v.date || '').match(/\d{4}/)?.[0] || '';
+
+  useEffect(() => {
+    if (isHovered && allImgs.length > 1) {
+      intervalRef.current = setInterval(() => {
+        setCurrent(c => (c + 1) % allImgs.length);
+      }, 1200);
+    } else {
+      clearInterval(intervalRef.current);
+      setCurrent(0);
+    }
+    return () => clearInterval(intervalRef.current);
+  }, [isHovered, allImgs.length]);
+
+  return (
+    <Link href={`/voyages/${v.slug || v.id}`}
+      style={{ display: 'block', textDecoration: 'none', position: 'relative', overflow: 'hidden', aspectRatio: '3/4', maxHeight: '420px' }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}>
+
+      {/* Photos crossfade */}
+      {allImgs.map((img, i) => (
+        <Image key={img} src={cloudinaryUrl(img)} alt={v.title} fill
+          style={{ objectFit: 'cover', opacity: i === current ? 1 : 0, transition: 'opacity 0.8s ease', zIndex: i === current ? 1 : 0 }}
+          sizes="(max-width: 768px) 100vw, 33vw"
+          priority={index === 0 && i === 0}
+        />
+      ))}
+      {!allImgs.length && <div style={{ position: 'absolute', inset: 0, background: '#111' }} />}
+
+      {/* Overlay */}
+      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.2) 55%, rgba(0,0,0,0.05) 100%)', zIndex: 2, transition: 'opacity .4s', opacity: isHovered ? 1 : 0.85 }} />
+
+      {/* Number */}
+      <div style={{ position: 'absolute', top: '16px', left: '18px', zIndex: 3, fontFamily: '"Cormorant Garamond",serif', fontSize: '11px', color: isHovered ? '#c4962a' : 'rgba(196,150,42,0.4)', letterSpacing: '0.2em', transition: 'color .3s' }}>
+        {String(index + 1).padStart(2, '0')}
+      </div>
+
+      {/* Photo counter */}
+      {isHovered && allImgs.length > 1 && (
+        <div style={{ position: 'absolute', top: '16px', right: '18px', zIndex: 3, fontFamily: 'system-ui', fontSize: '9px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.1em' }}>
+          {current + 1} / {allImgs.length}
+        </div>
+      )}
+
+      {/* Progress bar */}
+      {isHovered && allImgs.length > 1 && (
+        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '2px', background: 'rgba(255,255,255,0.1)', zIndex: 4 }}>
+          <div key={current} style={{ height: '100%', background: '#c4962a', width: '100%', animation: 'progress 1.2s linear' }} />
+        </div>
+      )}
+
+      {/* Content */}
+      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '20px 18px', zIndex: 3 }}>
+        <h3 style={{ fontFamily: '"Cormorant Garamond",serif', fontSize: '20px', fontWeight: 300, fontStyle: 'italic', color: '#f5f0e8', margin: '0 0 10px', lineHeight: 1.1, transition: 'transform .4s', transform: isHovered ? 'translateY(-4px)' : 'translateY(0)' }}>
+          {v.title}
+        </h3>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ width: '14px', height: '1px', background: '#c4962a' }} />
+          <span style={{ fontFamily: 'system-ui', fontSize: '9px', letterSpacing: '0.3em', color: '#c4962a', textTransform: 'uppercase' }}>
+            {v.country}{getYear() ? ` · ${getYear()}` : ''}
+          </span>
+        </div>
+        <div style={{ marginTop: '12px', opacity: isHovered ? 1 : 0, transform: isHovered ? 'translateY(0)' : 'translateY(6px)', transition: 'all .3s', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <span style={{ fontFamily: 'system-ui', fontSize: '10px', letterSpacing: '0.2em', color: '#c4962a', textTransform: 'uppercase' }}>Découvrir</span>
+          <div style={{ width: '28px', height: '1px', background: '#c4962a' }} />
+        </div>
+      </div>
+
+      <style>{`@keyframes progress { from { width: 0% } to { width: 100% } }`}</style>
+    </Link>
+  );
+}
 
 export default function FeaturedVoyages() {
   const [voyages, setVoyages] = useState([]);
-  const [hovered, setHovered] = useState(null);
 
   useEffect(() => {
     fetch('/api/voyages')
@@ -25,15 +106,10 @@ export default function FeaturedVoyages() {
 
   if (!voyages.length) return null;
 
-  const getImg = (v) => v.heroImage || v.coverImage || '';
-  const getYear = (v) => String(v.startDate||v.date||'').match(/\d{4}/)?.[0] || '';
-
-          const cols = voyages.length === 1 ? '1fr' : voyages.length === 2 ? '1fr 1fr' : 'repeat(3, 1fr)';
+  const cols = voyages.length === 1 ? '1fr' : voyages.length === 2 ? '1fr 1fr' : 'repeat(3, 1fr)';
 
   return (
     <section style={{ background: '#080808', paddingBottom: '100px' }}>
-
-      {/* Header */}
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '80px 48px 48px' }}>
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
           <div>
@@ -51,59 +127,9 @@ export default function FeaturedVoyages() {
           </Link>
         </div>
       </div>
-
-      {/* Grid */}
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 48px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: cols, gap: '3px' }}>
-          {voyages.map((v, i) => {
-            const img = getImg(v);
-            const year = getYear(v);
-            const isHov = hovered === i;
-
-            return (
-              <Link key={v.slug||v.id} href={`/voyages/${v.slug||v.id}`}
-                style={{ display: 'block', textDecoration: 'none', position: 'relative', overflow: 'hidden', aspectRatio: '3/4', maxHeight: '420px' }}
-                onMouseEnter={() => setHovered(i)}
-                onMouseLeave={() => setHovered(null)}>
-
-                {/* Image */}
-                {img ? (
-                  <Image src={cloudinaryUrl(img)} alt={v.title} fill
-                    style={{ objectFit: 'cover', transition: 'transform 0.7s cubic-bezier(0.22,1,0.36,1)', transform: isHov ? 'scale(1.05)' : 'scale(1)' }}
-                    sizes="(max-width: 768px) 100vw, 33vw" />
-                ) : (
-                  <div style={{ position: 'absolute', inset: 0, background: '#111' }} />
-                )}
-
-                {/* Overlay */}
-                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.1) 100%)', transition: 'opacity .4s', opacity: isHov ? 1 : 0.85 }} />
-
-                {/* Number top left */}
-                <div style={{ position: 'absolute', top: '20px', left: '22px', fontFamily: '"Cormorant Garamond",serif', fontSize: '12px', color: 'rgba(196,150,42,0.5)', letterSpacing: '0.2em' }}>
-                  {String(i + 1).padStart(2, '0')}
-                </div>
-
-                {/* Content bottom — titre en haut, pays en bas */}
-                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '24px 22px' }}>
-                  <h3 style={{ fontFamily: '"Cormorant Garamond",serif', fontSize: 'clamp(1.3rem,2.2vw,1.8rem)', fontWeight: 300, fontStyle: 'italic', color: '#f5f0e8', margin: '0 0 10px', lineHeight: 1.15, transition: 'transform .4s', transform: isHov ? 'translateY(-4px)' : 'translateY(0)' }}>
-                    {v.title}
-                  </h3>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <div style={{ width: '16px', height: '1px', background: '#c4962a' }} />
-                    <span style={{ fontFamily: 'system-ui', fontSize: '9px', letterSpacing: '0.3em', color: '#c4962a', textTransform: 'uppercase' }}>
-                      {v.country}{year ? ` · ${year}` : ''}
-                    </span>
-                  </div>
-
-                  {/* Arrow on hover */}
-                  <div style={{ marginTop: '14px', opacity: isHov ? 1 : 0, transform: isHov ? 'translateY(0)' : 'translateY(6px)', transition: 'all .3s', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <span style={{ fontFamily: 'system-ui', fontSize: '10px', letterSpacing: '0.2em', color: '#c4962a', textTransform: 'uppercase' }}>Découvrir</span>
-                    <div style={{ width: '32px', height: '1px', background: '#c4962a' }} />
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
+          {voyages.map((v, i) => <VoyageCard key={v.slug||v.id} v={v} index={i} />)}
         </div>
       </div>
     </section>
