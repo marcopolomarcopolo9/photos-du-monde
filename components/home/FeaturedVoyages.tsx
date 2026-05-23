@@ -19,7 +19,7 @@ function VoyageCard({ v, index }) {
     if (isHovered && allImgs.length > 1) {
       intervalRef.current = setInterval(() => {
         setCurrent(c => (c + 1) % allImgs.length);
-      }, 2400);
+      }, 4800);
     } else {
       clearInterval(intervalRef.current);
       setCurrent(0);
@@ -59,7 +59,7 @@ function VoyageCard({ v, index }) {
       {/* Progress bar */}
       {isHovered && allImgs.length > 1 && (
         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '2px', background: 'rgba(255,255,255,0.1)', zIndex: 4 }}>
-          <div key={current} style={{ height: '100%', background: '#c4962a', width: '100%', animation: 'progress 1.2s linear forwards' }} />
+          <div key={current} style={{ height: '100%', background: '#c4962a', width: '100%', animation: 'progress 4.8s linear forwards' }} />
         </div>
       )}
 
