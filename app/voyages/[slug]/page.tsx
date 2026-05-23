@@ -87,7 +87,11 @@ export default function VoyagePage({ params }: { params: { slug: string } }) {
               </div>
             </ScrollReveal>
 
-
+            {voyage.description && (
+              <ScrollReveal delay={0.1}>
+                <p className="text-creme/60 leading-[1.9] text-base mb-10 font-poppins font-light max-w-2xl">{voyage.description}</p>
+              </ScrollReveal>
+            )}
 
           </div>
 
