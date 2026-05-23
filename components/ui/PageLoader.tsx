@@ -45,6 +45,14 @@ export default function PageLoader() {
               className="h-px bg-or/50 origin-left"
               style={{ width: '160px' }}
             />
+            <motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.8 }}
+              className="font-serif italic text-sm text-creme/40 tracking-[0.15em]"
+            >
+              by Rolf Etter
+            </motion.span>
           </motion.div>
 
           {/* Progress bar */}
