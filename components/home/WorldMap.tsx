@@ -83,9 +83,17 @@ export default function WorldMap() {
           className: '',
         });
 
-        L.marker([pt.lat, pt.lng], { icon })
-          .addTo(map)
-          .on('click', () => { window.location.href = `/voyages/${pt.slug}`; });
+        const marker = L.marker([pt.lat, pt.lng], { icon }).addTo(map);
+        
+        marker.on('click', () => { window.location.href = `/voyages/${pt.slug}`; });
+        
+        marker.on('mouseover', () => {
+          map.flyTo([pt.lat, pt.lng], 5, { duration: 0.8, easeLinearity: 0.5 });
+        });
+        
+        marker.on('mouseout', () => {
+          map.flyToBounds(bounds, { padding: [40, 40], maxZoom: 6, duration: 0.8 });
+        });
       });
     });
 
