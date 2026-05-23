@@ -87,8 +87,11 @@ export default function VoyagePage({ params }: { params: { slug: string } }) {
               </div>
             </ScrollReveal>
 
-
-
+            {voyage.description && (
+              <ScrollReveal delay={0.1}>
+                <p className="text-creme/60 leading-[1.9] text-base mb-10 font-poppins font-light max-w-2xl">{voyage.description}</p>
+              </ScrollReveal>
+            )}
 
           </div>
 
@@ -96,9 +99,6 @@ export default function VoyagePage({ params }: { params: { slug: string } }) {
           <div className="lg:col-span-1">
             {((voyage.waypoints || []).length > 0 || voyage.lat) && (
               <ScrollReveal direction="right">
-                {voyage.description && (
-                  <p className="text-creme/55 text-sm leading-[1.9] font-poppins font-light mb-6">{voyage.description}</p>
-                )}
                 {((voyage.waypoints || []).length > 0 || voyage.lat) && <div className="text-[10px] tracking-[0.3em] uppercase text-or mb-4 font-poppins">Itinéraire</div>}
                 <VoyageMapLeaflet waypoints={voyage.waypoints || []} country={voyage.country} centerLat={voyage.lat} centerLng={voyage.lng} />
               </ScrollReveal>
