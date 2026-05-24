@@ -82,15 +82,19 @@ export default function VoyagePage({ params }: { params: { slug: string } }) {
 
   const isCubaPage = voyage && (
     (voyage.country || '').toLowerCase().includes('cuba') ||
-    (voyage.title || '').toLowerCase().includes('cuba') ||
+    (voyage.slug || '').toLowerCase().includes('musique') ||
     (voyage.slug || '').toLowerCase().includes('cuba')
   );
 
   const toggleCubaMute = () => {
     const audio = cubaAudioRef.current;
-    if (!audio) return;
-    if (cubaMuted) { audio.volume = 0.15; setCubaMuted(false); }
-    else { audio.volume = 0; setCubaMuted(true); }
+    if (cubaMuted) {
+      if (audio) audio.volume = 0.15;
+      setCubaMuted(false);
+    } else {
+      if (audio) audio.volume = 0;
+      setCubaMuted(true);
+    }
   };
 
   if (loading) return (

@@ -6,7 +6,7 @@ const AUDIO_URL = 'https://res.cloudinary.com/doxsjisyx/video/upload/v1779389179
 export default function AmbientSound() {
   const [isCubaPage, setIsCubaPage] = useState(false);
   useEffect(() => {
-    const check = () => setIsCubaPage(window.location.pathname.toLowerCase().includes('cuba'));
+    const check = () => setIsCubaPage(window.location.pathname.toLowerCase().includes('de-la-musique') || window.location.pathname.toLowerCase().includes('cuba'));
     check();
     window.addEventListener('popstate', check);
     return () => window.removeEventListener('popstate', check);
