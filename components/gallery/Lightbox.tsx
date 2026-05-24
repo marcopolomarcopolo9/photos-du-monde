@@ -177,9 +177,9 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
         <div className="absolute inset-0 flex items-center justify-center px-4 md:px-16 py-20">
           <motion.div
             key={photo.src}
-            initial={{ opacity: 0, scale: 0.97 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.15, ease: 'easeOut' }}
             ref={imgRef}
             style={{
               cursor: zoomed ? 'zoom-out' : 'zoom-in',
@@ -199,7 +199,7 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
               height={photo.height || 800}
               className="block max-w-[90vw] max-h-[78vh] object-contain select-none"
               style={{
-                transition: effectiveScale === 1 ? 'transform 0.4s ease' : 'none',
+                transition: effectiveScale === 1 ? 'transform 0.2s ease' : 'none',
                 transform: effectiveScale > 1
                   ? `scale(${effectiveScale}) translate(${(50 - zoomPos.x) * 0.6}%, ${(50 - zoomPos.y) * 0.6}%)`
                   : 'scale(1)',
