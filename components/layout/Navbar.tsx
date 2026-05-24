@@ -50,7 +50,7 @@ export default function Navbar() {
         <div className="max-w-screen-xl mx-auto px-5 md:px-10">
           <div className="flex items-center justify-between h-14 md:h-20">
             {/* Logo - hidden on mobile when menu open */}
-            <Link href="/" className={`flex items-center gap-1.5 md:gap-2.5 group ${menuOpen ? "invisible md:visible" : ""}`}>
+            <Link href="/" className="flex items-center gap-1.5 md:gap-2.5 group">
               <motion.div className="w-1.5 h-1.5 rounded-full bg-or" whileHover={{ scale: 1.8 }} />
               <div className="flex flex-col leading-tight">
                 <span className="font-serif text-xs md:text-base font-light tracking-[0.12em] md:tracking-[0.18em] uppercase text-creme">
@@ -91,7 +91,7 @@ export default function Navbar() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25 }}
-            className="fixed inset-0 z-40 bg-noir/98 backdrop-blur-xl md:hidden flex flex-col"
+            className="fixed inset-0 z-[60] bg-noir/98 backdrop-blur-xl md:hidden flex flex-col"
           >
             {/* Close */}
             <div className="flex justify-between items-center px-5 h-14 border-b border-white/5">
