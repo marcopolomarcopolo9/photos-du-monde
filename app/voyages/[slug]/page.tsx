@@ -51,9 +51,14 @@ export default function VoyagePage({ params }: { params: { slug: string } }) {
     audio.volume = 0;
     cubaAudioRef.current = audio; // ← assign ref so toggle works
 
+    let audioStarted = false;
     const tryPlay = () => {
-      if (window.innerWidth < 768) return; // no sound on mobile
-      window.dispatchEvent(new Event('cuba-music-start')); // ← cut ambient
+      if (audioStarted) return;
+      if (window.innerWidth < 768) return;
+      audioStarted = true;
+      document.removeEventListener('click', tryPlay);
+      document.removeEventListener('scroll', tryPlay);
+      window.dispatchEvent(new Event('cuba-music-start'));
       audio.play().then(() => {
         let v = 0;
         const fade = setInterval(() => {
@@ -64,7 +69,7 @@ export default function VoyagePage({ params }: { params: { slug: string } }) {
       }).catch(() => {});
     };
 
-    document.addEventListener('click', tryPlay, { once: true });
+    document.addEventListener('click', tryPlay);
     document.addEventListener('scroll', tryPlay, { once: true });
 
     return () => {
@@ -138,7 +143,7 @@ export default function VoyagePage({ params }: { params: { slug: string } }) {
       {isCubaPage && (
         <button
           className="hidden md:flex"
-          onClick={toggleCubaMute}
+          onClick={(e) => { e.stopPropagation(); toggleCubaMute(); }}
           title={cubaMuted ? 'Activer la musique' : 'Couper la musique'}
           style={{
             position: 'fixed', bottom: 'max(24px, env(safe-area-inset-bottom, 24px))', right: '16px', zIndex: 9000,
