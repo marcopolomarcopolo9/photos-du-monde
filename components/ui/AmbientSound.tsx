@@ -70,7 +70,7 @@ export default function AmbientSound() {
     const events = ['pointerdown', 'touchstart', 'mousemove', 'scroll', 'keydown', 'click'];
     
     const handler = () => {
-      if (!startedRef.current) startSound();
+      if (!startedRef.current && !isCubaPage) startSound();
     };
 
     // Try immediately in case document is already interactive
