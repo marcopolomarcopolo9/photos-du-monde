@@ -53,10 +53,10 @@ export default function VoyagePage({ params }: { params: { slug: string } }) {
         // Fade in
         let v = 0;
         const fade = setInterval(() => {
-          v = Math.min(v + 0.01, 0.25);
+          v = Math.min(v + 0.008, 0.15);
           audio.volume = v;
           if (v >= 0.25) clearInterval(fade);
-        }, 80);
+        }, 120);
       }).catch(() => {});
     };
 

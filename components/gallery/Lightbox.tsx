@@ -190,7 +190,7 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
             key={photo.src}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.15, ease: 'easeOut' }}
+            transition={{ duration: 0.08, ease: 'easeOut' }}
             ref={imgRef}
             style={{
               cursor: zoomed ? 'zoom-out' : 'zoom-in',
