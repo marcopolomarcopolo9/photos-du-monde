@@ -108,9 +108,8 @@ button {
 img {
   -webkit-user-drag: none;
   user-drag: none;
-  pointer-events: none;
+  /* pointer-events kept on for hover zoom - only block drag */
 }
-.photo-card img,
 .lightbox img,
 [data-photo] img {
   pointer-events: none;
