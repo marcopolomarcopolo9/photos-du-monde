@@ -150,8 +150,8 @@ img {
   /* Voyage grid: 1 col on small, 2 on medium */
   .voyage-grid { grid-template-columns: 1fr; gap: 3px; }
   
-  /* No hover effects on touch */
-  .photo-card:hover .photo-overlay { opacity: 0; }
+  /* No hover overlay on touch - keep zoom */
+  @media (hover: none) { .photo-card:hover .photo-overlay { opacity: 0; } }
   
   /* Text sizes */
   .font-serif { line-height: 1.15; }
