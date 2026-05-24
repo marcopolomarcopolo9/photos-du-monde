@@ -16,6 +16,7 @@ interface Props {
 const PhotoCard = memo(({ photo, index, onClick }: { photo: Photo; index: number; onClick: () => void }) => {
   const [zooming, setZooming] = useState(false);
   const [rect, setRect] = useState<DOMRect | null>(null);
+  const [hovered, setHovered] = useState(false);
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const el = e.currentTarget.querySelector('img');
@@ -34,6 +35,8 @@ const PhotoCard = memo(({ photo, index, onClick }: { photo: Photo; index: number
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: Math.min(index * 0.04, 0.4), duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
       onClick={handleClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       data-cursor="photo"
     >
       {/* Zoom flash overlay */}
@@ -56,7 +59,8 @@ const PhotoCard = memo(({ photo, index, onClick }: { photo: Photo; index: number
           alt={photo.alt || ''}
           width={photo.width || 800}
           height={photo.height || 600}
-          className="w-full h-auto block transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+          className="w-full h-auto block"
+          style={{ transform: hovered ? 'scale(1.05)' : 'scale(1)', transition: 'transform 0.7s cubic-bezier(0.22,1,0.36,1)' }}
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
           loading={index < 6 ? 'eager' : 'lazy'}
         />
