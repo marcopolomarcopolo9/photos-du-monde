@@ -128,36 +128,55 @@ export default function VoyagePage({ params }: { params: { slug: string } }) {
     <div className="bg-noir min-h-screen">
       <VoyageHero voyage={voyage} />
 
-      {/* Cuba music button - replaces ambient sound button */}
+      {/* Cuba volume control */}
       {isCubaPage && (
-        <button onClick={toggleCubaMute}
-          title={cubaMuted ? 'Activer la musique cubaine' : 'Couper la musique cubaine'}
-          style={{
-            position: 'fixed',
-            bottom: 'max(24px, env(safe-area-inset-bottom, 24px))',
-            right: '16px',
-            zIndex: 9000,
-            width: '48px', height: '48px', borderRadius: '50%',
-            background: 'rgba(8,8,8,0.88)',
-            border: `1px solid ${cubaMuted ? 'rgba(255,255,255,0.15)' : 'rgba(196,150,42,0.6)'}`,
-            color: cubaMuted ? 'rgba(255,255,255,0.4)' : '#c4962a',
-            cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            backdropFilter: 'blur(8px)', transition: 'all 0.3s',
-            boxShadow: cubaMuted ? 'none' : '0 0 16px rgba(196,150,42,0.15)',
-          }}>
-          {cubaMuted ? (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor" stroke="none"/>
-              <line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>
-            </svg>
-          ) : (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor" stroke="none"/>
-              <path d="M15.54 8.46a5 5 0 0 1 0 7.07" strokeOpacity="0.7"/>
-              <path d="M19.07 4.93a10 10 0 0 1 0 14.14" strokeOpacity="0.4"/>
-            </svg>
-          )}
-        </button>
+        <div style={{
+          position: 'fixed',
+          bottom: 'max(24px, env(safe-area-inset-bottom, 24px))',
+          right: '16px',
+          zIndex: 9000,
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px',
+          background: 'rgba(8,8,8,0.88)',
+          border: '1px solid rgba(255,255,255,0.1)',
+          borderRadius: '40px',
+          padding: '10px 14px',
+          backdropFilter: 'blur(8px)',
+          transition: 'all 0.3s',
+        }}>
+          {/* Speaker icon */}
+          <button onClick={toggleCubaMute} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: cubaMuted ? 'rgba(255,255,255,0.3)' : '#c4962a', display: 'flex', alignItems: 'center' }}>
+            {cubaMuted ? (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor" stroke="none"/>
+                <line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>
+              </svg>
+            ) : (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor" stroke="none"/>
+                <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+              </svg>
+            )}
+          </button>
+          {/* Volume slider */}
+          <input type="range" min="0" max="100" defaultValue="50"
+            onChange={e => {
+              const audio = cubaAudioRef.current;
+              if (!audio) return;
+              const v = parseInt(e.target.value) / 100 * 0.3;
+              audio.volume = v;
+              setCubaMuted(v === 0);
+            }}
+            style={{
+              width: '60px',
+              height: '2px',
+              accentColor: '#c4962a',
+              cursor: 'pointer',
+              opacity: 0.8,
+            }}
+          />
+        </div>
       )}
 
       <div className="max-w-screen-xl mx-auto px-6 md:px-10 py-16 md:py-24">
