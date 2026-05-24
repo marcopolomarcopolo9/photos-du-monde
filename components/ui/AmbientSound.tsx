@@ -111,18 +111,18 @@ export default function AmbientSound() {
   };
 
   if (isCubaPage) return null;
-  if (typeof window !== 'undefined' && window.innerWidth < 768) return null;
 
   return (
     <>
       <button onClick={toggle} title={playing ? 'Couper le son' : 'Ambiance sonore'}
+        className="hidden md:flex"
         style={{
           position: 'fixed', bottom: 'max(24px, env(safe-area-inset-bottom, 24px))', right: '16px', zIndex: 9000,
           width: '48px', height: '48px', borderRadius: '50%',
           background: 'rgba(8,8,8,0.88)',
           border: `1px solid ${playing ? 'rgba(196,150,42,0.6)' : 'rgba(255,255,255,0.15)'}`,
           color: playing ? '#c4962a' : 'rgba(255,255,255,0.4)',
-          cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          cursor: 'pointer', alignItems: 'center', justifyContent: 'center',
           backdropFilter: 'blur(8px)', transition: 'all 0.3s ease',
           boxShadow: playing ? '0 0 16px rgba(196,150,42,0.15)' : 'none',
         }}>

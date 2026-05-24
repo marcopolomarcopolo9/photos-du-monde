@@ -134,7 +134,7 @@ export default function VoyagePage({ params }: { params: { slug: string } }) {
       <VoyageHero voyage={voyage} />
 
       {/* Cuba volume control - desktop only */}
-      {isCubaPage && typeof window !== 'undefined' && window.innerWidth >= 768 && (
+      {isCubaPage && (
         <div style={{
           position: 'fixed',
           bottom: 'max(24px, env(safe-area-inset-bottom, 24px))',
