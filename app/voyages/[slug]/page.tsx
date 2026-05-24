@@ -44,7 +44,7 @@ export default function VoyagePage({ params }: { params: { slug: string } }) {
                    (voyage.slug || '').toLowerCase().includes('cuba');
     if (!isCuba) return;
 
-    const audio = new Audio('https://archive.org/download/MusicSalsaCubana_201704/Bamboleo.mp3');
+    const audio = new Audio('https://archive.org/download/MusicSalsaCubana_201704/Los%20Van%20Van.mp3');
     audio.loop = true;
     audio.volume = 0;
     
