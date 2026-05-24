@@ -114,7 +114,7 @@ export default function WorldMap() {
         </h2>
       </div>
 
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 48px 0' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 clamp(0px, 4vw, 48px) 0' }}>
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
         <style>{`
           .leaflet-container { background:#0a0a0a !important; }
