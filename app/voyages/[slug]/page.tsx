@@ -52,6 +52,7 @@ export default function VoyagePage({ params }: { params: { slug: string } }) {
     cubaAudioRef.current = audio; // ← assign ref so toggle works
 
     const tryPlay = () => {
+      if (window.innerWidth < 768) return; // no sound on mobile
       window.dispatchEvent(new Event('cuba-music-start')); // ← cut ambient
       audio.play().then(() => {
         let v = 0;

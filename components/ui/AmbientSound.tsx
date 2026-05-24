@@ -13,6 +13,7 @@ export default function AmbientSound() {
 
   const startSound = () => {
     if (startedRef.current) return;
+    if (window.innerWidth < 768) return; // no sound on mobile
     startedRef.current = true;
     const audio = new Audio(AUDIO_URL);
     audio.loop = true;
