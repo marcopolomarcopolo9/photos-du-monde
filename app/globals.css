@@ -211,3 +211,14 @@ img {
 .leaflet-bottom {
   z-index: 2 !important;
 }
+
+/* ── World map responsive ── */
+.world-map-container {
+  height: 500px;
+}
+@media (max-width: 640px) {
+  .world-map-container {
+    height: 100vw; /* square on mobile */
+    max-height: 420px;
+  }
+}
