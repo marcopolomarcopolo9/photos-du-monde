@@ -138,7 +138,7 @@ export default function VoyagePage({ params }: { params: { slug: string } }) {
       {isCubaPage && (
         <div style={{
           position: 'fixed',
-          bottom: 'max(24px, env(safe-area-inset-bottom, 24px))',
+          top: '84px',
           right: '16px',
           zIndex: 9000,
           display: 'flex',
