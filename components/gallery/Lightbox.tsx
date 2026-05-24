@@ -15,6 +15,17 @@ interface Props {
 }
 
 export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: Props) {
+  // Preload adjacent photos for instant navigation
+  useEffect(() => {
+    const toPreload = [currentIndex - 1, currentIndex + 1, currentIndex + 2].filter(
+      i => i >= 0 && i < photos.length
+    );
+    toPreload.forEach(i => {
+      const img = new window.Image();
+      img.src = photos[i]?.src || '';
+    });
+  }, [currentIndex, photos]);
+
   const photo = photos[currentIndex];
   const hasPrev = currentIndex > 0;
   const hasNext = currentIndex < photos.length - 1;
