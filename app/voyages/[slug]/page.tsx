@@ -134,6 +134,42 @@ export default function VoyagePage({ params }: { params: { slug: string } }) {
     <div className="bg-noir min-h-screen">
       <VoyageHero voyage={voyage} />
 
+      {/* Cuba music button - same style as ambient */}
+      {isCubaPage && (
+        <button
+          className="hidden md:flex"
+          onClick={toggleCubaMute}
+          title={cubaMuted ? 'Activer la musique' : 'Couper la musique'}
+          style={{
+            position: 'fixed', bottom: 'max(24px, env(safe-area-inset-bottom, 24px))', right: '16px', zIndex: 9000,
+            width: '48px', height: '48px', borderRadius: '50%',
+            background: 'rgba(8,8,8,0.88)',
+            border: `1px solid ${cubaMuted ? 'rgba(255,255,255,0.15)' : 'rgba(196,150,42,0.6)'}`,
+            color: cubaMuted ? 'rgba(255,255,255,0.4)' : '#c4962a',
+            cursor: 'pointer', alignItems: 'center', justifyContent: 'center',
+            backdropFilter: 'blur(8px)', transition: 'all 0.3s ease',
+            boxShadow: cubaMuted ? 'none' : '0 0 16px rgba(196,150,42,0.15)',
+          }}>
+          {cubaMuted ? (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor" stroke="none"/>
+              <line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>
+            </svg>
+          ) : (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor" stroke="none"/>
+              <path d="M15.54 8.46a5 5 0 0 1 0 7.07" strokeOpacity="0.7"/>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14" strokeOpacity="0.4"/>
+            </svg>
+          )}
+          {!cubaMuted && <>
+            <span style={{ position:'absolute', inset:'-5px', borderRadius:'50%', border:'1px solid rgba(196,150,42,0.25)', animation:'ra 2.5s ease-out infinite', pointerEvents:'none' }}/>
+            <span style={{ position:'absolute', inset:'-11px', borderRadius:'50%', border:'1px solid rgba(196,150,42,0.1)', animation:'ra 2.5s ease-out 1s infinite', pointerEvents:'none' }}/>
+          </>}
+        </button>
+      )}
+      <style>{`@keyframes ra{0%{transform:scale(.9);opacity:.8}100%{transform:scale(1.5);opacity:0}}`}</style>
+
       <div className="max-w-screen-xl mx-auto px-6 md:px-10 py-16 md:py-24">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
 
