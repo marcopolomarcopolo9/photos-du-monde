@@ -159,6 +159,11 @@ export default function VoyagePage({ params }: { params: { slug: string } }) {
               </svg>
             )}
           </button>
+          {/* Music info */}
+          <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.3 }}>
+            <span style={{ fontSize: '9px', color: '#c4962a', fontFamily: 'system-ui', letterSpacing: '0.05em', whiteSpace: 'nowrap' }}>Los Van Van</span>
+            <span style={{ fontSize: '8px', color: 'rgba(255,255,255,0.3)', fontFamily: 'system-ui', whiteSpace: 'nowrap' }}>Son Cubano</span>
+          </div>
           {/* Volume slider */}
           <input type="range" min="0" max="100" defaultValue="50"
             onChange={e => {
