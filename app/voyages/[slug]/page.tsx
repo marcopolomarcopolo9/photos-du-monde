@@ -36,6 +36,48 @@ export default function VoyagePage({ params }: { params: { slug: string } }) {
       .catch(() => setLoading(false));
   }, [params.slug]);
 
+  // Play Cuban music when on Cuba voyage
+  useEffect(() => {
+    if (!voyage) return;
+    const isCuba = (voyage.country || '').toLowerCase().includes('cuba') || 
+                   (voyage.title || '').toLowerCase().includes('cuba') ||
+                   (voyage.slug || '').toLowerCase().includes('cuba');
+    if (!isCuba) return;
+
+    const audio = new Audio('https://archive.org/download/MusicSalsaCubana_201704/Bamboleo.mp3');
+    audio.loop = true;
+    audio.volume = 0;
+    
+    const tryPlay = () => {
+      audio.play().then(() => {
+        // Fade in
+        let v = 0;
+        const fade = setInterval(() => {
+          v = Math.min(v + 0.01, 0.25);
+          audio.volume = v;
+          if (v >= 0.25) clearInterval(fade);
+        }, 80);
+      }).catch(() => {});
+    };
+
+    // Try on first interaction
+    const handler = () => { tryPlay(); document.removeEventListener('click', handler); document.removeEventListener('scroll', handler); };
+    document.addEventListener('click', handler, { once: true });
+    document.addEventListener('scroll', handler, { once: true });
+
+    return () => {
+      // Fade out and stop
+      let v = audio.volume;
+      const fade = setInterval(() => {
+        v = Math.max(0, v - 0.02);
+        audio.volume = v;
+        if (v <= 0) { audio.pause(); clearInterval(fade); }
+      }, 50);
+      document.removeEventListener('click', handler);
+      document.removeEventListener('scroll', handler);
+    };
+  }, [voyage]);
+
   if (loading) return (
     <div className="min-h-screen bg-noir flex items-center justify-center">
       <div className="w-8 h-px bg-or animate-pulse" />
