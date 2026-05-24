@@ -50,10 +50,10 @@ export default function Navbar() {
         <div className="max-w-screen-xl mx-auto px-5 md:px-10">
           <div className="flex items-center justify-between h-14 md:h-20">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2.5 group">
+            <Link href="/" className="flex items-center gap-1.5 md:gap-2.5 group">
               <motion.div className="w-1.5 h-1.5 rounded-full bg-or" whileHover={{ scale: 1.8 }} />
               <div className="flex flex-col leading-tight">
-                <span className="font-serif text-sm md:text-base font-light tracking-[0.18em] uppercase text-creme">
+                <span className="font-serif text-xs md:text-base font-light tracking-[0.12em] md:tracking-[0.18em] uppercase text-creme">
                   Photos du Monde
                 </span>
                 <span className="text-[9px] tracking-[0.12em] text-or/60 italic font-serif">
