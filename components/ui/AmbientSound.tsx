@@ -1,16 +1,12 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
+import { usePathname } from 'next/navigation';
 
 const AUDIO_URL = 'https://res.cloudinary.com/doxsjisyx/video/upload/v1779389179/photos-du-monde/jungle-ambient.mp3';
 
 export default function AmbientSound() {
-  const [isCubaPage, setIsCubaPage] = useState(false);
-  useEffect(() => {
-    const check = () => setIsCubaPage(window.location.pathname.toLowerCase().includes('de-la-musique') || window.location.pathname.toLowerCase().includes('cuba'));
-    check();
-    window.addEventListener('popstate', check);
-    return () => window.removeEventListener('popstate', check);
-  }, []);
+  const pathname = usePathname();
+  const isCubaPage = pathname?.toLowerCase().includes('de-la-musique') || pathname?.toLowerCase().includes('cuba');
   const [playing, setPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const startedRef = useRef(false);
