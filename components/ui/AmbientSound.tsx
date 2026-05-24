@@ -29,6 +29,40 @@ export default function AmbientSound() {
     });
   };
 
+  // Fade out when Cuba music starts, fade back in when it stops
+  useEffect(() => {
+    const onCubaStart = () => {
+      const audio = audioRef.current;
+      if (!audio) return;
+      let v = audio.volume;
+      const fade = setInterval(() => {
+        v = Math.max(0, v - 0.02);
+        audio.volume = v;
+        if (v <= 0) { audio.pause(); clearInterval(fade); setPlaying(false); }
+      }, 50);
+    };
+    const onCubaStop = () => {
+      const audio = audioRef.current;
+      if (!audio || !startedRef.current) return;
+      audio.volume = 0;
+      audio.play().then(() => {
+        setPlaying(true);
+        let v = 0;
+        const fade = setInterval(() => {
+          v = Math.min(v + 0.01, 0.22);
+          audio.volume = v;
+          if (v >= 0.22) clearInterval(fade);
+        }, 80);
+      }).catch(() => {});
+    };
+    window.addEventListener('cuba-music-start', onCubaStart);
+    window.addEventListener('cuba-music-stop', onCubaStop);
+    return () => {
+      window.removeEventListener('cuba-music-start', onCubaStart);
+      window.removeEventListener('cuba-music-stop', onCubaStop);
+    };
+  }, []);
+
   useEffect(() => {
     const events = ['pointerdown', 'touchstart', 'mousemove', 'scroll', 'keydown', 'click'];
     

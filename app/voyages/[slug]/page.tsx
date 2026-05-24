@@ -1,6 +1,6 @@
 // @ts-nocheck
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -112,6 +112,34 @@ export default function VoyagePage({ params }: { params: { slug: string } }) {
   return (
     <div className="bg-noir min-h-screen">
       <VoyageHero voyage={voyage} />
+
+      {/* Cuba music mute button */}
+      {isCubaPage && (
+        <button onClick={toggleCubaMute}
+          title={cubaMuted ? 'Activer la musique' : 'Couper la musique'}
+          style={{
+            position: 'fixed', bottom: '84px', right: '20px', zIndex: 9000,
+            width: '48px', height: '48px', borderRadius: '50%',
+            background: 'rgba(8,8,8,0.88)',
+            border: `1px solid ${cubaMuted ? 'rgba(255,255,255,0.15)' : 'rgba(196,150,42,0.6)'}`,
+            color: cubaMuted ? 'rgba(255,255,255,0.4)' : '#c4962a',
+            cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            backdropFilter: 'blur(8px)', transition: 'all 0.3s',
+          }}>
+          {cubaMuted ? (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor" stroke="none"/>
+              <line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>
+            </svg>
+          ) : (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor" stroke="none"/>
+              <path d="M15.54 8.46a5 5 0 0 1 0 7.07" strokeOpacity="0.7"/>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14" strokeOpacity="0.4"/>
+            </svg>
+          )}
+        </button>
+      )}
 
       <div className="max-w-screen-xl mx-auto px-6 md:px-10 py-16 md:py-24">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
