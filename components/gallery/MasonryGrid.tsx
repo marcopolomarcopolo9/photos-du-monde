@@ -50,7 +50,7 @@ const PhotoCard = memo(({ photo, index, onClick }: { photo: Photo; index: number
         )}
       </AnimatePresence>
 
-      <div className="img-zoom overflow-hidden">
+      <div className="img-zoom">
         <Image
           src={cloudinaryUrl(photo.src)}
           alt={photo.alt || ''}

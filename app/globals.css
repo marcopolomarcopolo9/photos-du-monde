@@ -82,6 +82,9 @@ button {
 @media (min-width: 768px) {
   .photo-card { margin-bottom: 12px; }
 }
+.img-zoom {
+  overflow: hidden;
+}
 .photo-card .img-zoom img {
   display: block;
   width: 100%;
@@ -131,7 +134,10 @@ img {
 @media (max-width: 640px) {
   .masonry-grid { column-count: 2; column-gap: 6px; }
   .photo-card { margin-bottom: 6px; }
-  .photo-card .img-zoom img { max-height: 240px; }
+  .img-zoom {
+  overflow: hidden;
+}
+.photo-card .img-zoom img { max-height: 240px; }
 }
 
 /* ── Mobile optimizations ── */
@@ -145,7 +151,10 @@ img {
   /* Masonry: 2 cols on mobile */
   .masonry-grid { column-count: 2; column-gap: 4px; }
   .photo-card { margin-bottom: 4px; }
-  .photo-card .img-zoom img { max-height: 200px; }
+  .img-zoom {
+  overflow: hidden;
+}
+.photo-card .img-zoom img { max-height: 200px; }
 
   /* Voyage grid: 1 col on small, 2 on medium */
   .voyage-grid { grid-template-columns: 1fr; gap: 3px; }
