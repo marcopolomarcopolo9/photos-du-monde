@@ -18,6 +18,7 @@ export default function VoyagePage({ params }: { params: { slug: string } }) {
   const [photoFilter, setPhotoFilter] = useState<string>('all');
   const [loading, setLoading] = useState(true);
   const [cubaMuted, setCubaMuted] = useState(false);
+  const [cubaVolume, setCubaVolume] = useState(50);
   const cubaAudioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
@@ -88,7 +89,8 @@ export default function VoyagePage({ params }: { params: { slug: string } }) {
   const toggleCubaMute = () => {
     const audio = cubaAudioRef.current;
     if (cubaMuted) {
-      if (audio) audio.volume = 0.15;
+      const v = cubaVolume || 50;
+      if (audio) audio.volume = v / 100 * 0.3;
       setCubaMuted(false);
     } else {
       if (audio) audio.volume = 0;
@@ -168,13 +170,15 @@ export default function VoyagePage({ params }: { params: { slug: string } }) {
 
           </div>
           {/* Volume slider */}
-          <input type="range" min="0" max="100" defaultValue="50"
+          <input type="range" min="0" max="100" value={cubaVolume}
             onChange={e => {
+              const val = parseInt(e.target.value);
+              setCubaVolume(val);
               const audio = cubaAudioRef.current;
               if (!audio) return;
-              const v = parseInt(e.target.value) / 100 * 0.3;
+              const v = val / 100 * 0.3;
               audio.volume = v;
-              setCubaMuted(v === 0);
+              setCubaMuted(val === 0);
             }}
             style={{
               width: '60px',
