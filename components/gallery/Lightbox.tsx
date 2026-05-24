@@ -98,11 +98,17 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
     touchStartY.current = null;
   };
 
-  // Double tap to reset zoom
+  // Double tap/click to zoom
   const lastTap = useRef(0);
-  const handleDoubleTap = () => {
+  const handleDoubleTap = (e: React.MouseEvent | React.TouchEvent) => {
     const now = Date.now();
-    if (now - lastTap.current < 300) { setScale(1); setOffset({ x: 0, y: 0 }); }
+    if (now - lastTap.current < 350) {
+      if (scale > 1) {
+        setScale(1); setOffset({ x: 0, y: 0 });
+      } else {
+        setScale(2.5);
+      }
+    }
     lastTap.current = now;
   };
 
@@ -129,7 +135,7 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
-      onClick={handleDoubleTap}
+      onClick={(e) => handleDoubleTap(e)}
       onContextMenu={e => e.preventDefault()}
     >
       {/* Top bar */}
@@ -138,7 +144,7 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
         <span className="text-[11px] text-creme/40 font-poppins tracking-widest">
           {currentIndex + 1} / {photos.length}
         </span>
-        {scale > 1 && <span className="text-[10px] text-or/60 font-poppins">Double tap pour réinitialiser</span>}
+        <span className="text-[10px] text-or/60 font-poppins hidden md:block">{scale > 1 ? "Double-clic pour dézoomer" : "Double-clic pour zoomer"}</span>
         <button onClick={onClose} className="w-10 h-10 flex items-center justify-center text-creme/60 hover:text-creme">
           <X size={20} />
         </button>
