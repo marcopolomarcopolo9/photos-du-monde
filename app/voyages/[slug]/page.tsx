@@ -128,18 +128,22 @@ export default function VoyagePage({ params }: { params: { slug: string } }) {
     <div className="bg-noir min-h-screen">
       <VoyageHero voyage={voyage} />
 
-      {/* Cuba music mute button */}
+      {/* Cuba music button - replaces ambient sound button */}
       {isCubaPage && (
         <button onClick={toggleCubaMute}
-          title={cubaMuted ? 'Activer la musique' : 'Couper la musique'}
+          title={cubaMuted ? 'Activer la musique cubaine' : 'Couper la musique cubaine'}
           style={{
-            position: 'fixed', bottom: '84px', right: '20px', zIndex: 9000,
+            position: 'fixed',
+            bottom: 'max(24px, env(safe-area-inset-bottom, 24px))',
+            right: '16px',
+            zIndex: 9000,
             width: '48px', height: '48px', borderRadius: '50%',
             background: 'rgba(8,8,8,0.88)',
             border: `1px solid ${cubaMuted ? 'rgba(255,255,255,0.15)' : 'rgba(196,150,42,0.6)'}`,
             color: cubaMuted ? 'rgba(255,255,255,0.4)' : '#c4962a',
             cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
             backdropFilter: 'blur(8px)', transition: 'all 0.3s',
+            boxShadow: cubaMuted ? 'none' : '0 0 16px rgba(196,150,42,0.15)',
           }}>
           {cubaMuted ? (
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
