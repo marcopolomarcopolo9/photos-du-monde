@@ -38,45 +38,44 @@ export default function VoyagePage({ params }: { params: { slug: string } }) {
       .catch(() => setLoading(false));
   }, [params.slug]);
 
-  // Play Cuban music when on Cuba voyage
+  // Cuba music
   useEffect(() => {
     if (!voyage) return;
-    const isCuba = (voyage.country || '').toLowerCase().includes('cuba') || 
-                   (voyage.title || '').toLowerCase().includes('cuba') ||
-                   (voyage.slug || '').toLowerCase().includes('cuba');
+    const isCuba = (voyage.country || '').toLowerCase().includes('cuba') ||
+                   (voyage.slug || '').toLowerCase().includes('musique');
     if (!isCuba) return;
 
     const audio = new Audio('https://archive.org/download/MusicSalsaCubana_201704/Los%20Van%20Van.mp3');
     audio.loop = true;
     audio.volume = 0;
-    
+    cubaAudioRef.current = audio; // ← assign ref so toggle works
+
     const tryPlay = () => {
+      window.dispatchEvent(new Event('cuba-music-start')); // ← cut ambient
       audio.play().then(() => {
-        // Fade in
         let v = 0;
         const fade = setInterval(() => {
           v = Math.min(v + 0.008, 0.15);
           audio.volume = v;
-          if (v >= 0.25) clearInterval(fade);
+          if (v >= 0.15) clearInterval(fade);
         }, 120);
       }).catch(() => {});
     };
 
-    // Try on first interaction
-    const handler = () => { tryPlay(); document.removeEventListener('click', handler); document.removeEventListener('scroll', handler); };
-    document.addEventListener('click', handler, { once: true });
-    document.addEventListener('scroll', handler, { once: true });
+    document.addEventListener('click', tryPlay, { once: true });
+    document.addEventListener('scroll', tryPlay, { once: true });
 
     return () => {
-      // Fade out and stop
+      window.dispatchEvent(new Event('cuba-music-stop'));
+      cubaAudioRef.current = null;
       let v = audio.volume;
       const fade = setInterval(() => {
         v = Math.max(0, v - 0.02);
         audio.volume = v;
         if (v <= 0) { audio.pause(); clearInterval(fade); }
       }, 50);
-      document.removeEventListener('click', handler);
-      document.removeEventListener('scroll', handler);
+      document.removeEventListener('click', tryPlay);
+      document.removeEventListener('scroll', tryPlay);
     };
   }, [voyage]);
 
