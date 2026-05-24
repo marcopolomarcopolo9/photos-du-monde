@@ -17,6 +17,8 @@ export default function VoyagePage({ params }: { params: { slug: string } }) {
   const [similar, setSimilar] = useState<any[]>([]);
   const [photoFilter, setPhotoFilter] = useState<string>('all');
   const [loading, setLoading] = useState(true);
+  const [cubaMuted, setCubaMuted] = useState(false);
+  const cubaAudioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     fetch('/api/voyages?all=1')
@@ -77,6 +79,19 @@ export default function VoyagePage({ params }: { params: { slug: string } }) {
       document.removeEventListener('scroll', handler);
     };
   }, [voyage]);
+
+  const isCubaPage = voyage && (
+    (voyage.country || '').toLowerCase().includes('cuba') ||
+    (voyage.title || '').toLowerCase().includes('cuba') ||
+    (voyage.slug || '').toLowerCase().includes('cuba')
+  );
+
+  const toggleCubaMute = () => {
+    const audio = cubaAudioRef.current;
+    if (!audio) return;
+    if (cubaMuted) { audio.volume = 0.15; setCubaMuted(false); }
+    else { audio.volume = 0; setCubaMuted(true); }
+  };
 
   if (loading) return (
     <div className="min-h-screen bg-noir flex items-center justify-center">
