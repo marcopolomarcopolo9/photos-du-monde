@@ -189,3 +189,25 @@ img {
     transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1) !important;
   }
 }
+
+/* ── Leaflet z-index fix - stay below navbar ── */
+.leaflet-pane,
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-tile-pane,
+.leaflet-overlay-pane,
+.leaflet-shadow-pane,
+.leaflet-marker-pane,
+.leaflet-popup-pane,
+.leaflet-map-pane canvas,
+.leaflet-map-pane svg {
+  z-index: 1 !important;
+}
+.leaflet-control {
+  z-index: 2 !important;
+}
+.leaflet-top,
+.leaflet-bottom {
+  z-index: 2 !important;
+}
