@@ -133,8 +133,8 @@ export default function VoyagePage({ params }: { params: { slug: string } }) {
     <div className="bg-noir min-h-screen">
       <VoyageHero voyage={voyage} />
 
-      {/* Cuba volume control */}
-      {isCubaPage && (
+      {/* Cuba volume control - desktop only */}
+      {isCubaPage && typeof window !== 'undefined' && window.innerWidth >= 768 && (
         <div style={{
           position: 'fixed',
           bottom: 'max(24px, env(safe-area-inset-bottom, 24px))',

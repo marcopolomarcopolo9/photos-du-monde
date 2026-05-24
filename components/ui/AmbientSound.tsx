@@ -111,6 +111,7 @@ export default function AmbientSound() {
   };
 
   if (isCubaPage) return null;
+  if (typeof window !== 'undefined' && window.innerWidth < 768) return null;
 
   return (
     <>
