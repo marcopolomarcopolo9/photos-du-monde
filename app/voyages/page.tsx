@@ -94,7 +94,7 @@ export default function VoyagesPage() {
 
   return (
     <div className="min-h-screen bg-noir pt-28 pb-24">
-      <div className="max-w-screen-xl mx-auto px-6 md:px-10">
+      <div style={{ maxWidth: "1400px", margin: "0 auto", padding: "0 clamp(24px,5vw,80px)" }}>
         <ScrollReveal className="mb-16">
           <div className="flex items-center gap-4 mb-4">
             <div className="w-8 h-px bg-or" />
@@ -108,7 +108,7 @@ export default function VoyagesPage() {
         {voyages.length === 0 ? (
           <div className="text-center py-24 text-creme/30 font-poppins text-sm">Aucun voyage publié pour le moment.</div>
         ) : (
-          <div className="voyage-grid" style={{ maxWidth: "1100px", margin: "0 auto" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "3px", maxWidth: "1050px", margin: "0 auto" }}>
             {voyages.map((v: any, i: number) => (
               <VoyageCard key={v.slug || v.id} v={v} index={i} />
             ))}
