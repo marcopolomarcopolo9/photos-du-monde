@@ -213,11 +213,11 @@ img {
 
 /* ── World map responsive ── */
 .world-map-container {
-  height: 500px;
+  height: 400px; /* desktop: -20% */
 }
 @media (max-width: 640px) {
   .world-map-container {
-    height: calc(100vw - 32px); /* square minus padding */
+    height: calc(60vw); /* mobile: -40% */
     max-height: none;
   }
 }
