@@ -235,7 +235,7 @@ function PhotoGrid({ photos, onChange, onZoom }) {
             </div>
           );
         })}
-        <div onClick={() => fileRef.current && fileRef.current.click()} style={{ aspectRatio: '4/3', border: '2px dashed #2a2a2a', borderRadius: '8px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#444' }}>
+        <div onClick={() => fileRef.current && fileRef.current.click()} onDrop={e => { e.preventDefault(); addFiles(e.dataTransfer.files); }} onDragOver={e => e.preventDefault()} style={{ aspectRatio: '4/3', border: '2px dashed #2a2a2a', borderRadius: '8px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#444' }}>
           <div style={{ fontSize: '28px', marginBottom: '4px' }}>+</div>
           <div style={{ fontSize: '11px', letterSpacing: '.1em' }}>AJOUTER</div>
         </div>
