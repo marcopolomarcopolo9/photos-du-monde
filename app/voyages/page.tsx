@@ -108,7 +108,7 @@ export default function VoyagesPage() {
         {voyages.length === 0 ? (
           <div className="text-center py-24 text-creme/30 font-poppins text-sm">Aucun voyage publié pour le moment.</div>
         ) : (
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:"32px", maxWidth:"1400px", margin:"0 auto", padding:"0 clamp(24px,5vw,80px)" }}>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:"40px", maxWidth:"1200px", margin:"0 auto", padding:"0 clamp(24px,5vw,80px)" }}>
             {voyages.map((v: any, i: number) => (
               <VoyageCard key={v.slug || v.id} v={v} index={i} />
             ))}
