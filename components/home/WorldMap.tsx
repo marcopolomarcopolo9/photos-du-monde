@@ -103,7 +103,7 @@ export default function WorldMap() {
 
   return (
     <section style={{ background: '#070707', padding: '0 0 0' }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '80px 48px 36px' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: 'clamp(32px,6vw,80px) clamp(16px,4vw,48px) clamp(20px,3vw,36px)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '12px' }}>
           <div style={{ width: '36px', height: '1px', background: '#c4962a' }} />
           <span style={{ fontSize: '10px', letterSpacing: '0.36em', color: '#c4962a', textTransform: 'uppercase', fontFamily: 'system-ui' }}>
@@ -115,7 +115,7 @@ export default function WorldMap() {
         </h2>
       </div>
 
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 clamp(0px, 4vw, 48px) 0' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0' }}>
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
         <style>{`
           .leaflet-container { background:#0a0a0a !important; }
