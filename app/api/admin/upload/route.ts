@@ -47,10 +47,10 @@ export async function POST(req: NextRequest) {
     const data = await res.json();
 
     if (data.secure_url) {
-      // Return optimized URL with f_auto,q_auto
+      // Return URL with full quality
       const optimizedUrl = data.secure_url.replace(
         '/image/upload/',
-        '/image/upload/f_auto,q_auto/'
+        '/image/upload/f_auto/'
       );
       return NextResponse.json({ url: optimizedUrl, success: true });
     }
