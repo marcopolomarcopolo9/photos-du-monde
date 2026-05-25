@@ -222,3 +222,10 @@ img {
     max-height: none;
   }
 }
+
+/* ── Destinations page: 20px gap desktop only ── */
+@media (min-width: 768px) {
+  .destinations-grid {
+    gap: 20px !important;
+  }
+}
