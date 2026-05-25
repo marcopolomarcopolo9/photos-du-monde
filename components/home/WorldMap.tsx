@@ -33,7 +33,7 @@ export default function WorldMap() {
 
       const map = L.map(mapRef.current, {
         center: [20, 10],
-        zoom: 2,
+        zoom: 1.5,
         zoomControl: false,
         attributionControl: false,
         scrollWheelZoom: false,
@@ -45,7 +45,7 @@ export default function WorldMap() {
 
       // Fit bounds
       const bounds = L.latLngBounds(pts.map(p => [p.lat, p.lng]));
-      map.setView([20, 10], 2);
+      map.setView([20, 10], 1.5);
 
       // Smart direction to avoid overlap
       // For each point, check if another point is nearby and offset badge direction
