@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import Image from 'next/image';
+import { cloudinaryUrl } from '@/lib/cloudinary';
 import Link from 'next/link';
 import { Camera, Globe, Award, Heart } from 'lucide-react';
 import { HOMEPAGE_CONFIG } from '@/lib/homepage';
@@ -50,7 +51,7 @@ export default function AboutPage() {
           <ScrollReveal direction="right" delay={0.1}>
             {about.photo ? (
               <div className="relative aspect-[3/4] max-w-sm mx-auto overflow-hidden">
-                <Image src={about.photo} alt="Photo du photographe" fill className="object-cover" sizes="400px" />
+                <Image src={about.photo.includes('cloudinary') ? about.photo.replace('/upload/', '/upload/q_100,f_auto/') : about.photo} alt="Photo du photographe" fill className="object-cover" sizes="(max-width: 768px) 100vw, 400px" />
                 <div className="absolute inset-0 bg-gradient-to-t from-noir/40 to-transparent" />
               </div>
             ) : (
