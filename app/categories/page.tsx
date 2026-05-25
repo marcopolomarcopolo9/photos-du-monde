@@ -50,27 +50,31 @@ export default function CategoriesPage() {
             const cover = s?.cover || '';
             return (
               <ScrollReveal key={cat.slug} delay={i * 0.05}>
-                <Link href={`/categories/${cat.slug}`} className="group block relative overflow-hidden h-44 md:h-56 bg-noir-mid border border-white/5 hover:border-or/30 transition-all duration-300">
-                  {cover && (
+                <Link href={`/categories/${cat.slug}`}
+                  style={{ display:'block', position:'relative', overflow:'hidden', aspectRatio:'3/4', maxHeight:'280px', textDecoration:'none' }}
+                  className="group">
+                  {/* Image */}
+                  {cover ? (
                     <>
-                      <Image src={cover} alt={cat.label} fill className="object-cover transition-transform duration-700 group-hover:scale-105 opacity-40 group-hover:opacity-60" sizes="25vw" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-noir/90 via-noir/30 to-noir/10" />
+                      <Image src={cover} alt={cat.label} fill className="object-cover transition-transform duration-700 group-hover:scale-[1.04]" sizes="25vw" />
+                      <div style={{ position:'absolute', inset:0, background:'linear-gradient(to top,rgba(0,0,0,0.92) 0%,rgba(0,0,0,0.2) 55%,transparent 100%)' }} />
                     </>
+                  ) : (
+                    <div style={{ position:'absolute', inset:0, background:'#0d0d0d' }} />
                   )}
-                  {!cover && (
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-6xl opacity-10"></span>
-                    </div>
-                  )}
-                  <div className="absolute inset-0 flex flex-col justify-end p-5">
-                    <span className="text-3xl mb-2"></span>
-                    <h2 className="font-serif italic text-xl text-creme font-light mb-1">{cat.label}</h2>
-                    <p className="text-[10px] text-creme/40 font-poppins">
-                      {count > 0 ? `${count} photo${count > 1 ? 's' : ''}` : 'Aucune photo encore'}
+
+                  {/* Dot */}
+                  <div style={{ position:'absolute', top:'12px', left:'12px', width:'5px', height:'5px', borderRadius:'50%', background:'rgba(196,150,42,0.35)', transition:'background .3s' }} className="group-hover:!bg-[#c4962a]" />
+
+                  {/* Text box */}
+                  <div style={{ position:'absolute', bottom:'10px', left:'9px', right:'9px', padding:'11px 13px', border:'1.5px solid rgba(255,255,255,0.35)', background:'rgba(0,0,0,0.25)', backdropFilter:'blur(6px)' }}>
+                    <div style={{ width:'16px', height:'1px', background:'#c4962a', marginBottom:'8px' }} />
+                    <p style={{ fontFamily:'system-ui', fontSize:'9px', letterSpacing:'0.28em', color:'rgba(196,150,42,0.8)', textTransform:'uppercase', margin:'0 0 5px' }}>
+                      {count > 0 ? `${count} photo${count > 1 ? 's' : ''}` : cat.description}
                     </p>
-                  </div>
-                  <div className="absolute top-3 right-3 w-7 h-7 border border-white/10 group-hover:border-or flex items-center justify-center transition-all opacity-0 group-hover:opacity-100">
-                    <span className="text-or text-xs">→</span>
+                    <h2 style={{ fontFamily:'"Cormorant Garamond",Georgia,serif', fontSize:'22px', fontWeight:300, fontStyle:'italic', color:'#f5f0e8', margin:0, lineHeight:1.1 }}>
+                      {cat.emoji} {cat.label}
+                    </h2>
                   </div>
                 </Link>
               </ScrollReveal>
