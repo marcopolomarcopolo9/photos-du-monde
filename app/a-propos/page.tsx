@@ -51,7 +51,7 @@ export default function AboutPage() {
           <ScrollReveal direction="right" delay={0.1}>
             {about.photo ? (
               <div className="relative aspect-[3/4] max-w-sm mx-auto overflow-hidden">
-                <Image src={about.photo.includes('cloudinary') ? about.photo.replace('/upload/', '/upload/q_100,f_auto/') : about.photo} alt="Photo du photographe" fill className="object-cover" sizes="(max-width: 768px) 100vw, 400px" />
+                <img src={about.photo} alt="Photo du photographe" style={{ width:"100%", height:"100%", objectFit:"cover", display:"block" }} />
                 <div className="absolute inset-0 bg-gradient-to-t from-noir/40 to-transparent" />
               </div>
             ) : (
