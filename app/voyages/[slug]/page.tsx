@@ -95,12 +95,13 @@ export default function VoyagePage({ params }: { params: { slug: string } }) {
 
   const toggleCubaMute = () => {
     const audio = cubaAudioRef.current;
+    if (!audio) return;
     if (cubaMuted) {
-      const v = cubaVolume || 50;
-      if (audio) audio.volume = v / 100 * 0.3;
+      audio.volume = 0.09;
+      audio.muted = false;
       setCubaMuted(false);
     } else {
-      if (audio) audio.volume = 0;
+      audio.muted = true;
       setCubaMuted(true);
     }
   };
