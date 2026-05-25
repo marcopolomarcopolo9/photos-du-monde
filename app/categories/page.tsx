@@ -73,7 +73,7 @@ export default function CategoriesPage() {
                       {count > 0 ? `${count} photo${count > 1 ? 's' : ''}` : cat.description}
                     </p>
                     <h2 style={{ fontFamily:'"Cormorant Garamond",Georgia,serif', fontSize:'22px', fontWeight:300, fontStyle:'italic', color:'#f5f0e8', margin:0, lineHeight:1.1 }}>
-                      {cat.emoji} {cat.label}
+                      {cat.label}
                     </h2>
                   </div>
                 </Link>
