@@ -59,13 +59,14 @@ export default function VoyagePage({ params }: { params: { slug: string } }) {
       document.removeEventListener('click', tryPlay);
       document.removeEventListener('scroll', tryPlay);
       window.dispatchEvent(new Event('cuba-music-start'));
+      audio.volume = 0;
       audio.play().then(() => {
         let v = 0;
         const fade = setInterval(() => {
-          v = Math.min(v + 0.008, 0.15);
+          v = Math.min(v + 0.003, 0.12);
           audio.volume = v;
-          if (v >= 0.15) clearInterval(fade);
-        }, 120);
+          if (v >= 0.12) clearInterval(fade);
+        }, 150);
       }).catch(() => {});
     };
 
