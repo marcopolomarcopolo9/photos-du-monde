@@ -51,7 +51,7 @@ export default function CategoriesPage() {
             return (
               <ScrollReveal key={cat.slug} delay={i * 0.05}>
                 <Link href={`/categories/${cat.slug}`}
-                  style={{ display:'block', position:'relative', overflow:'hidden', aspectRatio:'3/4', maxHeight:'280px', textDecoration:'none' }}
+                  style={{ display:'block', position:'relative', overflow:'hidden', aspectRatio:'3/4', maxHeight:'350px', textDecoration:'none' }}
                   className="group">
                   {/* Image */}
                   {cover ? (
