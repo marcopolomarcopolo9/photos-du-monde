@@ -166,7 +166,6 @@ img {
 }
 
 @media (min-width: 480px) and (max-width: 640px) {
-  .voyage-grid { grid-template-columns: 1fr 1fr; }
   .masonry-grid { column-count: 2; }
 }
 
