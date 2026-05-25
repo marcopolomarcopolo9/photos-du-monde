@@ -120,7 +120,7 @@ img {
 .voyage-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 3px;
+  gap: 16px;
 }
 @media (min-width: 640px) {
   .voyage-grid { grid-template-columns: 1fr 1fr; }
