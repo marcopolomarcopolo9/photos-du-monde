@@ -217,7 +217,7 @@ img {
 }
 @media (max-width: 640px) {
   .world-map-container {
-    height: calc(60vw); /* mobile: -40% */
+    height: 280px; /* mobile: compact */
     max-height: none;
   }
 }
