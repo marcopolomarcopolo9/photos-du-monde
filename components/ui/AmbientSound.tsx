@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 
-const AUDIO_URL = 'https://res.cloudinary.com/doxsjisyx/video/upload/v1779693587/photos-du-monde/fireplace-ambient.mp3';
+const AUDIO_URL = 'https://res.cloudinary.com/doxsjisyx/video/upload/v1779694581/photos-du-monde/classical-ambient.mp3';
 
 export default function AmbientSound() {
   const pathname = usePathname();
