@@ -111,7 +111,7 @@ export default function AmbientSound() {
     }
   };
 
-  if (isCubaPage) return null;
+  return null; // Sound disabled
 
   return (
     <>
