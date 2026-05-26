@@ -31,24 +31,27 @@ export default function VoyageMap({ waypoints, country, centerLat, centerLng }: 
         zoomControl: false,
         scrollWheelZoom: false,
         dragging: window.innerWidth >= 768,
-        touchZoom: false,
+        touchZoom: window.innerWidth < 768, // mobile only
+        zoomControl: false,
         attributionControl: false,
       });
 instanceRef.current = map;
       
       // Mobile: 2 fingers zoom, 1 finger pan when zoomed
       if (typeof window !== 'undefined' && window.innerWidth < 768) {
-        map.touchZoom.enable();
+        const initialZoom = map.getZoom();
         const container = mapRef.current;
         if (container) {
           container.addEventListener('touchstart', (e) => {
             if (e.touches.length >= 2) {
+              map.touchZoom.enable();
               map.dragging.enable();
             } else if (e.touches.length === 1) {
-              const z = map.getZoom();
-              const initZ = map.getMinZoom() + 2;
-              if (z > initZ) map.dragging.enable();
-              else map.dragging.disable();
+              if (map.getZoom() > initialZoom) {
+                map.dragging.enable();
+              } else {
+                map.dragging.disable();
+              }
             }
           }, { passive: true });
         }

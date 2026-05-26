@@ -34,7 +34,7 @@ export default function WorldMap() {
       const map = L.map(mapRef.current, {
         center: [20, 10],
         zoom: 2,
-        zoomControl: window.innerWidth >= 768,
+        zoomControl: false,
         attributionControl: false,
         scrollWheelZoom: window.innerWidth >= 768,
         dragging: window.innerWidth >= 768,
