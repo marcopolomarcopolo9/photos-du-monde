@@ -30,7 +30,7 @@ export default function VoyageMap({ waypoints, country, centerLat, centerLng }: 
         zoom: pts.length === 1 ? 7 : 6,
         zoomControl: false,
         scrollWheelZoom: false,
-        dragging: false,
+        dragging: window.innerWidth >= 768,
         touchZoom: false,
         attributionControl: false,
       });

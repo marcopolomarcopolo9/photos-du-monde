@@ -37,7 +37,7 @@ export default function WorldMap() {
         zoomControl: false,
         attributionControl: false,
         scrollWheelZoom: false,
-        dragging: false,
+        dragging: window.innerWidth >= 768,
         touchZoom: false,
         doubleClickZoom: false,
       });
