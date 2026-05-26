@@ -713,8 +713,23 @@ export default function AdminPage() {
                     <div style={{ display: 'grid', gap: '12px' }}>
                       {[0,1,2,3].map(i => {
                         const slide = (hp.hero?.slides || [])[i] || { image:'', country:'', caption:'' };
+                        const handleSlideDragStart = (e) => { e.dataTransfer.setData('slideIndex', String(i)); };
+                        const handleSlideDrop = (e) => {
+                          e.preventDefault();
+                          const from = parseInt(e.dataTransfer.getData('slideIndex'));
+                          const to = i;
+                          if (from === to) return;
+                          const slides = [...(hp.hero?.slides || [{},{},{},{}])];
+                          const [moved] = slides.splice(from, 1);
+                          slides.splice(to, 0, moved);
+                          updHp('hero', 'slides', slides);
+                        };
                         return (
-                          <div key={i} style={{ background: '#0d0d0d', border: '1px solid #1e1e1e', borderRadius: '8px', padding: '14px', display: 'grid', gridTemplateColumns: slide.image ? '120px 1fr' : '1fr', gap: '14px', alignItems: 'center' }}>
+                          <div key={i} draggable
+                            onDragStart={handleSlideDragStart}
+                            onDrop={handleSlideDrop}
+                            onDragOver={e => e.preventDefault()}
+                            style={{ background: '#0d0d0d', border: '1px solid #1e1e1e', borderRadius: '8px', padding: '14px', display: 'grid', gridTemplateColumns: slide.image ? '120px 1fr' : '1fr', gap: '14px', alignItems: 'center', cursor: 'grab' }}>
                             {slide.image && (
                               <div style={{ position: 'relative', height: '68px', borderRadius: '6px', overflow: 'hidden', cursor: 'zoom-in' }} onClick={() => setLightbox({ photos:[{src:slide.image}], index:0 })}>
                                 <img src={slide.image} alt="" style={{ width:'100%', height:'100%', objectFit:'cover' }} />
