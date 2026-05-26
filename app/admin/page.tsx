@@ -179,8 +179,6 @@ function PhotoGrid({ photos, onChange, onZoom }) {
   };
 
   const remove = i => onChange(photos.filter((_, j) => j !== i));
-  const moveLeft = i => { if (i === 0) return; const p = [...photos]; [p[i - 1], p[i]] = [p[i], p[i - 1]]; onChange(p); };
-  const moveRight = i => { if (i === photos.length - 1) return; const p = [...photos]; [p[i], p[i + 1]] = [p[i + 1], p[i]]; onChange(p); };
 
   return (
     <div>
@@ -199,9 +197,7 @@ function PhotoGrid({ photos, onChange, onZoom }) {
                 <img src={src} alt="" onClick={() => onZoom && onZoom(i)} style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: onZoom ? 'zoom-in' : 'default', display: 'block' }} />
                 <div style={{ position: 'absolute', top: '3px', left: '5px', background: 'rgba(0,0,0,.65)', color: '#aaa', fontSize: '10px', padding: '2px 5px', borderRadius: '3px' }}>{i + 1}</div>
                 <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, display: 'flex', gap: '3px', padding: '5px', justifyContent: 'center', background: 'linear-gradient(to top,rgba(0,0,0,.8),transparent)' }}>
-                  <button onClick={() => moveLeft(i)} style={{ background: 'rgba(0,0,0,.7)', border: 'none', color: '#fff', width: '24px', height: '24px', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>&#8592;</button>
-                  <button onClick={() => moveRight(i)} style={{ background: 'rgba(0,0,0,.7)', border: 'none', color: '#fff', width: '24px', height: '24px', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>&#8594;</button>
-                  <button onClick={() => remove(i)} style={{ background: 'rgba(180,20,20,.8)', border: 'none', color: '#fff', width: '24px', height: '24px', borderRadius: '4px', cursor: 'pointer', fontSize: '14px' }}>&#215;</button>
+                  <button onClick={() => remove(i)} style={{ background: 'rgba(180,20,20,.8)', border: 'none', color: '#fff', width: '28px', height: '28px', borderRadius: '4px', cursor: 'pointer', fontSize: '14px' }}>&#215;</button>
                 </div>
               </div>
               <input
