@@ -44,7 +44,7 @@ export default function WorldMap() {
       instanceRef.current = map;
 
       // Mobile: 2 fingers = zoom, 1 finger = pan when zoomed in
-      const isMobile = window.innerWidth < 768;
+      const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
       if (isMobile) {
         map.touchZoom.enable();
         const container = mapRef.current;
@@ -71,7 +71,6 @@ export default function WorldMap() {
 
       // Fit bounds
       const bounds = L.latLngBounds(pts.map(p => [p.lat, p.lng]));
-      const isMobile = window.innerWidth < 768;
       map.setView([20, 10], isMobile ? 1 : 2);
 
       // Smart direction to avoid overlap
