@@ -30,6 +30,8 @@ export default function VoyageMap({ waypoints, country, centerLat, centerLng }: 
         zoom: pts.length === 1 ? 7 : 6,
         zoomControl: false,
         scrollWheelZoom: false,
+        dragging: false,
+        touchZoom: false,
         attributionControl: false,
       });
       instanceRef.current = map;

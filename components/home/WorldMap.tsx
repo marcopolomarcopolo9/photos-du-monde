@@ -37,9 +37,31 @@ export default function WorldMap() {
         zoomControl: false,
         attributionControl: false,
         scrollWheelZoom: false,
-        dragging: true,
+        dragging: false,
+        touchZoom: false,
+        doubleClickZoom: false,
       });
       instanceRef.current = map;
+
+      // Enable touch zoom only with 2 fingers
+      const container = mapRef.current;
+      let touchCount = 0;
+      const onTouchStart = (e) => {
+        touchCount = e.touches.length;
+        if (e.touches.length >= 2) {
+          map.touchZoom.enable();
+          map.dragging.enable();
+        }
+      };
+      const onTouchEnd = () => {
+        touchCount = 0;
+        setTimeout(() => {
+          map.touchZoom.disable();
+          map.dragging.disable();
+        }, 300);
+      };
+      container.addEventListener('touchstart', onTouchStart, { passive: true });
+      container.addEventListener('touchend', onTouchEnd, { passive: true });
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(map);
 
