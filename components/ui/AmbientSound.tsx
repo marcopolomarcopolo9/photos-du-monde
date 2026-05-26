@@ -12,6 +12,7 @@ export default function AmbientSound() {
   const startedRef = useRef(false);
 
   const startSound = () => {
+    return; // Sound disabled globally
     if (startedRef.current) return;
     if (window.innerWidth < 768) return; // no sound on mobile
     startedRef.current = true;
