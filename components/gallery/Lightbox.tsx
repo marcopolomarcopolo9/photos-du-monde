@@ -80,13 +80,12 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
       swipeStart.current = null;
       panStart.current = null;
     } else if (e.touches.length === 1) {
+      // Always record start position for tap detection
+      swipeStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
       if (scale > 1) {
         // Pan mode
         panStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY, px: pan.x, py: pan.y };
-        swipeStart.current = null;
       } else {
-        // Swipe mode
-        swipeStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
         panStart.current = null;
       }
     }
