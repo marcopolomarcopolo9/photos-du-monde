@@ -95,7 +95,7 @@ export default function Navbar() {
             {/* Close */}
             <div className="flex justify-between items-center px-5 h-14 border-b border-white/5">
               <Link href="/" onClick={() => setMenuOpen(false)} className="flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-or" />
+                
                 <span className="font-serif text-sm tracking-[0.18em] uppercase text-creme">Photos du Monde</span>
               </Link>
               <button onClick={() => setMenuOpen(false)} className="w-10 h-10 flex items-center justify-center text-creme/60">

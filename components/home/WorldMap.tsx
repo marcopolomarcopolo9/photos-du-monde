@@ -43,6 +43,12 @@ export default function WorldMap() {
       });
       instanceRef.current = map;
 
+      // Enable scroll zoom on desktop explicitly
+      if (window.innerWidth >= 768) {
+        map.scrollWheelZoom.enable();
+        map.dragging.enable();
+      }
+
       // Mobile: 2 fingers = zoom, 1 finger = pan when zoomed in
       const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
       if (isMobile) {
