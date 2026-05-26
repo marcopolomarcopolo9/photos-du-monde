@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 export default function CustomCursor() {
+  if (typeof window !== 'undefined' && window.innerWidth < 768) return null;
   const dotRef = useRef<HTMLDivElement>(null);
   const ringRef = useRef<HTMLDivElement>(null);
   const [state, setState] = useState<'default' | 'hover' | 'click' | 'photo'>('default');
