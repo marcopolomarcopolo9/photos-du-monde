@@ -212,10 +212,10 @@ function PhotoGrid({ photos, onChange, onZoom }) {
               />
               {/* Per-photo category tags */}
               <div style={{ padding:'6px 8px', background:'#080808', borderTop:'1px solid #111', display:'flex', flexWrap:'wrap', gap:'4px' }}>
-                {['volcans','forets','plages','montagnes','deserts','faune','flore','villes','culture','aurores'].map(cat => {
+                {['volcans','forets','plages','montagnes','deserts','faune','flore','villes','culture','aurores','voitures','svalbard','continent'].map(cat => {
                   const photoObj = typeof photos[i] === 'object' ? photos[i] : { src };
                   const selected = (photoObj.categories || []).includes(cat);
-                  const emojis: Record<string,string> = { volcans:'🌋', forets:'🌿', plages:'🏖️', montagnes:'⛰️', deserts:'🏜️', faune:'🦜', flore:'🌸', villes:'🏙️', culture:'🎭', aurores:'🌌' };
+                  const emojis: Record<string,string> = { volcans:'🌋', forets:'🌿', plages:'🏖️', montagnes:'⛰️', deserts:'🏜️', faune:'🦜', flore:'🌸', villes:'🏙️', culture:'🎭', aurores:'🌌', voitures:'🚗', svalbard:'🧊', continent:'🇳🇴' };
                   return (
                     <button key={cat} type="button"
                       onClick={() => {
