@@ -69,7 +69,7 @@ export default function CustomCursor() {
       {/* Dot */}
       <div
         ref={dotRef}
-        className="pointer-events-none fixed top-0 left-0 z-[99999]"
+        className="pointer-events-none fixed top-0 left-0 z-[99999] hidden md:block"
         style={{
           width: `${s.dot}px`, height: `${s.dot}px`,
           borderRadius: '50%', background: '#c4962a',
@@ -81,7 +81,7 @@ export default function CustomCursor() {
       {/* Ring */}
       <div
         ref={ringRef}
-        className="pointer-events-none fixed top-0 left-0 z-[99998]"
+        className="pointer-events-none fixed top-0 left-0 z-[99998] hidden md:block"
         style={{
           width: `${s.ring}px`, height: `${s.ring}px`,
           borderRadius: '50%',

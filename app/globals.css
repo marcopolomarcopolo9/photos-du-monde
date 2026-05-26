@@ -156,7 +156,7 @@ img {
 .photo-card .img-zoom img { max-height: 200px; }
 
   /* Voyage grid: 1 col on small, 2 on medium */
-  .voyage-grid { grid-template-columns: 1fr; gap: 3px; }
+  .voyage-grid { grid-template-columns: 1fr; gap: 16px; }
   
   /* No hover overlay on touch - keep zoom */
   @media (hover: none) { .photo-card:hover .photo-overlay { opacity: 0; } }

@@ -108,7 +108,17 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
   const onTouchEnd = (e: React.TouchEvent) => {
     lastDist.current = null;
     panStart.current = null;
-    if (scale > 1) { swipeStart.current = null; return; }
+    if (scale > 1) {
+      // Single tap when zoomed → reset zoom
+      if (swipeStart.current) {
+        const dx = e.changedTouches[0].clientX - swipeStart.current.x;
+        const dy = e.changedTouches[0].clientY - swipeStart.current.y;
+        if (Math.abs(dx) < 10 && Math.abs(dy) < 10) {
+          setScale(1); setPan({ x: 0, y: 0 });
+        }
+      }
+      swipeStart.current = null; return;
+    }
     if (swipeStart.current && e.changedTouches.length > 0) {
       const dx = e.changedTouches[0].clientX - swipeStart.current.x;
       const dy = e.changedTouches[0].clientY - swipeStart.current.y;
