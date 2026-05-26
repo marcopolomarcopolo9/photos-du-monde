@@ -84,6 +84,13 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
     setZoomed(z => !z);
   };
 
+  // Pan state for zoomed image
+  const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
+  const panStart = useRef<{ x: number; y: number; ox: number; oy: number } | null>(null);
+
+  // Reset pan when scale resets
+  useEffect(() => { if (pinchScale <= 1) setPanOffset({ x: 0, y: 0 }); }, [pinchScale]);
+
   // Touch handlers
   const getDist = (t: React.TouchList) =>
     Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
@@ -92,9 +99,13 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
     if (e.touches.length === 2) {
       lastDist.current = getDist(e.touches);
       lastScale.current = pinchScale;
-    } else {
+      panStart.current = null;
+    } else if (e.touches.length === 1) {
       touchStartX.current = e.touches[0].clientX;
       touchStartY.current = e.touches[0].clientY;
+      if (pinchScale > 1) {
+        panStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY, ox: panOffset.x, oy: panOffset.y };
+      }
     }
   };
 
@@ -103,11 +114,17 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
       e.preventDefault();
       const newScale = Math.min(Math.max(lastScale.current * (getDist(e.touches) / lastDist.current), 1), 4);
       setPinchScale(newScale);
+    } else if (e.touches.length === 1 && pinchScale > 1 && panStart.current) {
+      e.preventDefault();
+      const dx = e.touches[0].clientX - panStart.current.x;
+      const dy = e.touches[0].clientY - panStart.current.y;
+      setPanOffset({ x: panStart.current.ox + dx, y: panStart.current.oy + dy });
     }
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
     lastDist.current = null;
+    panStart.current = null;
     if (pinchScale <= 1 && touchStartX.current !== null && touchStartY.current !== null) {
       const dx = e.changedTouches[0].clientX - touchStartX.current;
       const dy = e.changedTouches[0].clientY - touchStartY.current;
