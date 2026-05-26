@@ -103,7 +103,9 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
     } else if (e.touches.length === 1) {
       touchStartX.current = e.touches[0].clientX;
       touchStartY.current = e.touches[0].clientY;
+      // Always set panStart when zoomed
       if (pinchScale > 1) {
+        e.preventDefault();
         panStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY, ox: panOffset.x, oy: panOffset.y };
       }
     }
@@ -125,6 +127,11 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
   const handleTouchEnd = (e: React.TouchEvent) => {
     lastDist.current = null;
     panStart.current = null;
+    if (pinchScale > 1) {
+      touchStartX.current = null;
+      touchStartY.current = null;
+      return; // Never swipe when zoomed
+    }
     if (pinchScale <= 1 && touchStartX.current !== null && touchStartY.current !== null) {
       const dx = e.changedTouches[0].clientX - touchStartX.current;
       const dy = e.changedTouches[0].clientY - touchStartY.current;
