@@ -37,11 +37,11 @@ export default function AboutPage() {
             <h1 className="font-serif font-light text-5xl md:text-6xl text-creme italic leading-tight mb-8">
               Derrière<br /><em>l&apos;objectif</em>
             </h1>
-            <p className="text-creme/60 text-base leading-[1.9] font-poppins font-light mb-6">
+            <p className="text-creme/60 text-base leading-[1.9] font-poppins font-light mb-6" style={{ textAlign: "justify" }}>
               {about.intro || 'Photographe voyageur passionné par la nature sauvage et les cultures du monde.'}
             </p>
             {about.philosophy && (
-              <p className="text-creme/45 text-sm leading-[1.9] font-poppins font-light">
+              <p className="text-creme/45 text-sm leading-[1.9] font-poppins font-light" style={{ textAlign: "justify" }}>
                 {about.philosophy}
               </p>
             )}
@@ -85,7 +85,7 @@ export default function AboutPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16 mb-20">
           <ScrollReveal direction="left">
             <h2 className="font-serif italic text-2xl text-creme mb-6">Ma philosophie</h2>
-            <div className="space-y-5 text-creme/55 text-sm leading-[1.9] font-poppins font-light">
+            <div className="space-y-5 text-creme/55 text-sm leading-[1.9] font-poppins font-light" style={{ textAlign: "justify" }}>
               {about.philosophy && <p>{about.philosophy}</p>}
               {about.philosophy2 && <p>{about.philosophy2}</p>}
               <p>Toutes mes photos sont réalisées dans le respect total de la faune et des communautés locales.</p>
