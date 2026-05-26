@@ -14,7 +14,6 @@ const NAV_LINKS = [
   { href: '/galerie', label: 'Galerie' },
   { href: '/a-propos', label: 'À propos' },
   { href: '/contact', label: 'Contact' },
-  { href: '/admin', label: 'Admin', desktopOnly: true },
 ];
 
 export default function Navbar() {
