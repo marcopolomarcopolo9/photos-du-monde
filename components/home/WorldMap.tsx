@@ -43,25 +43,29 @@ export default function WorldMap() {
       });
       instanceRef.current = map;
 
-      // Enable touch zoom only with 2 fingers
-      const container = mapRef.current;
-      let touchCount = 0;
-      const onTouchStart = (e) => {
-        touchCount = e.touches.length;
-        if (e.touches.length >= 2) {
-          map.touchZoom.enable();
-          map.dragging.enable();
-        }
-      };
-      const onTouchEnd = () => {
-        touchCount = 0;
-        setTimeout(() => {
-          map.touchZoom.disable();
-          map.dragging.disable();
-        }, 300);
-      };
-      container.addEventListener('touchstart', onTouchStart, { passive: true });
-      container.addEventListener('touchend', onTouchEnd, { passive: true });
+      // Mobile: 2 fingers = zoom, 1 finger = pan when zoomed in
+      const isMobile = window.innerWidth < 768;
+      if (isMobile) {
+        map.touchZoom.enable();
+        const container = mapRef.current;
+        let initialZoom = map.getZoom();
+        
+        const onTouchStart = (e) => {
+          if (e.touches.length === 1) {
+            const currentZoom = map.getZoom();
+            if (currentZoom > initialZoom) {
+              map.dragging.enable();
+            } else {
+              map.dragging.disable();
+            }
+          } else if (e.touches.length >= 2) {
+            map.dragging.enable();
+          }
+        };
+        
+        container.addEventListener('touchstart', onTouchStart, { passive: true });
+        map.on('zoomend', () => { initialZoom = isMobile ? 1 : 2; });
+      }
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(map);
 

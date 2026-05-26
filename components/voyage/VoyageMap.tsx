@@ -34,7 +34,25 @@ export default function VoyageMap({ waypoints, country, centerLat, centerLng }: 
         touchZoom: false,
         attributionControl: false,
       });
-      instanceRef.current = map;
+instanceRef.current = map;
+      
+      // Mobile: 2 fingers zoom, 1 finger pan when zoomed
+      if (typeof window !== 'undefined' && window.innerWidth < 768) {
+        map.touchZoom.enable();
+        const container = mapRef.current;
+        if (container) {
+          container.addEventListener('touchstart', (e) => {
+            if (e.touches.length >= 2) {
+              map.dragging.enable();
+            } else if (e.touches.length === 1) {
+              const z = map.getZoom();
+              const initZ = map.getMinZoom() + 2;
+              if (z > initZ) map.dragging.enable();
+              else map.dragging.disable();
+            }
+          }, { passive: true });
+        }
+      }
 
       // Dark CartoDB tiles
       L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
