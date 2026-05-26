@@ -53,10 +53,10 @@ export default function Navbar() {
             <Link href="/" className="flex items-center gap-1.5 md:gap-2.5 group">
               <motion.div className="w-1.5 h-1.5 rounded-full bg-or" whileHover={{ scale: 1.8 }} />
               <div className="flex flex-col leading-tight">
-                <span className="font-serif text-xs md:text-base font-light tracking-[0.12em] md:tracking-[0.18em] uppercase text-creme">
+                <span className="font-serif text-sm md:text-2xl font-light tracking-[0.12em] md:tracking-[0.18em] uppercase text-creme">
                   Photos du Monde
                 </span>
-                <span className="text-[9px] tracking-[0.12em] text-or/60 italic font-serif">
+                <span className="text-[13px] tracking-[0.12em] text-or/60 italic font-serif">
                   by Rolf Etter
                 </span>
               </div>
@@ -66,7 +66,7 @@ export default function Navbar() {
             <nav className="hidden md:flex items-center gap-8">
               {NAV_LINKS.map((link) => (
                 <Link key={link.href} href={link.href}
-                  className={cn('text-[11px] tracking-[0.25em] uppercase font-poppins font-light transition-colors duration-200',
+                  className={cn('text-[14px] tracking-[0.25em] uppercase font-poppins font-light transition-colors duration-200',
                     pathname === link.href ? 'text-or' : 'text-creme/60 hover:text-creme')}>
                   {link.label}
                 </Link>
