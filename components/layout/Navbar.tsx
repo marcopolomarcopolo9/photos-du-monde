@@ -50,7 +50,7 @@ export default function Navbar() {
           <div className="flex items-center justify-between h-14 md:h-20">
             {/* Logo - hidden on mobile when menu open */}
             <Link href="/" className="flex items-center gap-1 md:gap-2 group" style={{ marginTop: "10px", marginLeft: "10px" }}>
-              <motion.div className="w-1.5 h-1.5 rounded-full bg-or hidden md:block" whileHover={{ scale: 1.8 }} />
+              
               <div className="flex flex-col leading-tight">
                 <span className="font-serif text-xl md:text-3xl font-bold tracking-[0.05em] md:tracking-[0.08em] uppercase text-white">
                   Photos du Monde

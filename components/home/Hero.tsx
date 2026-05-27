@@ -63,7 +63,7 @@ export default function Hero() {
 
       <div style={{ position:'relative', zIndex:4, padding:'0 clamp(24px,8vw,120px)', maxWidth:'780px' }}>
         <div style={{ display:'flex', alignItems:'center', gap:'16px', marginBottom:'28px' }}>
-          <div style={{ width:'32px', height:'1px', background:'#c4962a' }} />
+          
           {tagline && <span style={{ fontSize:'10px', letterSpacing:'0.35em', color:'#c4962a', textTransform:'uppercase', fontFamily:'system-ui' }}>{tagline}</span>}
         </div>
         <h1 style={{ margin:'0 0 16px', fontFamily:'Georgia,serif', lineHeight:1.15 }}>
