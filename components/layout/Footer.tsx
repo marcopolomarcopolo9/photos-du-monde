@@ -16,33 +16,10 @@ export default function Footer() {
                 Photos du Monde
               </span>
             </div>
-            <p className="text-sm text-creme/40 leading-relaxed max-w-xs">
-              Un carnet visuel de voyages au cœur des volcans, jungles et
-              sanctuaires d&apos;oiseaux du monde.
-            </p>
+
           </div>
 
-          {/* Navigation */}
-          <div>
-            <div className="text-[10px] tracking-widest uppercase text-or mb-5">
-              Explorer
-            </div>
-            <nav className="flex flex-col gap-3">
-              {[
-                { href: '/', label: 'Accueil' },
-                { href: '/voyages', label: 'Voyages' },
-                { href: '/galerie', label: 'Galerie' },
-              ].map((l) => (
-                <Link
-                  key={l.href}
-                  href={l.href}
-                  className="text-sm text-creme/50 hover:text-creme transition-colors"
-                >
-                  {l.label}
-                </Link>
-              ))}
-            </nav>
-          </div>
+
 
           {/* Contact */}
           <div>

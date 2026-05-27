@@ -78,8 +78,8 @@ export default function Hero() {
           </div>
         )}
         <div style={{ display:'flex', gap:'14px', flexWrap:'wrap', marginTop: slides[current]?.country ? '0' : '28px' }}>
-          <Link href="/voyages" style={{ padding:'13px 30px', background:'#c4962a', color:'#0a0a0a', fontWeight:700, textDecoration:'none', letterSpacing:'0.15em', textTransform:'uppercase', fontSize:'11px' }}>{btn1}</Link>
-          <Link href="/galerie" style={{ padding:'13px 30px', border:'1px solid rgba(255,255,255,0.35)', color:'rgba(255,255,255,0.85)', textDecoration:'none', letterSpacing:'0.15em', textTransform:'uppercase', fontSize:'11px', fontWeight:700 }}>{btn2}</Link>
+          <Link href="/voyages" style={{ padding:'13px 30px', background:'#c4962a', color:'#0a0a0a', fontWeight:700, textDecoration:'none', letterSpacing:'0.15em', textTransform:'uppercase', fontSize:'13px' }}>{btn1}</Link>
+          <Link href="/galerie" style={{ padding:'13px 30px', padding:'13px 30px', border:'1px solid rgba(255,255,255,0.35)', color:'rgba(255,255,255,0.85)', textDecoration:'none', letterSpacing:'0.15em', textTransform:'uppercase', fontSize:'13px', fontWeight:700 }}>{btn2}</Link>
         </div>
       </div>
 
