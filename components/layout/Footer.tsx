@@ -1,10 +1,10 @@
 import Link from 'next/link';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Instagram, Mail } from 'lucide-react';
 
 function FooterDesc() {
-  const [desc, setDesc] = React.useState('Un carnet visuel de voyages autour du monde.');
-  React.useEffect(() => {
+  const [desc, setDesc] = useState('Un carnet visuel de voyages autour du monde.');
+  useEffect(() => {
     fetch('/api/admin/homepage').then(r=>r.json()).then(d=>{
       if(d.homepage?.footer?.description) setDesc(d.homepage.footer.description);
     }).catch(()=>{});
