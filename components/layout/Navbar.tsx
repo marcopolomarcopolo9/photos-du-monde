@@ -49,7 +49,7 @@ export default function Navbar() {
         <div style={{ padding: "0 clamp(24px,8vw,120px)" }}>
           <div className="flex items-center justify-between h-14 md:h-20">
             {/* Logo - hidden on mobile when menu open */}
-            <Link href="/" className="flex items-center gap-1 md:gap-2 group" style={{ marginLeft: "12px" }}>
+            <Link href="/" className="flex items-start gap-1 md:gap-2 group" style={{ marginLeft: "12px", marginTop: "18px" }}>
               
               <div className="flex flex-col leading-tight">
                 <span className="font-serif text-base md:text-3xl font-bold tracking-[0.05em] md:tracking-[0.08em] uppercase text-white">
