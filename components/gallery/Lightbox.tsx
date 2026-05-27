@@ -100,9 +100,11 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
       e.preventDefault();
       const dx = e.touches[0].clientX - panStart.current.x;
       const dy = e.touches[0].clientY - panStart.current.y;
-      // Clamp pan to image bounds
-      const maxX = (window.innerWidth * (scale - 1)) / 2;
-      const maxY = (window.innerHeight * (scale - 1)) / 2;
+      // Clamp pan tightly - no black borders
+      const imgW = window.innerWidth * 0.9;
+      const imgH = window.innerHeight * 0.7;
+      const maxX = (imgW * (scale - 1)) / 2;
+      const maxY = (imgH * (scale - 1)) / 2;
       const newX = Math.max(-maxX, Math.min(maxX, panStart.current.px + dx));
       const newY = Math.max(-maxY, Math.min(maxY, panStart.current.py + dy));
       setPan({ x: newX, y: newY });
@@ -113,13 +115,11 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
     lastDist.current = null;
     panStart.current = null;
     if (scale > 1) {
-      // Single tap when zoomed → reset zoom
-      if (swipeStart.current) {
-        const dx = e.changedTouches[0].clientX - swipeStart.current.x;
-        const dy = e.changedTouches[0].clientY - swipeStart.current.y;
-        if (Math.abs(dx) < 10 && Math.abs(dy) < 10) {
-          setScale(1); setPan({ x: 0, y: 0 });
-        }
+      // Any tap = reset zoom (simple and reliable)
+      const dx = e.changedTouches[0].clientX - (swipeStart.current?.x || e.changedTouches[0].clientX);
+      const dy = e.changedTouches[0].clientY - (swipeStart.current?.y || e.changedTouches[0].clientY);
+      if (Math.abs(dx) < 15 && Math.abs(dy) < 15) {
+        setScale(1); setPan({ x: 0, y: 0 });
       }
       swipeStart.current = null; return;
     }
