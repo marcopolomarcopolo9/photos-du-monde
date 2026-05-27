@@ -282,7 +282,7 @@ export default function AdminPage() {
   const [bulkUploading, setBulkUploading] = useState(false);
   const uploadRef = useRef(null);
 
-  const TABS = ['TABLEAU DE BORD', 'VOYAGES', "PAGE D'ACCUEIL", 'À PROPOS', 'GALERIE'];
+  const TABS = ['TABLEAU DE BORD', 'VOYAGES', "PAGE D'ACCUEIL", 'À PROPOS', 'GALERIE', 'UPLOAD'];
 
   useEffect(() => {
     if (localStorage.getItem('admin_auth') === 'true') { setAuth(true); loadAll(); }
