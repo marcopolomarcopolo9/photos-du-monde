@@ -7,7 +7,8 @@ function FooterDesc() {
   const [desc, setDesc] = useState('Un carnet visuel de voyages autour du monde.');
   useEffect(() => {
     fetch('/api/admin/homepage').then(r=>r.json()).then(d=>{
-      const desc = d.homepage?.footer?.description || d.footer?.description; if(desc) setDesc(desc);
+      const desc = d.config?.footer?.description || d.homepage?.footer?.description || d.footer?.description;
+      if(desc && desc.length > 3) setDesc(desc);
     }).catch(()=>{});
   }, []);
   return <p className="text-sm text-creme/40 leading-relaxed max-w-xs mt-4" style={{textAlign:'justify'}}>{desc}</p>;
