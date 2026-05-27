@@ -55,7 +55,7 @@ export default function Navbar() {
                 <span className="font-serif text-base md:text-3xl font-semibold tracking-[0.12em] md:tracking-[0.18em] uppercase text-white">
                   Photos du Monde
                 </span>
-                <span className="text-[16px] tracking-[0.12em] text-or/90 italic font-serif">
+                <span className="text-[16px] tracking-[0.12em] text-or/90 italic font-serif admin-hidden">
                   by Rolf Etter
                 </span>
               </div>
