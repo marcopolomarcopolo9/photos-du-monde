@@ -49,13 +49,13 @@ export default function Navbar() {
         <div className="max-w-screen-xl mx-auto px-5 md:px-10">
           <div className="flex items-center justify-between h-14 md:h-20">
             {/* Logo - hidden on mobile when menu open */}
-            <Link href="/" className="flex items-center gap-1.5 md:gap-2.5 group">
+            <Link href="/" className="flex items-center gap-1 md:gap-2 group">
               <motion.div className="w-1.5 h-1.5 rounded-full bg-or hidden md:block" whileHover={{ scale: 1.8 }} />
               <div className="flex flex-col leading-tight">
-                <span className="font-serif text-base md:text-3xl font-light tracking-[0.12em] md:tracking-[0.18em] uppercase text-creme">
+                <span className="font-serif text-sm md:text-2xl font-light tracking-[0.08em] md:tracking-[0.12em] uppercase text-creme">
                   Photos du Monde
                 </span>
-                <span className="text-[16px] tracking-[0.12em] text-or/60 italic font-serif">
+                <span className="text-[13px] tracking-[0.08em] text-or/60 italic font-serif">
                   by Rolf Etter
                 </span>
               </div>
