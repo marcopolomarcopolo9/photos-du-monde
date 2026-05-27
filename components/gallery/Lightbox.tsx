@@ -181,11 +181,11 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
               className="block select-none" style={{ width: scale > 1 ? "100%" : "auto", height: scale > 1 ? "100%" : "auto", maxWidth: scale > 1 ? "none" : "100%", maxHeight: scale > 1 ? "none" : "100%", objectFit: scale > 1 ? "cover" : "contain" as "cover" | "contain",
                 transition: scale === 1 && !zoomed ? 'transform 0.3s ease' : 'none',
                 transform: scale > 1
-                  ? `scale(${scale}) translate(${pan.x/scale}px, ${pan.y/scale}px)`
+                  ? `scale(${scale})`
                   : zoomed
                     ? `scale(2.5) translate(${(50-zoomPos.x)*0.6}%, ${(50-zoomPos.y)*0.6}%)`
                     : 'scale(1)',
-                transformOrigin: scale > 1 ? 'center center' : `${zoomPos.x}% ${zoomPos.y}%`,
+                transformOrigin: scale > 1 ? `calc(50% - ${pan.x/scale}px) calc(50% - ${pan.y/scale}px)` : `${zoomPos.x}% ${zoomPos.y}%`,
                 pointerEvents: 'none',
               }}
               priority draggable={false} onContextMenu={e => e.preventDefault()}/>
