@@ -178,7 +178,7 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
             style={{ cursor: zoomed ? 'zoom-out' : 'zoom-in', width:'100%', height:'100%', display:'flex', alignItems:'center', justifyContent:'center' }}
             onClick={handleImgClick} onMouseMove={handleMouseMove}>
             <Image src={cloudinaryUrl(photo.src)} alt={photo.alt||''} width={photo.width||1200} height={photo.height||800}
-              className="block max-w-full max-h-full object-contain select-none"
+              className="block select-none" style={{ width: scale > 1 ? "100%" : "auto", height: scale > 1 ? "100%" : "auto", maxWidth: scale > 1 ? "none" : "100%", maxHeight: scale > 1 ? "none" : "100%", objectFit: scale > 1 ? "cover" : "contain" }}
               style={{
                 transition: scale === 1 && !zoomed ? 'transform 0.3s ease' : 'none',
                 transform: scale > 1
@@ -186,7 +186,7 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
                   : zoomed
                     ? `scale(2.5) translate(${(50-zoomPos.x)*0.6}%, ${(50-zoomPos.y)*0.6}%)`
                     : 'scale(1)',
-                transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`,
+                transformOrigin: scale > 1 ? 'center center' : `${zoomPos.x}% ${zoomPos.y}%`,
                 pointerEvents: 'none',
               }}
               priority draggable={false} onContextMenu={e => e.preventDefault()}/>
