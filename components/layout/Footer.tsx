@@ -1,5 +1,16 @@
 import Link from 'next/link';
+import React from 'react';
 import { Instagram, Mail } from 'lucide-react';
+
+function FooterDesc() {
+  const [desc, setDesc] = React.useState('Un carnet visuel de voyages autour du monde.');
+  React.useEffect(() => {
+    fetch('/api/admin/homepage').then(r=>r.json()).then(d=>{
+      if(d.homepage?.footer?.description) setDesc(d.homepage.footer.description);
+    }).catch(()=>{});
+  }, []);
+  return <p className="text-sm text-creme/40 leading-relaxed max-w-xs mt-4" style={{textAlign:'justify'}}>{desc}</p>;
+}
 
 export default function Footer() {
   const year = new Date().getFullYear();
@@ -16,7 +27,7 @@ export default function Footer() {
                 Photos du Monde
               </span>
             </div>
-
+            <FooterDesc />
           </div>
 
 
