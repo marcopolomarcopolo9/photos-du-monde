@@ -67,8 +67,8 @@ export default function Hero() {
           {tagline && <span style={{ fontSize:'10px', letterSpacing:'0.35em', color:'#c4962a', textTransform:'uppercase', fontFamily:'system-ui' }}>{tagline}</span>}
         </div>
         <h1 style={{ margin:'0 0 16px', fontFamily:'Georgia,serif', lineHeight:1.15 }}>
-          <span style={{ display:'block', fontSize:'clamp(1.8rem,3.5vw,3rem)', fontWeight:300, color:'#f5f0e8', letterSpacing:'0.02em' }}>{title}</span>
-          <em style={{ display:'block', fontSize:'clamp(2rem,4vw,3.4rem)', fontWeight:300, fontStyle:'italic', color:'#c4962a' }}>{italic}</em>
+          <span style={{ display:'block', fontSize:'clamp(4rem,7.8vw,6.75rem)', fontWeight:300, color:'#f5f0e8', letterSpacing:'0.02em' }}>{title}</span>
+          <em style={{ display:'block', fontSize:'clamp(4.5rem,9vw,7.65rem)', fontWeight:300, fontStyle:'italic', color:'#c4962a' }}>{italic}</em>
         </h1>
         {slides[current]?.country && (
           <div style={{ display:'flex', alignItems:'center', gap:'8px', marginBottom:'28px', opacity:0.7 }}>
