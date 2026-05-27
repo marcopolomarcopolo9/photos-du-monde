@@ -256,6 +256,14 @@ function PhotoGrid({ photos, onChange, onZoom }) {
    MAIN ADMIN COMPONENT
 ═══════════════════════════════════════════ */
 export default function AdminPage() {
+  // Hide 'by Rolf Etter' on admin page
+  useEffect(() => {
+    const s = document.createElement('style');
+    s.textContent = '.by-rolf-etter{display:none!important}';
+    document.head.appendChild(s);
+    return () => s.remove();
+  }, []);
+
   const [auth, setAuth] = useState(false);
   const [pw, setPw] = useState('');
   const [loginErr, setLoginErr] = useState('');
