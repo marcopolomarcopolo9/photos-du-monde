@@ -7,7 +7,7 @@ function FooterDesc() {
   const [desc, setDesc] = useState('Un carnet visuel de voyages autour du monde.');
   useEffect(() => {
     fetch('/api/admin/homepage').then(r=>r.json()).then(d=>{
-      if(d.homepage?.footer?.description) setDesc(d.homepage.footer.description);
+      const desc = d.homepage?.footer?.description || d.footer?.description; if(desc) setDesc(desc);
     }).catch(()=>{});
   }, []);
   return <p className="text-sm text-creme/40 leading-relaxed max-w-xs mt-4" style={{textAlign:'justify'}}>{desc}</p>;
