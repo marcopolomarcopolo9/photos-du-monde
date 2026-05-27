@@ -586,7 +586,7 @@ export default function AdminPage() {
       <div style={{ borderBottom: '1px solid #1a1a1a', padding: '0 32px', display: 'flex', overflowX: 'auto' }}>
         {TABS.map((t, i) => (
           <button key={i} onClick={() => setTab(i)}
-            style={{ padding: '16px 20px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '11px', letterSpacing: '.2em', fontWeight: '600', color: tab === i ? G : '#3a3a3a', borderBottom: tab === i ? '2px solid ' + G : '2px solid transparent', whiteSpace: 'nowrap', transition: '.2s' }}>
+            style={{ padding: '16px 20px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '11px', letterSpacing: '.2em', fontWeight: '600', color: tab === i ? G : '#ffffff', fontWeight: 700, borderBottom: tab === i ? '2px solid ' + G : '2px solid transparent', whiteSpace: 'nowrap', transition: '.2s' }}>
             {t}
           </button>
         ))}
