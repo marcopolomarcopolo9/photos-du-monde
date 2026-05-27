@@ -33,6 +33,7 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
 
   // Swipe
   const swipeStart = useRef<{ x: number; y: number } | null>(null);
+  const wasPinch = useRef(false);
 
   const handlePrev = useCallback(() => {
     if (hasPrev) { setZoomed(false); setScale(1); setPan({ x: 0, y: 0 }); onNavigate(currentIndex - 1); }
@@ -79,6 +80,7 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
       lastScale.current = scale;
       swipeStart.current = null;
       panStart.current = null;
+      wasPinch.current = true;
     } else if (e.touches.length === 1) {
       // Always record start position for tap detection
       swipeStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
@@ -109,14 +111,18 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
     lastDist.current = null;
     panStart.current = null;
     if (scale > 1) {
-      // Any tap = reset zoom (simple and reliable)
-      const dx = e.changedTouches[0].clientX - (swipeStart.current?.x || e.changedTouches[0].clientX);
-      const dy = e.changedTouches[0].clientY - (swipeStart.current?.y || e.changedTouches[0].clientY);
-      if (Math.abs(dx) < 15 && Math.abs(dy) < 15) {
-        setScale(1); setPan({ x: 0, y: 0 });
+      // Only reset if it was a true single tap (not a pinch release)
+      if (!wasPinch.current && swipeStart.current) {
+        const dx = e.changedTouches[0].clientX - swipeStart.current.x;
+        const dy = e.changedTouches[0].clientY - swipeStart.current.y;
+        if (Math.abs(dx) < 10 && Math.abs(dy) < 10) {
+          setScale(1); setPan({ x: 0, y: 0 });
+        }
       }
+      wasPinch.current = false;
       swipeStart.current = null; return;
     }
+    wasPinch.current = false;
     if (swipeStart.current && e.changedTouches.length > 0) {
       const dx = e.changedTouches[0].clientX - swipeStart.current.x;
       const dy = e.changedTouches[0].clientY - swipeStart.current.y;
