@@ -52,10 +52,10 @@ export default function Navbar() {
             <Link href="/" className="flex items-center gap-1 md:gap-2 group" style={{ marginTop: "4px", marginLeft: "6px" }}>
               <motion.div className="w-1.5 h-1.5 rounded-full bg-or hidden md:block" whileHover={{ scale: 1.8 }} />
               <div className="flex flex-col leading-tight">
-                <span className="font-serif text-base md:text-3xl font-light tracking-[0.12em] md:tracking-[0.18em] uppercase text-creme">
+                <span className="font-serif text-base md:text-3xl font-semibold tracking-[0.12em] md:tracking-[0.18em] uppercase text-white">
                   Photos du Monde
                 </span>
-                <span className="text-[16px] tracking-[0.12em] text-or/60 italic font-serif">
+                <span className="text-[16px] tracking-[0.12em] text-or/90 italic font-serif">
                   by Rolf Etter
                 </span>
               </div>
@@ -66,7 +66,7 @@ export default function Navbar() {
               {NAV_LINKS.map((link) => (
                 <Link key={link.href} href={link.href}
                   className={cn('text-[14px] tracking-[0.25em] uppercase font-poppins font-bold transition-colors duration-200',
-                    pathname === link.href ? 'text-or' : 'text-creme/60 hover:text-creme')}>
+                    pathname === link.href ? 'text-or' : 'text-white hover:text-or')}>
                   {link.label}
                 </Link>
               ))}
