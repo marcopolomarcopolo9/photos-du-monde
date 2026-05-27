@@ -55,7 +55,7 @@ export default function Navbar() {
                 <span className="font-serif text-xl md:text-3xl font-bold tracking-[0.05em] md:tracking-[0.08em] uppercase text-white">
                   Photos du Monde
                 </span>
-                <span className="text-[16px] tracking-[0.12em] text-or/90 italic font-serif admin-hidden">
+                <span className={`text-[16px] tracking-[0.12em] text-or/90 italic font-serif ${pathname?.startsWith("/admin") ? "hidden" : ""}`}>
                   by Rolf Etter
                 </span>
               </div>
