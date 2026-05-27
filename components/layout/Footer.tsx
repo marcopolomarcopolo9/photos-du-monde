@@ -70,6 +70,11 @@ export default function Footer() {
             Godard
           </p>
         </div>
+      <div style={{ textAlign: 'center', paddingTop: '16px', paddingBottom: '8px' }}>
+        <p style={{ fontSize: '10px', color: 'rgba(245,240,232,0.2)', letterSpacing: '0.1em', fontFamily: 'system-ui' }}>
+          Made with ❤️ by Marcopolo Studio
+        </p>
+      </div>
       </div>
     </footer>
   );
