@@ -42,7 +42,6 @@ function Field({ label, children }) {
       <label style={lbl}>{label}</label>
       {children}
     </div>
-    </>
   );
 }
 
