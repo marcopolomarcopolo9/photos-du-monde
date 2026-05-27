@@ -47,7 +47,7 @@ export default function Navbar() {
         )}
       >
         <div style={{ padding: "0 clamp(24px,8vw,120px)" }}>
-          <div className="flex items-start justify-between h-14 md:h-20" style={{ paddingTop: "0" }}>
+          <div className="flex items-center justify-between h-14 md:h-20">
             {/* Logo - hidden on mobile when menu open */}
             <Link href="/" className="flex items-center gap-1 md:gap-2 group" style={{ marginLeft: "12px" }}>
               
@@ -62,7 +62,7 @@ export default function Navbar() {
             </Link>
 
             {/* Desktop nav */}
-            <nav className="hidden md:flex items-center gap-8" style={{ height: "100%" }}>
+            <nav className="hidden md:flex items-center gap-8">
               {NAV_LINKS.map((link) => (
                 <Link key={link.href} href={link.href}
                   className={cn('text-[14px] tracking-[0.1em] uppercase font-poppins font-bold transition-colors duration-200',
