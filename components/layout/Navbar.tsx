@@ -49,7 +49,7 @@ export default function Navbar() {
         <div className="max-w-screen-xl mx-auto px-5 md:px-10">
           <div className="flex items-center justify-between h-14 md:h-20">
             {/* Logo - hidden on mobile when menu open */}
-            <Link href="/" className="flex items-center gap-1.5 md:gap-2.5 group">
+            <Link href="/" className="flex items-center gap-1.5 md:gap-2.5 group" style={{ marginLeft: "-20px" }}>
               <motion.div className="w-1.5 h-1.5 rounded-full bg-or hidden md:block" whileHover={{ scale: 1.8 }} />
               <div className="flex flex-col leading-tight">
                 <span className="font-serif text-base md:text-3xl font-light tracking-[0.12em] md:tracking-[0.18em] uppercase text-creme">
@@ -66,7 +66,7 @@ export default function Navbar() {
               {NAV_LINKS.map((link) => (
                 <Link key={link.href} href={link.href}
                   className={cn('text-[14px] tracking-[0.25em] uppercase font-poppins font-bold transition-colors duration-200',
-                    pathname === link.href ? 'text-or' : 'text-creme/60 hover:text-creme')}>
+                    pathname === link.href ? 'text-or' : 'text-white hover:text-or')}>
                   {link.label}
                 </Link>
               ))}
