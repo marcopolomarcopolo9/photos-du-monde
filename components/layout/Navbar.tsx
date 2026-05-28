@@ -14,7 +14,6 @@ const NAV_LINKS = [
   { href: '/galerie', label: 'Galerie' },
   { href: '/a-propos', label: 'À propos' },
   { href: '/contact', label: 'Contact' },
-  { href: '/admin', label: 'Admin', desktopOnly: true },
 ];
 
 export default function Navbar() {
@@ -50,13 +49,13 @@ export default function Navbar() {
         <div className="max-w-screen-xl mx-auto px-5 md:px-10">
           <div className="flex items-center justify-between h-14 md:h-20">
             {/* Logo - hidden on mobile when menu open */}
-            <Link href="/" className="flex items-center gap-1.5 md:gap-2.5 group">
-              <motion.div className="w-1.5 h-1.5 rounded-full bg-or" whileHover={{ scale: 1.8 }} />
+            <Link href="/" className="flex items-center gap-1 md:gap-2 group" style={{ marginLeft: "-20px" }}>
+              
               <div className="flex flex-col leading-tight">
-                <span className="font-serif text-xs md:text-base font-light tracking-[0.12em] md:tracking-[0.18em] uppercase text-creme">
+                <span className="font-serif text-lg md:text-3xl font-bold tracking-[0.05em] md:tracking-[0.08em] uppercase text-white">
                   Photos du Monde
                 </span>
-                <span className="text-[9px] tracking-[0.12em] text-or/60 italic font-serif">
+                <span className="by-rolf-etter text-[16px] tracking-[0.12em] text-or/90 italic font-serif">
                   by Rolf Etter
                 </span>
               </div>
@@ -66,8 +65,8 @@ export default function Navbar() {
             <nav className="hidden md:flex items-center gap-8">
               {NAV_LINKS.map((link) => (
                 <Link key={link.href} href={link.href}
-                  className={cn('text-[11px] tracking-[0.25em] uppercase font-poppins font-light transition-colors duration-200',
-                    pathname === link.href ? 'text-or' : 'text-creme/60 hover:text-creme')}>
+                  className={cn('text-[14px] tracking-[0.1em] uppercase font-poppins font-bold transition-colors duration-200',
+                    pathname === link.href ? 'text-or' : 'text-white hover:text-or')}>
                   {link.label}
                 </Link>
               ))}
@@ -96,7 +95,7 @@ export default function Navbar() {
             {/* Close */}
             <div className="flex justify-between items-center px-5 h-14 border-b border-white/5">
               <Link href="/" onClick={() => setMenuOpen(false)} className="flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-or" />
+                
                 <span className="font-serif text-sm tracking-[0.18em] uppercase text-creme">Photos du Monde</span>
               </Link>
               <button onClick={() => setMenuOpen(false)} className="w-10 h-10 flex items-center justify-center text-creme/60">

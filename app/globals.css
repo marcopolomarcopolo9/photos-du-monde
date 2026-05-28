@@ -156,7 +156,7 @@ img {
 .photo-card .img-zoom img { max-height: 200px; }
 
   /* Voyage grid: 1 col on small, 2 on medium */
-  .voyage-grid { grid-template-columns: 1fr; gap: 3px; }
+  .voyage-grid { grid-template-columns: 1fr; gap: 16px; }
   
   /* No hover overlay on touch - keep zoom */
   @media (hover: none) { .photo-card:hover .photo-overlay { opacity: 0; } }
@@ -166,7 +166,6 @@ img {
 }
 
 @media (min-width: 480px) and (max-width: 640px) {
-  .voyage-grid { grid-template-columns: 1fr 1fr; }
   .masonry-grid { column-count: 2; }
 }
 
@@ -214,11 +213,11 @@ img {
 
 /* ── World map responsive ── */
 .world-map-container {
-  height: 500px;
+  height: 400px; /* desktop: -20% */
 }
 @media (max-width: 640px) {
   .world-map-container {
-    height: calc(100vw - 32px); /* square minus padding */
+    height: 280px; /* mobile: compact */
     max-height: none;
   }
 }
