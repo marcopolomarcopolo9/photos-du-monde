@@ -46,10 +46,10 @@ export default function Navbar() {
           scrolled ? 'bg-noir/90 backdrop-blur-md border-b border-white/5' : 'bg-transparent'
         )}
       >
-        <div className="max-w-screen-xl mx-auto px-5 md:px-10">
+        <div className="max-w-screen-xl mx-auto px-5 md:px-[clamp(24px,8vw,120px)]">
           <div className="flex items-center justify-between h-14 md:h-20">
             {/* Logo - hidden on mobile when menu open */}
-            <Link href="/" className="flex items-center gap-1 md:gap-2 group md:ml-[clamp(0px,calc(8vw-40px),80px)]">
+            <Link href="/" className="flex items-center gap-1 md:gap-2 group">
               
               <div className="flex flex-col leading-tight">
                 <span className="font-serif text-lg md:text-3xl font-bold tracking-[0.05em] md:tracking-[0.08em] uppercase text-white">
