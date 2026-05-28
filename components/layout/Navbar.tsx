@@ -46,7 +46,7 @@ export default function Navbar() {
           scrolled ? 'bg-noir/90 backdrop-blur-md border-b border-white/5' : 'bg-transparent'
         )}
       >
-        <div style={{ padding: "0 clamp(24px,8vw,120px)" }}>
+        <div className="max-w-screen-xl mx-auto px-5 md:px-10">
           <div className="flex items-center justify-between h-14 md:h-20">
             {/* Logo - hidden on mobile when menu open */}
             <Link href="/" className="flex items-start gap-1 md:gap-2 group mt-0 md:mt-[18px]" style={{ marginLeft: "-4px" }}>
