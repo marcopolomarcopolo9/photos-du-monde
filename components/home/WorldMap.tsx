@@ -109,7 +109,7 @@ export default function WorldMap() {
             {voyages.length} destination{voyages.length > 1 ? 's' : ''} · {totalPhotos} photos
           </span>
         </div>
-        <h2 style={{ fontFamily: '"Cormorant Garamond",Georgia,serif', fontSize: 'clamp(1.8rem,4vw,3.2rem)', fontWeight: 300, color: '#f5f0e8', fontStyle: 'italic', margin: 0 }}>
+        <h2 style={{ fontFamily: '"Cormorant Garamond",Georgia,serif', fontSize: 'clamp(1.8rem,4vw,3.2rem)', fontWeight: 300, color: '#f5f0e8', fontStyle: 'italic', margin: '16px 0 0' }}>
           Le monde sans frontières
         </h2>
       </div>
