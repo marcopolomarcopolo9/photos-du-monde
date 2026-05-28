@@ -34,7 +34,7 @@ export default function PageLoader() {
           >
             <div className="flex items-center gap-3">
               <div className="w-1.5 h-1.5 rounded-full bg-or" />
-              <span className="font-serif text-xl md:text-5xl font-light tracking-[0.25em] text-creme uppercase">
+              <span className="font-serif text-xl font-light tracking-[0.25em] text-creme uppercase">
                 Photos du Monde
               </span>
             </div>
@@ -49,7 +49,7 @@ export default function PageLoader() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.8 }}
-              className="font-serif italic text-xs md:text-xl text-creme/40 tracking-[0.15em]"
+              className="font-serif italic text-sm text-creme/40 tracking-[0.15em]"
             >
               by Rolf Etter
             </motion.span>

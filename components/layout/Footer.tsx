@@ -1,18 +1,5 @@
-'use client';
 import Link from 'next/link';
-import React, { useState, useEffect } from 'react';
 import { Instagram, Mail } from 'lucide-react';
-
-function FooterDesc() {
-  const [desc, setDesc] = useState('Un carnet visuel de voyages autour du monde.');
-  useEffect(() => {
-    fetch('/api/admin/homepage').then(r=>r.json()).then(d=>{
-      const desc = d.config?.footer?.description || d.homepage?.footer?.description || d.footer?.description;
-      if(desc && desc.length > 3) setDesc(desc);
-    }).catch(()=>{});
-  }, []);
-  return <p className="text-sm text-creme/40 leading-relaxed max-w-xs mt-4" style={{textAlign:'justify'}}>{desc}</p>;
-}
 
 export default function Footer() {
   const year = new Date().getFullYear();
@@ -29,7 +16,7 @@ export default function Footer() {
                 Photos du Monde
               </span>
             </div>
-            <FooterDesc />
+
           </div>
 
 
@@ -71,11 +58,6 @@ export default function Footer() {
             Godard
           </p>
         </div>
-      <div style={{ textAlign: 'center', paddingTop: '16px', paddingBottom: '8px' }}>
-        <p style={{ fontSize: '10px', color: 'rgba(245,240,232,0.2)', letterSpacing: '0.1em', fontFamily: 'system-ui' }}>
-          Made with ❤️ by Marcopolo Studio
-        </p>
-      </div>
       </div>
     </footer>
   );
