@@ -134,9 +134,9 @@ export default function WorldMap() {
 
   return (
     <section style={{ background: '#070707', padding: '0 0 0' }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: 'clamp(48px,8vw,80px) clamp(16px,4vw,48px) clamp(20px,4vw,48px)' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: 'clamp(32px,6vw,80px) clamp(16px,4vw,48px) clamp(20px,4vw,48px)' }}>
 
-        <h2 style={{ fontFamily: '"Cormorant Garamond",Georgia,serif', fontSize: 'clamp(1.95rem,5.4vw,4.05rem)', fontWeight: 300, color: '#f5f0e8', fontStyle: 'italic', margin: '24px 0 0' }}>
+        <h2 style={{ fontFamily: '"Cormorant Garamond",Georgia,serif', fontSize: 'clamp(1.95rem,5.4vw,4.05rem)', fontWeight: 300, color: '#f5f0e8', fontStyle: 'italic', margin: 0 }}>
           Le monde sans frontières
         </h2>
       </div>
