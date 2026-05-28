@@ -135,12 +135,7 @@ export default function WorldMap() {
   return (
     <section style={{ background: '#070707', padding: '0 0 0' }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: 'clamp(32px,6vw,80px) clamp(16px,4vw,48px) clamp(20px,3vw,36px)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '12px' }}>
-          <div style={{ width: '36px', height: '1px', background: '#c4962a' }} />
-          <span style={{ fontSize: '10px', letterSpacing: '0.36em', color: '#c4962a', textTransform: 'uppercase', fontFamily: 'system-ui' }}>
-            {voyages.length} destination{voyages.length > 1 ? 's' : ''} · {totalPhotos} photos
-          </span>
-        </div>
+
         <h2 style={{ fontFamily: '"Cormorant Garamond",Georgia,serif', fontSize: 'clamp(1.8rem,4vw,3.2rem)', fontWeight: 300, color: '#f5f0e8', fontStyle: 'italic', margin: 0 }}>
           Le monde sans frontières
         </h2>

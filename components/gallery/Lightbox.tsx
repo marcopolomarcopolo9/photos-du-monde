@@ -33,6 +33,7 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
 
   // Swipe
   const swipeStart = useRef<{ x: number; y: number } | null>(null);
+  const wasPinch = useRef(false);
 
   const handlePrev = useCallback(() => {
     if (hasPrev) { setZoomed(false); setScale(1); setPan({ x: 0, y: 0 }); onNavigate(currentIndex - 1); }
@@ -79,6 +80,7 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
       lastScale.current = scale;
       swipeStart.current = null;
       panStart.current = null;
+      wasPinch.current = true;
     } else if (e.touches.length === 1) {
       // Always record start position for tap detection
       swipeStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
@@ -100,6 +102,7 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
       e.preventDefault();
       const dx = e.touches[0].clientX - panStart.current.x;
       const dy = e.touches[0].clientY - panStart.current.y;
+      // Pan freely
       setPan({ x: panStart.current.px + dx, y: panStart.current.py + dy });
     }
   };
@@ -108,16 +111,18 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
     lastDist.current = null;
     panStart.current = null;
     if (scale > 1) {
-      // Single tap when zoomed → reset zoom
-      if (swipeStart.current) {
+      // Only reset if it was a true single tap (not a pinch release)
+      if (!wasPinch.current && swipeStart.current) {
         const dx = e.changedTouches[0].clientX - swipeStart.current.x;
         const dy = e.changedTouches[0].clientY - swipeStart.current.y;
         if (Math.abs(dx) < 10 && Math.abs(dy) < 10) {
           setScale(1); setPan({ x: 0, y: 0 });
         }
       }
+      wasPinch.current = false;
       swipeStart.current = null; return;
     }
+    wasPinch.current = false;
     if (swipeStart.current && e.changedTouches.length > 0) {
       const dx = e.changedTouches[0].clientX - swipeStart.current.x;
       const dy = e.changedTouches[0].clientY - swipeStart.current.y;
@@ -173,15 +178,14 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
             style={{ cursor: zoomed ? 'zoom-out' : 'zoom-in', width:'100%', height:'100%', display:'flex', alignItems:'center', justifyContent:'center' }}
             onClick={handleImgClick} onMouseMove={handleMouseMove}>
             <Image src={cloudinaryUrl(photo.src)} alt={photo.alt||''} width={photo.width||1200} height={photo.height||800}
-              className="block max-w-full max-h-full object-contain select-none"
-              style={{
+              className="block select-none" style={{ width: scale > 1 ? "100%" : "auto", height: scale > 1 ? "100%" : "auto", maxWidth: scale > 1 ? "none" : "100%", maxHeight: scale > 1 ? "none" : "100%", objectFit: scale > 1 ? "cover" : "contain" as "cover" | "contain",
                 transition: scale === 1 && !zoomed ? 'transform 0.3s ease' : 'none',
                 transform: scale > 1
-                  ? `scale(${scale}) translate(${pan.x/scale}px, ${pan.y/scale}px)`
+                  ? `scale(${scale})`
                   : zoomed
                     ? `scale(2.5) translate(${(50-zoomPos.x)*0.6}%, ${(50-zoomPos.y)*0.6}%)`
                     : 'scale(1)',
-                transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`,
+                transformOrigin: scale > 1 ? `calc(50% - ${pan.x/scale}px) calc(50% - ${pan.y/scale}px)` : `${zoomPos.x}% ${zoomPos.y}%`,
                 pointerEvents: 'none',
               }}
               priority draggable={false} onContextMenu={e => e.preventDefault()}/>
