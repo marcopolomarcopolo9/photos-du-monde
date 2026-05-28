@@ -49,13 +49,13 @@ export default function Navbar() {
         <div className="max-w-screen-xl mx-auto px-5 md:px-10">
           <div className="flex items-center justify-between h-14 md:h-20">
             {/* Logo - hidden on mobile when menu open */}
-            <Link href="/" className="flex items-center gap-1 md:gap-2 group">
-              
+            <Link href="/" className="flex items-center gap-1.5 md:gap-2.5 group">
+              <motion.div className="w-1.5 h-1.5 rounded-full bg-or hidden md:block" whileHover={{ scale: 1.8 }} />
               <div className="flex flex-col leading-tight">
-                <span className="font-serif text-lg md:text-3xl font-bold tracking-[0.05em] md:tracking-[0.08em] uppercase text-white">
+                <span className="font-serif text-base md:text-3xl font-light tracking-[0.12em] md:tracking-[0.18em] uppercase text-creme">
                   Photos du Monde
                 </span>
-                <span className="by-rolf-etter text-[16px] tracking-[0.12em] text-or/90 italic font-serif">
+                <span className="text-[16px] tracking-[0.12em] text-or/60 italic font-serif">
                   by Rolf Etter
                 </span>
               </div>
@@ -65,8 +65,8 @@ export default function Navbar() {
             <nav className="hidden md:flex items-center gap-8">
               {NAV_LINKS.map((link) => (
                 <Link key={link.href} href={link.href}
-                  className={cn('text-[14px] tracking-[0.1em] uppercase font-poppins font-bold transition-colors duration-200',
-                    pathname === link.href ? 'text-or' : 'text-white hover:text-or')}>
+                  className={cn('text-[14px] tracking-[0.25em] uppercase font-poppins font-bold transition-colors duration-200',
+                    pathname === link.href ? 'text-or' : 'text-creme/60 hover:text-creme')}>
                   {link.label}
                 </Link>
               ))}
