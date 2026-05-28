@@ -148,7 +148,7 @@ export default function WorldMap() {
           .leaflet-tile { filter: brightness(0.18) saturate(0.3) sepia(0.2); }
           .pm-dot:hover { transform: scale(1.8); }
         `}</style>
-        <div ref={mapRef} style={{ width: '100%', height: '520px', background: '#0a0a0a' }} />
+        <div ref={mapRef} className="world-map-container" style={{ width: '100%', background: '#0a0a0a' }} />
       </div>
     </section>
   );
