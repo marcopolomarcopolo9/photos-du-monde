@@ -40,7 +40,7 @@ export default function Hero() {
 
   const title = hero.title || 'Explorer le monde';
   const italic = hero.italicTitle || "à travers l'objectif.";
-  const tagline = '';
+  const tagline = hero.tagline || 'VOYAGES · NATURE · PHOTOGRAPHIE';
   const btn1 = hero.cta1 || 'VOIR LES VOYAGES';
   const btn2 = hero.cta2 || 'GALERIE';
 
@@ -63,8 +63,8 @@ export default function Hero() {
 
       <div style={{ position:'relative', zIndex:4, padding:'0 clamp(24px,8vw,120px)', maxWidth:'780px' }}>
         <div style={{ display:'flex', alignItems:'center', gap:'16px', marginBottom:'28px' }}>
-          
-          {tagline && <span style={{ fontSize:'10px', letterSpacing:'0.35em', color:'#c4962a', textTransform:'uppercase', fontFamily:'system-ui' }}>{tagline}</span>}
+          <div style={{ width:'32px', height:'1px', background:'#c4962a' }} />
+          <span style={{ fontSize:'10px', letterSpacing:'0.35em', color:'#c4962a', textTransform:'uppercase', fontFamily:'system-ui' }}>{tagline}</span>
         </div>
         <h1 style={{ margin:'0 0 16px', fontFamily:'Georgia,serif', lineHeight:1.15 }}>
           <span style={{ display:'block', fontSize:'clamp(1.8rem,3.5vw,3rem)', fontWeight:300, color:'#f5f0e8', letterSpacing:'0.02em' }}>{title}</span>
@@ -78,8 +78,8 @@ export default function Hero() {
           </div>
         )}
         <div style={{ display:'flex', gap:'14px', flexWrap:'wrap', marginTop: slides[current]?.country ? '0' : '28px' }}>
-          <Link href="/voyages" style={{ padding:'13px 30px', background:'#c4962a', color:'#0a0a0a', fontWeight:700, textDecoration:'none', letterSpacing:'0.15em', textTransform:'uppercase', fontSize:'13px' }}>{btn1}</Link>
-          <Link href="/galerie" style={{ padding:'13px 30px', padding:'13px 30px', border:'1px solid rgba(255,255,255,0.35)', color:'rgba(255,255,255,0.85)', textDecoration:'none', letterSpacing:'0.15em', textTransform:'uppercase', fontSize:'13px', fontWeight:700 }}>{btn2}</Link>
+          <Link href="/voyages" style={{ padding:'13px 30px', background:'#c4962a', color:'#0a0a0a', fontWeight:700, textDecoration:'none', letterSpacing:'0.15em', textTransform:'uppercase', fontSize:'11px' }}>{btn1}</Link>
+          <Link href="/galerie" style={{ padding:'13px 30px', border:'1px solid rgba(255,255,255,0.35)', color:'rgba(255,255,255,0.85)', textDecoration:'none', letterSpacing:'0.15em', textTransform:'uppercase', fontSize:'11px' }}>{btn2}</Link>
         </div>
       </div>
 
