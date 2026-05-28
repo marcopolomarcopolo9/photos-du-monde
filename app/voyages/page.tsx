@@ -56,7 +56,7 @@ function VoyageCard({ v, index }: { v: any; index: number }) {
       {/* Text box */}
       <div style={{ position: 'absolute', bottom: '10px', left: '9px', right: '9px', padding: '11px 13px', zIndex: 3, border: '1.5px solid rgba(255,255,255,0.35)', background: 'rgba(0,0,0,0.25)', backdropFilter: 'blur(6px)' }}>
         <div style={{ width: '16px', height: '1px', background: '#c4962a', marginBottom: '8px' }} />
-        <p style={{ fontFamily: 'system-ui', fontSize: '13px', letterSpacing: '0.2em', color: '#c4962a', textTransform: 'uppercase', margin: '0 0 7px', fontWeight: 700 }}>
+        <p style={{ fontFamily: 'system-ui', fontSize: '9px', letterSpacing: '0.28em', color: 'rgba(196,150,42,0.8)', textTransform: 'uppercase', margin: '0 0 6px' }}>
           {v.country}{getYear() ? ` · ${getYear()}` : ''}
         </p>
         <h3 style={{ fontFamily: '"Cormorant Garamond",Georgia,serif', fontSize: '26px', fontWeight: 300, fontStyle: 'italic', color: '#f5f0e8', margin: isHovered ? '0 0 10px' : '0', lineHeight: 1.1, transition: 'transform .4s', transform: isHovered ? 'translateY(-2px)' : 'translateY(0)' }}>
@@ -94,7 +94,7 @@ export default function VoyagesPage() {
 
   return (
     <div className="min-h-screen bg-noir pt-28 pb-24">
-      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 clamp(24px,5vw,80px)" }}>
+      <div style={{ maxWidth: "1400px", margin: "0 auto", padding: "0 clamp(24px,5vw,80px)" }}>
         <ScrollReveal className="mb-16">
           <div className="flex items-center gap-4 mb-4">
             <div className="w-8 h-px bg-or" />
@@ -108,7 +108,7 @@ export default function VoyagesPage() {
         {voyages.length === 0 ? (
           <div className="text-center py-24 text-creme/30 font-poppins text-sm">Aucun voyage publié pour le moment.</div>
         ) : (
-          <div className="voyage-grid" style={{ gap: "20px" }}>
+          <div className="voyage-grid" style={{ maxWidth: "1200px", margin: "0 auto", gap: "20px" }}>
             {voyages.map((v: any, i: number) => (
               <VoyageCard key={v.slug || v.id} v={v} index={i} />
             ))}
