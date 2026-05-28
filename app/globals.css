@@ -218,6 +218,7 @@ img {
 @media (max-width: 640px) {
   .world-map-container {
     height: 280px; /* mobile: compact */
+    margin: 0 12px;
     overflow: hidden;
     max-height: none;
   }
