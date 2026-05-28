@@ -256,14 +256,6 @@ function PhotoGrid({ photos, onChange, onZoom }) {
    MAIN ADMIN COMPONENT
 ═══════════════════════════════════════════ */
 export default function AdminPage() {
-  // Hide 'by Rolf Etter' on admin page
-  useEffect(() => {
-    const s = document.createElement('style');
-    s.textContent = '.by-rolf-etter{display:none!important}';
-    document.head.appendChild(s);
-    return () => s.remove();
-  }, []);
-
   const [auth, setAuth] = useState(false);
   const [pw, setPw] = useState('');
   const [loginErr, setLoginErr] = useState('');
@@ -282,7 +274,7 @@ export default function AdminPage() {
   const [bulkUploading, setBulkUploading] = useState(false);
   const uploadRef = useRef(null);
 
-  const TABS = ['TABLEAU DE BORD', 'VOYAGES', "PAGE D'ACCUEIL", 'À PROPOS', 'GALERIE'];
+  const TABS = ['TABLEAU DE BORD', 'VOYAGES', "PAGE D'ACCUEIL", 'À PROPOS', 'GALERIE', 'UPLOAD', 'PARAMETRES'];
 
   useEffect(() => {
     if (localStorage.getItem('admin_auth') === 'true') { setAuth(true); loadAll(); }
@@ -594,7 +586,7 @@ export default function AdminPage() {
       <div style={{ borderBottom: '1px solid #1a1a1a', padding: '0 32px', display: 'flex', overflowX: 'auto' }}>
         {TABS.map((t, i) => (
           <button key={i} onClick={() => setTab(i)}
-            style={{ padding: '16px 20px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '11px', letterSpacing: '.2em', fontWeight: '600', color: tab === i ? G : '#ffffff', fontWeight: 700, borderBottom: tab === i ? '2px solid ' + G : '2px solid transparent', whiteSpace: 'nowrap', transition: '.2s' }}>
+            style={{ padding: '16px 20px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '11px', letterSpacing: '.2em', fontWeight: '600', color: tab === i ? G : '#3a3a3a', borderBottom: tab === i ? '2px solid ' + G : '2px solid transparent', whiteSpace: 'nowrap', transition: '.2s' }}>
             {t}
           </button>
         ))}
@@ -974,8 +966,48 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* ═══ PARAMÈTRES ═══ */}
+        {/* ═══ UPLOAD ═══ */}
         {tab === 5 && (
+          <div>
+            <h1 style={{ fontSize: '26px', fontWeight: '200', fontFamily: 'Georgia,serif', fontStyle: 'italic', margin: '0 0 6px' }}>Upload d'images</h1>
+            <p style={{ color: '#555', fontSize: '13px', marginBottom: '28px' }}>Uploadez sur Cloudinary — copiez les URLs pour les utiliser partout</p>
+            <div style={cardSt}>
+              <label style={{ display: 'block', border: '2px dashed #2a2a2a', borderRadius: '12px', padding: '50px 40px', textAlign: 'center', cursor: 'pointer', transition: '.2s', marginBottom: '20px' }}>
+                <div style={{ fontSize: '36px', marginBottom: '10px' }}>&#128247;</div>
+                <div style={{ color: '#aaa', marginBottom: '16px', fontSize: '15px' }}>Cliquez ou glissez vos images ici</div>
+                <div style={{ display: 'inline-block', padding: '10px 28px', background: GB, borderRadius: '8px', color: '#fff', fontSize: '13px', fontWeight: '600', letterSpacing: '.15em' }}>
+                  {bulkUploading ? 'UPLOAD EN COURS...' : 'CHOISIR DES IMAGES'}
+                </div>
+                <div style={{ color: '#333', fontSize: '11px', marginTop: '10px' }}>JPG, PNG, WebP</div>
+                <input type="file" accept="image/*" multiple style={{ display: 'none' }} ref={uploadRef} onChange={e => doBulkUpload(e.target.files)} />
+              </label>
+              {uploadFiles.length > 0 && (
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                    <h3 style={{ margin: 0, color: G, fontSize: '11px', letterSpacing: '.2em' }}>IMAGES UPLOADÉES</h3>
+                    <button onClick={() => setUploadFiles([])} style={{ background: 'none', border: '1px solid #222', borderRadius: '6px', color: '#555', cursor: 'pointer', padding: '4px 12px', fontSize: '12px' }}>Effacer tout</button>
+                  </div>
+                  <div style={{ display: 'grid', gap: '10px' }}>
+                    {uploadFiles.map((f, i) => (
+                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '10px 14px', background: '#0d0d0d', borderRadius: '8px', border: '1px solid ' + (f.status === 'done' ? '#166534' : f.status === 'error' ? '#7f1d1d' : '#222') }}>
+                        {f.url && <img src={f.url} alt="" style={{ width: '48px', height: '36px', objectFit: 'cover', borderRadius: '4px', cursor: 'zoom-in', flexShrink: 0 }} onClick={() => setLightbox({ photos: [{ src: f.url }], index: 0 })} />}
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: '13px', color: '#ccc', marginBottom: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{f.name}</div>
+                          {f.url && <div style={{ fontSize: '11px', color: '#555', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{f.url}</div>}
+                        </div>
+                        {f.url && <button onClick={() => { navigator.clipboard.writeText(f.url); toast('URL copiée !'); }} style={{ padding: '6px 14px', background: '#1a1a1a', border: '1px solid #333', borderRadius: '6px', color: G, cursor: 'pointer', fontSize: '12px', flexShrink: 0 }}>Copier URL</button>}
+                        <span style={{ color: f.status === 'done' ? '#4ade80' : f.status === 'error' ? '#f87171' : '#facc15', fontSize: '16px', flexShrink: 0 }}>{f.status === 'done' ? '✓' : f.status === 'error' ? '✗' : '⏳'}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ═══ PARAMÈTRES ═══ */}
+        {tab === 6 && (
           <div>
             <h1 style={{ fontSize: '26px', fontWeight: '200', fontFamily: 'Georgia,serif', fontStyle: 'italic', margin: '0 0 28px' }}>Paramètres</h1>
             <div style={{ display: 'grid', gap: '16px' }}>
