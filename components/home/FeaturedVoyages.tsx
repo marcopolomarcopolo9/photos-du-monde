@@ -65,12 +65,12 @@ function VoyageCard({ v, index }) {
 
       {/* Content */}
       <div style={{ position: 'absolute', bottom: '12px', left: '10px', right: '10px', padding: '12px 14px', zIndex: 3, border: '1.5px solid rgba(255,255,255,0.35)', background: 'rgba(0,0,0,0.25)', backdropFilter: 'blur(6px)' }}>
-        <h3 style={{ fontFamily: '"Cormorant Garamond",serif', fontSize: '32px', fontWeight: 300, fontStyle: 'italic', color: '#f5f0e8', margin: '0 0 10px', lineHeight: 1.1, textShadow: '0 1px 8px rgba(0,0,0,0.8)', transition: 'transform .4s', transform: isHovered ? 'translateY(-4px)' : 'translateY(0)' }}>
+        <h3 style={{ fontFamily: '"Cormorant Garamond",serif', fontSize: '48px', fontWeight: 300, fontStyle: 'italic', color: '#f5f0e8', margin: '0 0 10px', lineHeight: 1.1, textShadow: '0 1px 8px rgba(0,0,0,0.8)', transition: 'transform .4s', transform: isHovered ? 'translateY(-4px)' : 'translateY(0)' }}>
           {v.title}
         </h3>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <div style={{ width: '14px', height: '1px', background: '#c4962a' }} />
-          <span style={{ fontFamily: 'system-ui', fontSize: '11px', letterSpacing: '0.3em', color: 'rgba(196,150,42,0.8)', textTransform: 'uppercase' }}>
+          <span style={{ fontFamily: 'system-ui', fontSize: '14px', letterSpacing: '0.3em', color: 'rgba(196,150,42,0.8)', textTransform: 'uppercase' }}>
             {v.country}{getYear() ? ` · ${getYear()}` : ''}
           </span>
         </div>
