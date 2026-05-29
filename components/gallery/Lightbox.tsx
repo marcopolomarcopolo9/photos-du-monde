@@ -102,8 +102,12 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
       e.preventDefault();
       const dx = e.touches[0].clientX - panStart.current.x;
       const dy = e.touches[0].clientY - panStart.current.y;
-      // Pan freely
-      setPan({ x: panStart.current.px + dx, y: panStart.current.py + dy });
+      // Clamp pan so image doesn't go out of bounds
+      const maxX = (window.innerWidth * (scale - 1)) / 2;
+      const maxY = (window.innerHeight * (scale - 1)) / 2;
+      const newX = Math.min(Math.max(panStart.current.px + dx, -maxX), maxX);
+      const newY = Math.min(Math.max(panStart.current.py + dy, -maxY), maxY);
+      setPan({ x: newX, y: newY });
     }
   };
 
