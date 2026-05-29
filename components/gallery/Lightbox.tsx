@@ -102,15 +102,8 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
       e.preventDefault();
       const dx = e.touches[0].clientX - panStart.current.x;
       const dy = e.touches[0].clientY - panStart.current.y;
-      // Clamp pan to image bounds
-      const el = imgRef.current;
-      const w = el ? el.offsetWidth : window.innerWidth;
-      const h = el ? el.offsetHeight : window.innerHeight;
-      const maxX = (w * (scale - 1)) / 2;
-      const maxY = (h * (scale - 1)) / 2;
-      const newX = Math.min(Math.max(panStart.current.px + dx, -maxX), maxX);
-      const newY = Math.min(Math.max(panStart.current.py + dy, -maxY), maxY);
-      setPan({ x: newX, y: newY });
+      // Pan freely
+      setPan({ x: panStart.current.px + dx, y: panStart.current.py + dy });
     }
   };
 
@@ -179,7 +172,7 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
         )}
 
         {/* Image */}
-        <div className="flex-1 relative flex items-center justify-center px-4 md:px-16 py-4 overflow-hidden">
+        <div className="flex-1 relative flex items-center justify-center px-4 md:px-16 py-4">
           <motion.div key={photo.src} initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.15 }}
             ref={imgRef}
             style={{ cursor: zoomed ? 'zoom-out' : 'zoom-in', width:'100%', height:'100%', display:'flex', alignItems:'center', justifyContent:'center' }}
