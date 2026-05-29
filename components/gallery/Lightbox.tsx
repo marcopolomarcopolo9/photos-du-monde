@@ -23,6 +23,7 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
   const [zoomed, setZoomed] = useState(false);
   const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
   const imgRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Mobile pinch + pan
   const [scale, setScale] = useState(1);
@@ -102,8 +103,16 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
       e.preventDefault();
       const dx = e.touches[0].clientX - panStart.current.x;
       const dy = e.touches[0].clientY - panStart.current.y;
-      // Pan freely
-      setPan({ x: panStart.current.px + dx, y: panStart.current.py + dy });
+      // Clamp pan to image bounds
+      const ctn = containerRef.current;
+      const cw = ctn ? ctn.offsetWidth : window.innerWidth;
+      const ch = ctn ? ctn.offsetHeight : window.innerHeight;
+      const maxX = cw * (scale - 1) / 2;
+      const maxY = ch * (scale - 1) / 2;
+      setPan({
+        x: Math.min(Math.max(panStart.current.px + dx, -maxX), maxX),
+        y: Math.min(Math.max(panStart.current.py + dy, -maxY), maxY)
+      });
     }
   };
 
@@ -172,7 +181,7 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
         )}
 
         {/* Image */}
-        <div className="flex-1 relative flex items-center justify-center px-4 md:px-16 py-4">
+        <div className="flex-1 relative flex items-center justify-center px-4 md:px-16 py-4" ref={containerRef}>
           <motion.div key={photo.src} initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.15 }}
             ref={imgRef}
             style={{ cursor: zoomed ? 'zoom-out' : 'zoom-in', width:'100%', height:'100%', display:'flex', alignItems:'center', justifyContent:'center' }}
@@ -181,11 +190,11 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
               className="block select-none" style={{ width: scale > 1 ? "100%" : "auto", height: scale > 1 ? "100%" : "auto", maxWidth: scale > 1 ? "none" : "100%", maxHeight: scale > 1 ? "none" : "100%", objectFit: scale > 1 ? "cover" : "contain" as "cover" | "contain",
                 transition: scale === 1 && !zoomed ? 'transform 0.3s ease' : 'none',
                 transform: scale > 1
-                  ? `scale(${scale})`
+                  ? `translate(${pan.x}px, ${pan.y}px) scale(${scale})`
                   : zoomed
                     ? `scale(2.5) translate(${(50-zoomPos.x)*0.6}%, ${(50-zoomPos.y)*0.6}%)`
                     : 'scale(1)',
-                transformOrigin: scale > 1 ? `calc(50% - ${pan.x/scale}px) calc(50% - ${pan.y/scale}px)` : `${zoomPos.x}% ${zoomPos.y}%`,
+                transformOrigin: scale > 1 ? 'center center' : `${zoomPos.x}% ${zoomPos.y}%`,
                 pointerEvents: 'none',
               }}
               priority draggable={false} onContextMenu={e => e.preventDefault()}/>
