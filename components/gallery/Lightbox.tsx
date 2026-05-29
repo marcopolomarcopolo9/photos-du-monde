@@ -85,7 +85,7 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
     } else if (e.touches.length === 1) {
       // Always record start position for tap detection
       swipeStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-      if (scale > 1) {
+      if (scale > 1 || zoomed) {
         // Pan mode
         panStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY, px: pan.x, py: pan.y };
       } else {
@@ -99,7 +99,7 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
       e.preventDefault();
       const newScale = Math.min(Math.max(lastScale.current * getDist(e.touches) / lastDist.current, 1), 5);
       setScale(newScale);
-    } else if (e.touches.length === 1 && panStart.current && scale > 1) {
+    } else if (e.touches.length === 1 && panStart.current && (scale > 1 || zoomed)) {
       e.preventDefault();
       const dx = e.touches[0].clientX - panStart.current.x;
       const dy = e.touches[0].clientY - panStart.current.y;
@@ -107,8 +107,9 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
       const ctn = containerRef.current;
       const cw = ctn ? ctn.offsetWidth : window.innerWidth;
       const ch = ctn ? ctn.offsetHeight : window.innerHeight;
-      const maxX = cw * (scale - 1) / 2;
-      const maxY = ch * (scale - 1) / 2;
+      const effectiveScale = scale > 1 ? scale : (zoomed ? 2.5 : 1);
+      const maxX = cw * (effectiveScale - 1) / 2;
+      const maxY = ch * (effectiveScale - 1) / 2;
       setPan({
         x: Math.min(Math.max(panStart.current.px + dx, -maxX), maxX),
         y: Math.min(Math.max(panStart.current.py + dy, -maxY), maxY)
@@ -192,9 +193,9 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
                 transform: scale > 1
                   ? `translate(${pan.x}px, ${pan.y}px) scale(${scale})`
                   : zoomed
-                    ? `scale(2.5) translate(${(50-zoomPos.x)*0.6}%, ${(50-zoomPos.y)*0.6}%)`
+                    ? `translate(${pan.x}px, ${pan.y}px) scale(2.5)`
                     : 'scale(1)',
-                transformOrigin: scale > 1 ? 'center center' : `${zoomPos.x}% ${zoomPos.y}%`,
+                transformOrigin: 'center center',
                 pointerEvents: 'none',
               }}
               priority draggable={false} onContextMenu={e => e.preventDefault()}/>
