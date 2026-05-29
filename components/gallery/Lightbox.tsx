@@ -69,7 +69,11 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
       const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
       setZoomPos({ x: ((e.clientX - rect.left) / rect.width) * 100, y: ((e.clientY - rect.top) / rect.height) * 100 });
     }
-    setZoomed(z => !z);
+    if (zoomed || scale > 1) {
+      setZoomed(false); setScale(1); setPan({ x: 0, y: 0 });
+    } else {
+      setZoomed(true);
+    }
   };
 
   // Mobile touch
