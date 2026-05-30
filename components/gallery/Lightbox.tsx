@@ -137,7 +137,7 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
       swipeStart.current = null; return;
     }
     wasPinch.current = false;
-    if (swipeStart.current && e.changedTouches.length > 0) {
+    if (swipeStart.current && e.changedTouches.length > 0 && !zoomed) {
       const dx = e.changedTouches[0].clientX - swipeStart.current.x;
       const dy = e.changedTouches[0].clientY - swipeStart.current.y;
       if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
