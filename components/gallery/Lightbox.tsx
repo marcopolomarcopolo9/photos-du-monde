@@ -211,14 +211,14 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
         <div className="flex-1 relative flex items-center justify-center px-4 md:px-16 py-4" ref={containerRef} style={{overflow:"hidden", minHeight:0}}>
           <motion.div key={photo.src} initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.15 }}
             ref={imgRef}
-            style={{ cursor: zoomed || scale > 1 ? 'grab' : 'zoom-in', display:'flex', alignItems:'center', justifyContent:'center', width:'100%', height:'100%' }}
+            style={{ cursor: zoomed || scale > 1 ? 'grab' : 'zoom-in', display:'flex', alignItems:'center', justifyContent:'center', position:'absolute', inset:0 }}
             onClick={handleImgClick} onMouseMove={handleMouseMove} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
             <Image src={cloudinaryUrl(photo.src)} alt={photo.alt||''} width={photo.width||1200} height={photo.height||800}
               className="block select-none" style={{ 
-                width: "auto",
-                height: "auto",
                 maxWidth: "100%",
                 maxHeight: "100%",
+                width: "auto",
+                height: "auto",
                 objectFit: "contain",
                 display: "block",
                 transition: !zoomed && scale === 1 ? 'transform 0.3s ease' : 'none',
