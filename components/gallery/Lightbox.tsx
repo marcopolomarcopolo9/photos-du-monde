@@ -59,15 +59,18 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
 
   // Desktop mouse pan
   const mousePanStart = useRef<{ x: number; y: number; px: number; py: number } | null>(null);
+  const mouseDragged = useRef(false);
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!zoomed && scale <= 1) return;
     e.preventDefault();
+    mouseDragged.current = false;
     mousePanStart.current = { x: e.clientX, y: e.clientY, px: pan.x, py: pan.y };
   };
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!mousePanStart.current) return;
     const dx = e.clientX - mousePanStart.current.x;
     const dy = e.clientY - mousePanStart.current.y;
+    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) mouseDragged.current = true;
     const ctn = containerRef.current;
     const cw = ctn ? ctn.offsetWidth : window.innerWidth;
     const ch = ctn ? ctn.offsetHeight : window.innerHeight;
@@ -82,6 +85,7 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
   const handleMouseUp = () => { mousePanStart.current = null; };
   const handleImgClick = (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (mouseDragged.current) { mouseDragged.current = false; return; }
     if (!zoomed) {
       const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
       setZoomPos({ x: ((e.clientX - rect.left) / rect.width) * 100, y: ((e.clientY - rect.top) / rect.height) * 100 });
