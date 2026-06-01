@@ -62,6 +62,7 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
   const mouseDragged = useRef(false);
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!zoomed && scale <= 1) return;
+    if (window.innerWidth < 768) return; // mobile only uses touch
     e.preventDefault();
     mouseDragged.current = false;
     mousePanStart.current = { x: e.clientX, y: e.clientY, px: pan.x, py: pan.y };
@@ -71,12 +72,12 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
     const dx = e.clientX - mousePanStart.current.x;
     const dy = e.clientY - mousePanStart.current.y;
     if (Math.abs(dx) > 3 || Math.abs(dy) > 3) mouseDragged.current = true;
-    const ctn = containerRef.current;
-    const cw = ctn ? ctn.offsetWidth : window.innerWidth;
-    const ch = ctn ? ctn.offsetHeight : window.innerHeight;
+    const img = imgRef.current;
+    const iw = img ? img.offsetWidth : window.innerWidth;
+    const ih = img ? img.offsetHeight : window.innerHeight;
     const effectiveScale = scale > 1 ? scale : (zoomed ? 2.5 : 1);
-    const maxX = cw * (effectiveScale - 1) / 2;
-    const maxY = ch * (effectiveScale - 1) / 2;
+    const maxX = (iw * (effectiveScale - 1)) / 2;
+    const maxY = (ih * (effectiveScale - 1)) / 2;
     setPan({
       x: Math.min(Math.max(mousePanStart.current.px + dx, -maxX), maxX),
       y: Math.min(Math.max(mousePanStart.current.py + dy, -maxY), maxY)
@@ -207,7 +208,7 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
         )}
 
         {/* Image */}
-        <div className="flex-1 relative flex items-center justify-center px-4 md:px-16 py-4 overflow-hidden" ref={containerRef}>
+        <div className="flex-1 relative flex items-center justify-center px-4 md:px-16 py-4" ref={containerRef}>
           <motion.div key={photo.src} initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.15 }}
             ref={imgRef}
             style={{ cursor: zoomed || scale > 1 ? 'grab' : 'zoom-in', width:'100%', height:'100%', display:'flex', alignItems:'center', justifyContent:'center' }}
