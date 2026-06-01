@@ -214,8 +214,13 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
             style={{ cursor: zoomed || scale > 1 ? 'grab' : 'zoom-in', width:'100%', height:'100%', display:'flex', alignItems:'center', justifyContent:'center' }}
             onClick={handleImgClick} onMouseMove={handleMouseMove} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
             <Image src={cloudinaryUrl(photo.src)} alt={photo.alt||''} width={photo.width||1200} height={photo.height||800}
-              className="block select-none" style={{ width: scale > 1 ? "100%" : "auto", height: scale > 1 ? "100%" : "auto", maxWidth: scale > 1 ? "none" : "100%", maxHeight: scale > 1 ? "none" : "100%", objectFit: scale > 1 ? "cover" : "contain" as "cover" | "contain",
-                transition: scale === 1 && !zoomed ? 'transform 0.3s ease' : 'none',
+              className="block select-none" style={{ 
+                width: "auto",
+                height: "auto",
+                maxWidth: "100%",
+                maxHeight: "100%",
+                objectFit: "contain",
+                transition: !zoomed && scale === 1 ? 'transform 0.3s ease' : 'none',
                 transform: scale > 1
                   ? `translate(${pan.x}px, ${pan.y}px) scale(${scale})`
                   : zoomed
