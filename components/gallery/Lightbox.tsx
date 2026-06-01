@@ -57,12 +57,29 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
     return () => { window.removeEventListener('keydown', onKey); document.body.style.overflow = ''; };
   }, [onClose, handlePrev, handleNext, zoomed, scale]);
 
-  // Desktop mouse zoom
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!zoomed || !imgRef.current) return;
-    const rect = imgRef.current.getBoundingClientRect();
-    setZoomPos({ x: ((e.clientX - rect.left) / rect.width) * 100, y: ((e.clientY - rect.top) / rect.height) * 100 });
+  // Desktop mouse pan
+  const mousePanStart = useRef<{ x: number; y: number; px: number; py: number } | null>(null);
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!zoomed && scale <= 1) return;
+    e.preventDefault();
+    mousePanStart.current = { x: e.clientX, y: e.clientY, px: pan.x, py: pan.y };
   };
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!mousePanStart.current) return;
+    const dx = e.clientX - mousePanStart.current.x;
+    const dy = e.clientY - mousePanStart.current.y;
+    const ctn = containerRef.current;
+    const cw = ctn ? ctn.offsetWidth : window.innerWidth;
+    const ch = ctn ? ctn.offsetHeight : window.innerHeight;
+    const effectiveScale = scale > 1 ? scale : (zoomed ? 2.5 : 1);
+    const maxX = cw * (effectiveScale - 1) / 2;
+    const maxY = ch * (effectiveScale - 1) / 2;
+    setPan({
+      x: Math.min(Math.max(mousePanStart.current.px + dx, -maxX), maxX),
+      y: Math.min(Math.max(mousePanStart.current.py + dy, -maxY), maxY)
+    });
+  };
+  const handleMouseUp = () => { mousePanStart.current = null; };
   const handleImgClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!zoomed) {
@@ -190,7 +207,7 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
           <motion.div key={photo.src} initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.15 }}
             ref={imgRef}
             style={{ cursor: zoomed ? 'zoom-out' : 'zoom-in', width:'100%', height:'100%', display:'flex', alignItems:'center', justifyContent:'center' }}
-            onClick={handleImgClick} onMouseMove={handleMouseMove}>
+            onClick={handleImgClick} onMouseMove={handleMouseMove} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
             <Image src={cloudinaryUrl(photo.src)} alt={photo.alt||''} width={photo.width||1200} height={photo.height||800}
               className="block select-none" style={{ width: scale > 1 ? "100%" : "auto", height: scale > 1 ? "100%" : "auto", maxWidth: scale > 1 ? "none" : "100%", maxHeight: scale > 1 ? "none" : "100%", objectFit: scale > 1 ? "cover" : "contain" as "cover" | "contain",
                 transition: scale === 1 && !zoomed ? 'transform 0.3s ease' : 'none',
