@@ -67,23 +67,25 @@ export default function WorldMap() {
       if (isMobile) {
         map.touchZoom.enable();
         const container = mapRef.current;
-        let initialZoom = map.getZoom();
-        
+        let activated = false;
+
         const onTouchStart = (e) => {
-          if (e.touches.length === 1) {
-            const currentZoom = map.getZoom();
-            if (currentZoom > initialZoom) {
+          if (e.touches.length >= 2) {
+            // Geste à 2 doigts → la carte est "activée"
+            activated = true;
+            map.dragging.enable();
+          } else if (e.touches.length === 1) {
+            // Un doigt : déplacement libre seulement après activation,
+            // sinon on laisse la page défiler normalement
+            if (activated) {
               map.dragging.enable();
             } else {
               map.dragging.disable();
             }
-          } else if (e.touches.length >= 2) {
-            map.dragging.enable();
           }
         };
-        
+
         container.addEventListener('touchstart', onTouchStart, { passive: true });
-        map.on('zoomend', () => { initialZoom = isMobile ? 1 : 2; });
       }
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(map);
