@@ -177,13 +177,13 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
   return (
     <AnimatePresence>
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}
-        className="fixed inset-0 z-[200] flex flex-col" style={{ background: 'rgba(4,4,4,0.97)' }}
+        className="fixed inset-0 z-[200]" style={{ background: 'rgba(4,4,4,0.97)' }}
         onClick={() => { if (zoomed || scale > 1) { setZoomed(false); setScale(1); setPan({ x: 0, y: 0 }); } else onClose(); }}
         onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}
         onContextMenu={e => e.preventDefault()}>
 
         {/* Top bar */}
-        <div className="flex items-center justify-between px-5 py-3 flex-shrink-0"
+        <div className="absolute top-0 inset-x-0 z-30 flex items-center justify-between px-5 py-3"
           style={{ paddingTop: 'max(12px, env(safe-area-inset-top))', background: 'linear-gradient(to bottom,rgba(0,0,0,0.6),transparent)' }}
           onClick={e => e.stopPropagation()}>
           <span className="text-[10px] tracking-[0.3em] text-creme/40 font-poppins">{String(currentIndex + 1).padStart(2,'0')} / {String(photos.length).padStart(2,'0')}</span>
@@ -208,10 +208,10 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
         )}
 
         {/* Image */}
-        <div className="flex-1 relative flex items-center justify-center px-4 md:px-16 py-4" ref={containerRef} style={{overflow:"hidden", minHeight:0}}>
+        <div className="absolute inset-0 z-10 flex items-center justify-center" ref={containerRef} style={{overflow:"hidden", minHeight:0}}>
           <motion.div key={photo.src} initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.15 }}
             ref={imgRef}
-            style={{ cursor: zoomed || scale > 1 ? 'grab' : 'zoom-in', display:'flex', alignItems:'center', justifyContent:'center', position:'absolute', inset:0 }}
+            style={{ cursor: zoomed || scale > 1 ? 'grab' : 'zoom-in', display:'flex', alignItems:'center', justifyContent:'center', position:'absolute', inset:0, padding:'clamp(60px, 8vh, 84px) clamp(16px, 5vw, 64px)', boxSizing:'border-box' }}
             onClick={handleImgClick} onMouseMove={handleMouseMove} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
             <Image src={cloudinaryUrl(photo.src)} alt={photo.alt||''} width={photo.width||1200} height={photo.height||800}
               className="block select-none" style={{ 
@@ -235,7 +235,7 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
         </div>
 
         {/* Bottom */}
-        <div className="flex-shrink-0 px-4 pb-4" style={{ paddingBottom:'max(16px,env(safe-area-inset-bottom))' }} onClick={e => e.stopPropagation()}>
+        <div className="absolute bottom-0 inset-x-0 z-30 px-4 pb-4" style={{ paddingBottom:'max(16px,env(safe-area-inset-bottom))' }} onClick={e => e.stopPropagation()}>
           {photo.caption && photo.caption.trim() && <p className="font-serif italic text-creme/80 text-sm text-center mb-3">{photo.caption}</p>}
           {/* Mobile dots */}
           <div className="flex md:hidden justify-center items-center gap-5">
