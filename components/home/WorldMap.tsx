@@ -26,8 +26,21 @@ export default function WorldMap() {
         title: v.title,
         country: v.country?.trim(),
         slug: v.slug || v.id,
+        link: `/voyages/${v.slug || v.id}`,
         photos: (v.photos || []).length,
       })).filter(p => p.lat && p.lng);
+
+      // Point spécial Svalbard → toutes les photos taguées "svalbard"
+      const svalbardCount = voyages.reduce((acc, v) =>
+        acc + (v.photos || []).filter(p => typeof p === 'object' && (p.categories || []).includes('svalbard')).length, 0);
+      pts.push({
+        lat: 78.2232,
+        lng: 15.6267,
+        title: 'Svalbard',
+        country: 'Svalbard',
+        link: '/categories/svalbard',
+        photos: svalbardCount,
+      });
 
       if (!pts.length) return;
 
@@ -117,7 +130,7 @@ export default function WorldMap() {
 
         const marker = L.marker([pt.lat, pt.lng], { icon }).addTo(map);
         
-        marker.on('click', () => { window.location.href = `/voyages/${pt.slug}`; });
+        marker.on('click', () => { window.location.href = pt.link; });
         
 
       });
