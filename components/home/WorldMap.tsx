@@ -95,7 +95,7 @@ export default function WorldMap() {
       // Smart direction to avoid overlap
       // For each point, check if another point is nearby and offset badge direction
       const getDirection = (pt, all) => {
-        if (pt.title === 'Svalbard') return 'bottom';
+        if (pt.title === 'Svalbard') return 'left';
         const nearby = all.filter(o => o !== pt && Math.abs(o.lat - pt.lat) < 15 && Math.abs(o.lng - pt.lng) < 30);
         if (!nearby.length) return 'bottom';
         const avgLat = nearby.reduce((a, o) => a + o.lat, 0) / nearby.length;
