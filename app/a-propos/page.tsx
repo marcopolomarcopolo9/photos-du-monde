@@ -41,7 +41,7 @@ export default function AboutPage() {
               {about.intro || 'Photographe voyageur passionné par la nature sauvage et les cultures du monde.'}
             </p>
             {about.philosophy && (
-              <p className="text-creme/45 text-sm leading-[1.9] font-poppins font-light" style={{ textAlign: "justify" }}>
+              <p className="text-creme/45 text-base leading-[1.9] font-poppins font-light" style={{ textAlign: "justify" }}>
                 {about.philosophy}
               </p>
             )}
