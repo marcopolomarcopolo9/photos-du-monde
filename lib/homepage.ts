@@ -35,8 +35,8 @@ export const HOMEPAGE_CONFIG = {
   "about": {
     "photo": "",
     "intro": "Photographe voyageur, je capture l'essence des territoires sauvages et des cultures lointaines. Chaque voyage est une rencontre, chaque photo un témoignage.",
-    "philosophy": "Chaque voyage est une immersion totale — je ne photographie pas les lieux, je vis à l'intérieur d'eux. Pendant des semaines, j'attends la lumière, j'apprivoise les animaux, j'apprends les rythmes de chaque écosystème.",
-    "philosophy2": "Les meilleurs clichés naissent toujours de la patience. Un lever de soleil sur un volcan, un toucan qui s'arrête trois secondes — ces instants ne se commandent pas.",
+    "philosophy": "Chaque voyage est une immersion totale — je ne photographie pas les lieux, je vis à l'intérieur d'eux. Pendant des jours, j'attends la bonne lumière, j'observe les animaux et leurs comportements, j'écoute les rythmes de chaque écosystème.",
+    "philosophy2": "Les meilleurs clichés naissent toujours de la patience. Un lever de soleil sur un volcan, un toucan qui s'arrête trois secondes — ces instants ne se commandent pas, ils se méritent.",
     "countries": 32,
     "photos": 4800,
     "years": 8,

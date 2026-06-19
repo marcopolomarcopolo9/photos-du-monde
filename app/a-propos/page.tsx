@@ -80,7 +80,7 @@ export default function AboutPage() {
         {/* Philosophy + Equipment */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16 mb-20">
           <ScrollReveal direction="left">
-            <h2 className="font-serif italic text-2xl text-creme mb-6">Ma philosophie</h2>
+            <h2 className="font-serif italic text-3xl text-creme mb-6">Ma philosophie</h2>
             <div className="space-y-5 text-creme/55 text-sm leading-[1.9] font-poppins font-light" style={{ textAlign: "justify" }}>
               {about.philosophy && <p>{about.philosophy}</p>}
               {about.philosophy2 && <p>{about.philosophy2}</p>}
@@ -88,7 +88,7 @@ export default function AboutPage() {
             </div>
           </ScrollReveal>
           <ScrollReveal direction="right" delay={0.1}>
-            <h2 className="font-serif italic text-2xl text-creme mb-6">Équipement</h2>
+            <h2 className="font-serif italic text-3xl text-creme mb-6">Équipement</h2>
             <div className="flex flex-wrap gap-2">
               {(equipment.length > 0 ? equipment : ['Sony A7R V','200-600mm f/5.6','24-70mm f/2.8','Trépied Gitzo','DJI Mavic 3']).map(item => (
                 <span key={item} className="text-[11px] px-3 py-1.5 border border-white/10 text-creme/50 font-poppins hover:border-or/30 transition-colors">{item}</span>
