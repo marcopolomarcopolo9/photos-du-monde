@@ -68,12 +68,12 @@ instanceRef.current = map;
 
       // X cross marker
       const xIcon = (isFirst) => L.divIcon({
-        html: `<svg width="${isFirst ? 18 : 14}" height="${isFirst ? 18 : 14}" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-          <line x1="2" y1="2" x2="14" y2="14" stroke="#c4962a" stroke-width="${isFirst ? 2.2 : 1.8}" stroke-linecap="round"/>
-          <line x1="14" y1="2" x2="2" y2="14" stroke="#c4962a" stroke-width="${isFirst ? 2.2 : 1.8}" stroke-linecap="round"/>
+        html: `<svg width="14" height="14" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+          <line x1="2" y1="2" x2="14" y2="14" stroke="#c4962a" stroke-width="1.8" stroke-linecap="round"/>
+          <line x1="14" y1="2" x2="2" y2="14" stroke="#c4962a" stroke-width="1.8" stroke-linecap="round"/>
         </svg>`,
-        iconSize: [isFirst ? 18 : 14, isFirst ? 18 : 14],
-        iconAnchor: [isFirst ? 9 : 7, isFirst ? 9 : 7],
+        iconSize: [14, 14],
+        iconAnchor: [7, 7],
         className: '',
       });
 
