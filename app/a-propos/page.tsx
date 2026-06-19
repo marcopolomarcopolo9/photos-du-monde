@@ -40,11 +40,7 @@ export default function AboutPage() {
             <p className="text-creme/60 text-base leading-[1.9] font-poppins font-light mb-6" style={{ textAlign: "justify" }}>
               {about.intro || 'Photographe voyageur passionné par la nature sauvage et les cultures du monde.'}
             </p>
-            {about.philosophy && (
-              <p className="text-creme/45 text-base leading-[1.9] font-poppins font-light" style={{ textAlign: "justify" }}>
-                {about.philosophy}
-              </p>
-            )}
+
           </ScrollReveal>
 
           {/* Photo */}
