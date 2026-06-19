@@ -40,7 +40,7 @@ export const HOMEPAGE_CONFIG = {
     "countries": 32,
     "photos": 4800,
     "years": 8,
-    "equipment": "Sony A7R V, 200-600mm f/5.6, 24-70mm f/2.8, Trépied Gitzo, DJI Mavic 3",
+    "equipment": "Nikon D750, Panasonic Lumix/Leica",
     "favorites": [
       {
         "name": "Costa Rica",
