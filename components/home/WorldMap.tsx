@@ -45,8 +45,8 @@ export default function WorldMap() {
       if (!pts.length) return;
 
       const map = L.map(mapRef.current, {
-        center: [20, 10],
-        zoom: 2,
+        center: [30, 10],
+        zoom: 1.5,
         zoomControl: false,
         attributionControl: false,
         scrollWheelZoom: window.innerWidth >= 768,
@@ -92,7 +92,7 @@ export default function WorldMap() {
 
       // Fit bounds
       const bounds = L.latLngBounds(pts.map(p => [p.lat, p.lng]));
-      map.setView(isMobile ? [40, 10] : [20, 10], isMobile ? 1 : 2);
+      map.setView(isMobile ? [40, 10] : [30, 10], isMobile ? 1 : 1.5);
 
       // Smart direction to avoid overlap
       // For each point, check if another point is nearby and offset badge direction
