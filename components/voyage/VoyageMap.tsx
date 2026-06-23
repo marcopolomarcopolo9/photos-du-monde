@@ -77,36 +77,31 @@ instanceRef.current = map;
         className: '',
       });
 
-      // Label comme divIcon avec offset pixel calculé selon la position relative des voisins
-      const getLabelIcon = (ptIdx: number) => {
-        const pt = pts[ptIdx];
-        // Cherche le voisin le plus proche (déjà traité ou suivant)
-        let closestDist = Infinity;
-        let closestPt: typeof pt | null = null;
-        pts.forEach((o, j) => {
-          if (j === ptIdx) return;
-          const d = Math.hypot(pt.lat - o.lat, pt.lng - o.lng);
-          if (d < closestDist) { closestDist = d; closestPt = o; }
-        });
+      // Calcule l'offset pixel de chaque label par rapport au centroïde du cluster local
+      const CLUSTER_THRESH = 3.5; // degrés
+      const LABEL_DIST = 22;      // px de distance depuis le marker
 
-        // Décide l'offset pixel : par défaut à droite; si voisin proche, on pousse vers le côté libre
-        let tx = 12, ty = -5; // droite par défaut
-        if (closestPt && closestDist < 5) {
-          const cp = closestPt as typeof pt;
-          if (Math.abs(pt.lat - cp.lat) > Math.abs(pt.lng - cp.lng)) {
-            // Voisin plutôt au-dessus/dessous → étiquette à droite mais décalée verticalement
-            ty = pt.lat > cp.lat ? 10 : -18;
-          } else {
-            // Voisin plutôt gauche/droite → étiquette au-dessus ou en-dessous
-            tx = 12; ty = pt.lng > cp.lng ? 10 : -18;
-          }
-        }
-        return L.divIcon({
-          html: `<span style="font-size:9px;letter-spacing:0.18em;color:rgba(245,240,232,0.75);text-transform:uppercase;font-family:system-ui;white-space:nowrap;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,0.9);">${pt.label}</span>`,
-          iconSize: [0, 0],
-          iconAnchor: [-tx, -ty],
-          className: '',
-        });
+      const getLabelOffset = (ptIdx: number): { dx: number; dy: number } => {
+        const pt = pts[ptIdx];
+        // Trouve tous les voisins proches (y compris ce point)
+        const cluster = pts.filter(o =>
+          Math.hypot(pt.lat - o.lat, pt.lng - o.lng) < CLUSTER_THRESH
+        );
+        if (cluster.length <= 1) return { dx: 12, dy: -5 }; // seul → droite
+
+        // Centroïde du cluster
+        const centLat = cluster.reduce((s, p) => s + p.lat, 0) / cluster.length;
+        const centLng = cluster.reduce((s, p) => s + p.lng, 0) / cluster.length;
+
+        // Vecteur du centroïde vers ce point (en espace écran : lng=x, lat=-y)
+        const rawDx = pt.lng - centLng;
+        const rawDy = -(pt.lat - centLat); // lat↑ = screen↑ = dy négatif
+
+        const mag = Math.hypot(rawDx, rawDy) || 0.001;
+        return {
+          dx: Math.round((rawDx / mag) * LABEL_DIST),
+          dy: Math.round((rawDy / mag) * LABEL_DIST),
+        };
       };
 
       pts.forEach((pt, i) => {
@@ -114,8 +109,15 @@ instanceRef.current = map;
           icon: xIcon(i === 0),
         }).addTo(map);
 
-        // Label comme marker séparé avec offset calculé
-        L.marker([pt.lat, pt.lng], { icon: getLabelIcon(i), interactive: false }).addTo(map);
+        // Label rayonnant vers l'extérieur du cluster
+        const { dx, dy } = getLabelOffset(i);
+        const labelIcon = L.divIcon({
+          html: `<span style="font-size:9px;letter-spacing:0.18em;color:rgba(245,240,232,0.75);text-transform:uppercase;font-family:system-ui;white-space:nowrap;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,0.9);display:inline-block;transform:translate(${dx}px,${dy}px)">${pt.label}</span>`,
+          iconSize: [0, 0],
+          iconAnchor: [0, 0],
+          className: '',
+        });
+        L.marker([pt.lat, pt.lng], { icon: labelIcon, interactive: false }).addTo(map);
 
         marker.bindPopup(`
           <div style="background:#111;border:1px solid #2a2a2a;padding:10px 14px;font-family:system-ui;color:#f5f0e8;min-width:120px;">
