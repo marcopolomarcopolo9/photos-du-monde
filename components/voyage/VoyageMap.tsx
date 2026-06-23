@@ -77,40 +77,46 @@ instanceRef.current = map;
         className: '',
       });
 
-      // Calcule l'offset pixel de chaque label par rapport au centroïde du cluster local
-      const CLUSTER_THRESH = 3.5; // degrés
-      const LABEL_DIST = 22;      // px de distance depuis le marker
+      // Anti-chevauchement : convertit les coordonnées en pixels écran et empile
+      // verticalement les labels dont les markers sont proches à l'écran.
+      const LABEL_H = 16;   // hauteur approx d'une ligne de label en px
+      const NEAR_PX = 60;   // distance écran sous laquelle on considère 2 labels en conflit
 
-      const getLabelOffset = (ptIdx: number): { dx: number; dy: number } => {
-        const pt = pts[ptIdx];
-        // Trouve tous les voisins proches (y compris ce point)
-        const cluster = pts.filter(o =>
-          Math.hypot(pt.lat - o.lat, pt.lng - o.lng) < CLUSTER_THRESH
-        );
-        if (cluster.length <= 1) return { dx: 12, dy: -5 }; // seul → droite
+      // Position pixel de chaque point (après que la vue soit calée)
+      const screenPts = pts.map(p => map.latLngToContainerPoint([p.lat, p.lng]));
 
-        // Centroïde du cluster
-        const centLat = cluster.reduce((s, p) => s + p.lat, 0) / cluster.length;
-        const centLng = cluster.reduce((s, p) => s + p.lng, 0) / cluster.length;
+      // Pour chaque point, on attribue un "rang" vertical pour éviter les collisions.
+      // Les labels sont placés sous le X (dy positif). Si un label précédent occupe
+      // déjà cette zone à l'écran, on descend d'un cran.
+      const placed: { x: number; y: number }[] = [];
+      const labelOffsets: { dx: number; dy: number }[] = [];
 
-        // Vecteur du centroïde vers ce point (en espace écran : lng=x, lat=-y)
-        const rawDx = pt.lng - centLng;
-        const rawDy = -(pt.lat - centLat); // lat↑ = screen↑ = dy négatif
-
-        const mag = Math.hypot(rawDx, rawDy) || 0.001;
-        return {
-          dx: Math.round((rawDx / mag) * LABEL_DIST),
-          dy: Math.round((rawDy / mag) * LABEL_DIST),
-        };
-      };
+      screenPts.forEach((sp) => {
+        let dx = 12;
+        let dy = 4; // sous le X, légèrement à droite par défaut
+        // Tant qu'un label déjà placé est trop proche, on descend
+        let guard = 0;
+        while (guard < 10) {
+          const lx = sp.x + dx;
+          const ly = sp.y + dy;
+          const conflict = placed.some(pl =>
+            Math.abs(pl.x - lx) < NEAR_PX && Math.abs(pl.y - ly) < LABEL_H
+          );
+          if (!conflict) break;
+          dy += LABEL_H; // descend d'une ligne
+          guard++;
+        }
+        placed.push({ x: sp.x + dx, y: sp.y + dy });
+        labelOffsets.push({ dx, dy });
+      });
 
       pts.forEach((pt, i) => {
         const marker = L.marker([pt.lat, pt.lng], {
           icon: xIcon(i === 0),
         }).addTo(map);
 
-        // Label rayonnant vers l'extérieur du cluster
-        const { dx, dy } = getLabelOffset(i);
+        // Label empilé sans chevauchement
+        const { dx, dy } = labelOffsets[i];
         const labelIcon = L.divIcon({
           html: `<span style="font-size:9px;letter-spacing:0.18em;color:rgba(245,240,232,0.75);text-transform:uppercase;font-family:system-ui;white-space:nowrap;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,0.9);display:inline-block;transform:translate(${dx}px,${dy}px)">${pt.label}</span>`,
           iconSize: [0, 0],
