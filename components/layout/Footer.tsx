@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { Instagram, Mail } from 'lucide-react';
 
 function FooterDesc() {
@@ -15,7 +16,9 @@ function FooterDesc() {
 }
 
 export default function Footer() {
+  const pathname = usePathname();
   const year = new Date().getFullYear();
+  if (pathname?.startsWith('/admin')) return null;
 
   return (
     <footer className="bg-noir border-t border-white/5">
