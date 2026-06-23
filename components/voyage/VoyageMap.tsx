@@ -77,67 +77,55 @@ instanceRef.current = map;
         className: '',
       });
 
-      // ── Anti-chevauchement par rectangles de texte en pixels écran ──
-      const CHAR_W = 6.2;   // largeur approx d'un caractère (9px + letter-spacing)
-      const LABEL_H = 15;   // hauteur d'une ligne
-      const GAP_Y = 3;      // marge verticale entre 2 labels empilés
-      const DX = 11;        // décalage horizontal du label depuis le X
+      const CHAR_W = 6.2, LABEL_H = 15, GAP_Y = 3, DX = 11;
+      const labelW = (s) => Math.max((s || '').length * CHAR_W, 10);
 
-      // largeur estimée de chaque label en px
-      const labelW = (s: string) => Math.max(s.length * CHAR_W, 10);
-
-      // boîtes déjà occupées {x1,y1,x2,y2}
-      const boxes: { x1: number; y1: number; x2: number; y2: number }[] = [];
-      const labelOffsets: { dx: number; dy: number }[] = [];
-
-      pts.forEach((pt) => {
-        const sp = map.latLngToContainerPoint([pt.lat, pt.lng]);
-        const w = labelW(pt.label || '');
-        const dx = DX;
-        let dy = 2; // ligne de base du label, juste sous/à côté du X
-
-        // descend tant que la boîte chevauche une boîte déjà placée
-        let guard = 0;
-        while (guard < 12) {
-          const x1 = sp.x + dx;
-          const y1 = sp.y + dy - LABEL_H / 2;
-          const x2 = x1 + w;
-          const y2 = y1 + LABEL_H;
-          const hit = boxes.some(b =>
-            x1 < b.x2 + 4 && x2 > b.x1 - 4 && y1 < b.y2 + GAP_Y && y2 > b.y1 - GAP_Y
-          );
-          if (!hit) {
-            boxes.push({ x1, y1, x2, y2 });
-            break;
-          }
-          dy += LABEL_H + GAP_Y;
-          guard++;
-        }
-        labelOffsets.push({ dx, dy });
-      });
-
+      // Crée les croix + les markers de label (vides au départ)
+      const labelMarkers = [];
       pts.forEach((pt, i) => {
-        const marker = L.marker([pt.lat, pt.lng], {
-          icon: xIcon(i === 0),
-        }).addTo(map);
-
-        // Label empilé sans chevauchement
-        const { dx, dy } = labelOffsets[i];
-        const labelIcon = L.divIcon({
-          html: `<span style="font-size:9px;letter-spacing:0.18em;color:rgba(245,240,232,0.8);text-transform:uppercase;font-family:system-ui;white-space:nowrap;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,0.95);display:inline-block;transform:translate(${dx}px,${dy}px)">${pt.label}</span>`,
-          iconSize: [0, 0],
-          iconAnchor: [0, 0],
-          className: '',
-        });
-        L.marker([pt.lat, pt.lng], { icon: labelIcon, interactive: false }).addTo(map);
-
+        const marker = L.marker([pt.lat, pt.lng], { icon: xIcon(i === 0) }).addTo(map);
         marker.bindPopup(`
           <div style="background:#111;border:1px solid #2a2a2a;padding:10px 14px;font-family:system-ui;color:#f5f0e8;min-width:120px;">
             <div style="color:#c4962a;font-size:9px;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:4px;">${pt.day ? `Jour ${pt.day}` : `Étape ${i+1}`}</div>
             <div style="font-size:13px;">${pt.label || ''}</div>
           </div>
         `, { className: 'custom-popup' });
+
+        const lm = L.marker([pt.lat, pt.lng], {
+          icon: L.divIcon({ html: '', iconSize: [0, 0], iconAnchor: [0, 0], className: '' }),
+          interactive: false,
+        }).addTo(map);
+        labelMarkers.push(lm);
       });
+
+      // Recalcule les offsets anti-chevauchement à partir des positions écran réelles
+      const repositionLabels = () => {
+        const boxes = [];
+        pts.forEach((pt, i) => {
+          const sp = map.latLngToContainerPoint([pt.lat, pt.lng]);
+          const w = labelW(pt.label);
+          const dx = DX;
+          let dy = 2, guard = 0;
+          while (guard < 14) {
+            const x1 = sp.x + dx, y1 = sp.y + dy - LABEL_H / 2;
+            const x2 = x1 + w, y2 = y1 + LABEL_H;
+            const hit = boxes.some(b =>
+              x1 < b.x2 + 4 && x2 > b.x1 - 4 && y1 < b.y2 + GAP_Y && y2 > b.y1 - GAP_Y
+            );
+            if (!hit) { boxes.push({ x1, y1, x2, y2 }); break; }
+            dy += LABEL_H + GAP_Y;
+            guard++;
+          }
+          labelMarkers[i].setIcon(L.divIcon({
+            html: `<span style="font-size:9px;letter-spacing:0.18em;color:rgba(245,240,232,0.8);text-transform:uppercase;font-family:system-ui;white-space:nowrap;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,0.95);display:inline-block;transform:translate(${dx}px,${dy}px)">${pt.label}</span>`,
+            iconSize: [0, 0], iconAnchor: [0, 0], className: '',
+          }));
+        });
+      };
+
+      // Recalcule après calage de la vue, puis à chaque zoom/déplacement
+      map.whenReady(() => { repositionLabels(); setTimeout(repositionLabels, 100); });
+      map.on('zoomend moveend', repositionLabels);
     });
 
     return () => {
