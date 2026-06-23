@@ -2,8 +2,8 @@
 import type { Metadata } from 'next';
 import { Poppins } from 'next/font/google';
 import './globals.css';
-import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
+import NavbarWrapper from '@/components/layout/NavbarWrapper';
+import FooterWrapper from '@/components/layout/FooterWrapper';
 import AmbientSound from '@/components/ui/AmbientSound';
 import PageLoader from '@/components/ui/PageLoader';
 import CustomCursor from '@/components/ui/CustomCursor';
@@ -83,9 +83,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="bg-noir text-creme antialiased">
         <PageLoader />
         <CustomCursor />
-        <Navbar />
+        <NavbarWrapper />
         <main>{children}</main>
-        <Footer />
+        <FooterWrapper />
         <AmbientSound />
       </body>
     </html>
