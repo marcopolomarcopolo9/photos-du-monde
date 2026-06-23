@@ -77,23 +77,30 @@ instanceRef.current = map;
         className: '',
       });
 
+      // Pré-calcule les directions pour éviter les chevauchements de labels
+      const tooltipDirs: string[] = [];
+      const tooltipOffsets: [number, number][] = [];
+      const offMap: Record<string, [number, number]> = { right: [10, 0], left: [-10, 0], top: [0, -14], bottom: [0, 14] };
+      pts.forEach((pt, i) => {
+        let dir = 'right';
+        for (let j = 0; j < i; j++) {
+          const o = pts[j];
+          if (Math.abs(pt.lat - o.lat) < 8 && Math.abs(pt.lng - o.lng) < 12) {
+            dir = pt.lat < o.lat ? 'bottom' : 'top';
+            break;
+          }
+        }
+        tooltipDirs.push(dir);
+        tooltipOffsets.push(offMap[dir]);
+      });
+
       pts.forEach((pt, i) => {
         const marker = L.marker([pt.lat, pt.lng], {
           icon: xIcon(i === 0),
         }).addTo(map);
 
-        // Label avec direction anti-chevauchement
-        const dir = (() => {
-          for (let j = 0; j < i; j++) {
-            const o = pts[j];
-            if (Math.abs(pt.lat - o.lat) < 4 && Math.abs(pt.lng - o.lng) < 6) {
-              return pt.lat < o.lat ? 'bottom' : 'top';
-            }
-          }
-          return 'right';
-        })();
-        const offsets = { right: [10, 0], left: [-10, 0], top: [0, -10], bottom: [0, 10] };
-        L.tooltip({ permanent: true, direction: dir, offset: offsets[dir] })
+        // Label
+        L.tooltip({ permanent: true, direction: tooltipDirs[i], offset: tooltipOffsets[i] })
           .setContent(`<span style="font-size:9px;letter-spacing:0.18em;color:rgba(245,240,232,0.65);text-transform:uppercase;font-family:system-ui;background:transparent;border:none;box-shadow:none;">${pt.label}</span>`)
           .setLatLng([pt.lat, pt.lng])
           .addTo(map);
