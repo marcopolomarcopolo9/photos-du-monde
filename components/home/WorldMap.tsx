@@ -88,7 +88,7 @@ export default function WorldMap() {
         container.addEventListener('touchstart', onTouchStart, { passive: true });
       }
 
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(map);
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', { maxZoom: 18 }).addTo(map);
 
       // Fit bounds
       const bounds = L.latLngBounds(pts.map(p => [p.lat, p.lng]));
@@ -161,7 +161,7 @@ export default function WorldMap() {
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
         <style>{`
           .leaflet-container { background:#0a0a0a !important; }
-          .leaflet-tile { filter: brightness(0.18) saturate(0.3) sepia(0.2); }
+          .leaflet-tile { filter: brightness(2.0) contrast(2.5) saturate(1.4); }
           .pm-dot:hover { transform: scale(1.8); }
         `}</style>
         <div ref={mapRef} className="world-map-container" style={{ width: '100%', background: '#0a0a0a' }} />
