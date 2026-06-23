@@ -81,13 +81,11 @@ instanceRef.current = map;
       const labelW = (s) => Math.max((s || '').length * CHAR_W, 10);
 
       // Calque SVG pour les traits de liaison croix → label
-      const leaderPane = map.createPane('leaderLines');
-      leaderPane.style.zIndex = '450';
-      leaderPane.style.pointerEvents = 'none';
+      // Attaché au conteneur de la carte (coordonnées écran fixes, pas un pane mobile)
       const svgNS = 'http://www.w3.org/2000/svg';
       const svg = document.createElementNS(svgNS, 'svg');
-      svg.setAttribute('style', 'position:absolute;top:0;left:0;width:100%;height:100%;overflow:visible;pointer-events:none;');
-      leaderPane.appendChild(svg);
+      svg.setAttribute('style', 'position:absolute;top:0;left:0;width:100%;height:100%;overflow:visible;pointer-events:none;z-index:600;');
+      map.getContainer().appendChild(svg);
 
       // Crée les croix + les markers de label (vides au départ)
       const labelMarkers = [];
