@@ -113,7 +113,7 @@ instanceRef.current = map;
         .custom-popup .leaflet-popup-tip { background:#111!important; }
         .leaflet-tooltip { background:transparent!important; border:none!important; box-shadow:none!important; padding:0!important; }
         .leaflet-tooltip::before { display:none!important; }
-        .leaflet-tile-pane { filter: brightness(2.0) contrast(2.5) saturate(1.4); }
+        .leaflet-tile-pane { filter: brightness(2.3) contrast(1.6) saturate(1.2); }
       `}</style>
       <div ref={mapRef} style={{ width:'100%', height:'400px', background:'#0d0d0d' }} />
     </div>

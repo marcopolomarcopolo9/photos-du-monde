@@ -161,7 +161,7 @@ export default function WorldMap() {
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
         <style>{`
           .leaflet-container { background:#0a0a0a !important; }
-          .leaflet-tile { filter: brightness(2.0) contrast(2.5) saturate(1.4); }
+          .leaflet-tile { filter: brightness(2.3) contrast(1.6) saturate(1.2); }
           .pm-dot:hover { transform: scale(1.8); }
         `}</style>
         <div ref={mapRef} className="world-map-container" style={{ width: '100%', background: '#0a0a0a' }} />
