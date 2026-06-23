@@ -77,36 +77,42 @@ instanceRef.current = map;
         className: '',
       });
 
-      // Anti-chevauchement : convertit les coordonnées en pixels écran et empile
-      // verticalement les labels dont les markers sont proches à l'écran.
-      const LABEL_H = 16;   // hauteur approx d'une ligne de label en px
-      const NEAR_PX = 60;   // distance écran sous laquelle on considère 2 labels en conflit
+      // ── Anti-chevauchement par rectangles de texte en pixels écran ──
+      const CHAR_W = 6.2;   // largeur approx d'un caractère (9px + letter-spacing)
+      const LABEL_H = 15;   // hauteur d'une ligne
+      const GAP_Y = 3;      // marge verticale entre 2 labels empilés
+      const DX = 11;        // décalage horizontal du label depuis le X
 
-      // Position pixel de chaque point (après que la vue soit calée)
-      const screenPts = pts.map(p => map.latLngToContainerPoint([p.lat, p.lng]));
+      // largeur estimée de chaque label en px
+      const labelW = (s: string) => Math.max(s.length * CHAR_W, 10);
 
-      // Pour chaque point, on attribue un "rang" vertical pour éviter les collisions.
-      // Les labels sont placés sous le X (dy positif). Si un label précédent occupe
-      // déjà cette zone à l'écran, on descend d'un cran.
-      const placed: { x: number; y: number }[] = [];
+      // boîtes déjà occupées {x1,y1,x2,y2}
+      const boxes: { x1: number; y1: number; x2: number; y2: number }[] = [];
       const labelOffsets: { dx: number; dy: number }[] = [];
 
-      screenPts.forEach((sp) => {
-        let dx = 12;
-        let dy = 4; // sous le X, légèrement à droite par défaut
-        // Tant qu'un label déjà placé est trop proche, on descend
+      pts.forEach((pt) => {
+        const sp = map.latLngToContainerPoint([pt.lat, pt.lng]);
+        const w = labelW(pt.label || '');
+        const dx = DX;
+        let dy = 2; // ligne de base du label, juste sous/à côté du X
+
+        // descend tant que la boîte chevauche une boîte déjà placée
         let guard = 0;
-        while (guard < 10) {
-          const lx = sp.x + dx;
-          const ly = sp.y + dy;
-          const conflict = placed.some(pl =>
-            Math.abs(pl.x - lx) < NEAR_PX && Math.abs(pl.y - ly) < LABEL_H
+        while (guard < 12) {
+          const x1 = sp.x + dx;
+          const y1 = sp.y + dy - LABEL_H / 2;
+          const x2 = x1 + w;
+          const y2 = y1 + LABEL_H;
+          const hit = boxes.some(b =>
+            x1 < b.x2 + 4 && x2 > b.x1 - 4 && y1 < b.y2 + GAP_Y && y2 > b.y1 - GAP_Y
           );
-          if (!conflict) break;
-          dy += LABEL_H; // descend d'une ligne
+          if (!hit) {
+            boxes.push({ x1, y1, x2, y2 });
+            break;
+          }
+          dy += LABEL_H + GAP_Y;
           guard++;
         }
-        placed.push({ x: sp.x + dx, y: sp.y + dy });
         labelOffsets.push({ dx, dy });
       });
 
@@ -118,7 +124,7 @@ instanceRef.current = map;
         // Label empilé sans chevauchement
         const { dx, dy } = labelOffsets[i];
         const labelIcon = L.divIcon({
-          html: `<span style="font-size:9px;letter-spacing:0.18em;color:rgba(245,240,232,0.75);text-transform:uppercase;font-family:system-ui;white-space:nowrap;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,0.9);display:inline-block;transform:translate(${dx}px,${dy}px)">${pt.label}</span>`,
+          html: `<span style="font-size:9px;letter-spacing:0.18em;color:rgba(245,240,232,0.8);text-transform:uppercase;font-family:system-ui;white-space:nowrap;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,0.95);display:inline-block;transform:translate(${dx}px,${dy}px)">${pt.label}</span>`,
           iconSize: [0, 0],
           iconAnchor: [0, 0],
           className: '',
