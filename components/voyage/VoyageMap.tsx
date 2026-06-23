@@ -80,6 +80,15 @@ instanceRef.current = map;
       const CHAR_W = 6.2, LABEL_H = 15, GAP_Y = 3, DX = 11;
       const labelW = (s) => Math.max((s || '').length * CHAR_W, 10);
 
+      // Calque SVG pour les traits de liaison croix → label
+      const leaderPane = map.createPane('leaderLines');
+      leaderPane.style.zIndex = '450';
+      leaderPane.style.pointerEvents = 'none';
+      const svgNS = 'http://www.w3.org/2000/svg';
+      const svg = document.createElementNS(svgNS, 'svg');
+      svg.setAttribute('style', 'position:absolute;top:0;left:0;width:100%;height:100%;overflow:visible;pointer-events:none;');
+      leaderPane.appendChild(svg);
+
       // Crée les croix + les markers de label (vides au départ)
       const labelMarkers = [];
       pts.forEach((pt, i) => {
@@ -98,9 +107,12 @@ instanceRef.current = map;
         labelMarkers.push(lm);
       });
 
-      // Recalcule les offsets anti-chevauchement à partir des positions écran réelles
+      // Recalcule les offsets anti-chevauchement + redessine les traits de liaison
       const repositionLabels = () => {
         const boxes = [];
+        // efface les anciens traits
+        while (svg.firstChild) svg.removeChild(svg.firstChild);
+
         pts.forEach((pt, i) => {
           const sp = map.latLngToContainerPoint([pt.lat, pt.lng]);
           const w = labelW(pt.label);
@@ -116,8 +128,21 @@ instanceRef.current = map;
             dy += LABEL_H + GAP_Y;
             guard++;
           }
+
+          // Trait de liaison seulement si le label est décalé loin du X
+          if (dy > 10) {
+            const line = document.createElementNS(svgNS, 'line');
+            line.setAttribute('x1', String(sp.x));
+            line.setAttribute('y1', String(sp.y));
+            line.setAttribute('x2', String(sp.x + dx));
+            line.setAttribute('y2', String(sp.y + dy));
+            line.setAttribute('stroke', 'rgba(196,150,42,0.5)');
+            line.setAttribute('stroke-width', '1');
+            svg.appendChild(line);
+          }
+
           labelMarkers[i].setIcon(L.divIcon({
-            html: `<span style="font-size:9px;letter-spacing:0.18em;color:rgba(245,240,232,0.8);text-transform:uppercase;font-family:system-ui;white-space:nowrap;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,0.95);display:inline-block;transform:translate(${dx}px,${dy}px)">${pt.label}</span>`,
+            html: `<span style="font-size:9px;letter-spacing:0.18em;color:rgba(245,240,232,0.85);text-transform:uppercase;font-family:system-ui;white-space:nowrap;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,0.95);display:inline-block;transform:translate(${dx}px,${dy}px)">${pt.label}</span>`,
             iconSize: [0, 0], iconAnchor: [0, 0], className: '',
           }));
         });
