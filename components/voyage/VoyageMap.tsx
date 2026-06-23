@@ -77,33 +77,45 @@ instanceRef.current = map;
         className: '',
       });
 
-      // Pré-calcule les directions pour éviter les chevauchements de labels
-      const tooltipDirs: string[] = [];
-      const tooltipOffsets: [number, number][] = [];
-      const offMap: Record<string, [number, number]> = { right: [10, 0], left: [-10, 0], top: [0, -14], bottom: [0, 14] };
-      pts.forEach((pt, i) => {
-        let dir = 'right';
-        for (let j = 0; j < i; j++) {
-          const o = pts[j];
-          if (Math.abs(pt.lat - o.lat) < 8 && Math.abs(pt.lng - o.lng) < 12) {
-            dir = pt.lat < o.lat ? 'bottom' : 'top';
-            break;
+      // Label comme divIcon avec offset pixel calculé selon la position relative des voisins
+      const getLabelIcon = (ptIdx: number) => {
+        const pt = pts[ptIdx];
+        // Cherche le voisin le plus proche (déjà traité ou suivant)
+        let closestDist = Infinity;
+        let closestPt: typeof pt | null = null;
+        pts.forEach((o, j) => {
+          if (j === ptIdx) return;
+          const d = Math.hypot(pt.lat - o.lat, pt.lng - o.lng);
+          if (d < closestDist) { closestDist = d; closestPt = o; }
+        });
+
+        // Décide l'offset pixel : par défaut à droite; si voisin proche, on pousse vers le côté libre
+        let tx = 12, ty = -5; // droite par défaut
+        if (closestPt && closestDist < 5) {
+          const cp = closestPt as typeof pt;
+          if (Math.abs(pt.lat - cp.lat) > Math.abs(pt.lng - cp.lng)) {
+            // Voisin plutôt au-dessus/dessous → étiquette à droite mais décalée verticalement
+            ty = pt.lat > cp.lat ? 10 : -18;
+          } else {
+            // Voisin plutôt gauche/droite → étiquette au-dessus ou en-dessous
+            tx = 12; ty = pt.lng > cp.lng ? 10 : -18;
           }
         }
-        tooltipDirs.push(dir);
-        tooltipOffsets.push(offMap[dir]);
-      });
+        return L.divIcon({
+          html: `<span style="font-size:9px;letter-spacing:0.18em;color:rgba(245,240,232,0.75);text-transform:uppercase;font-family:system-ui;white-space:nowrap;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,0.9);">${pt.label}</span>`,
+          iconSize: [0, 0],
+          iconAnchor: [-tx, -ty],
+          className: '',
+        });
+      };
 
       pts.forEach((pt, i) => {
         const marker = L.marker([pt.lat, pt.lng], {
           icon: xIcon(i === 0),
         }).addTo(map);
 
-        // Label
-        L.tooltip({ permanent: true, direction: tooltipDirs[i], offset: tooltipOffsets[i] })
-          .setContent(`<span style="font-size:9px;letter-spacing:0.18em;color:rgba(245,240,232,0.65);text-transform:uppercase;font-family:system-ui;background:transparent;border:none;box-shadow:none;">${pt.label}</span>`)
-          .setLatLng([pt.lat, pt.lng])
-          .addTo(map);
+        // Label comme marker séparé avec offset calculé
+        L.marker([pt.lat, pt.lng], { icon: getLabelIcon(i), interactive: false }).addTo(map);
 
         marker.bindPopup(`
           <div style="background:#111;border:1px solid #2a2a2a;padding:10px 14px;font-family:system-ui;color:#f5f0e8;min-width:120px;">
