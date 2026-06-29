@@ -63,10 +63,7 @@ instanceRef.current = map;
       }).addTo(map);
 
       if (pts.length > 1) {
-        const b = L.latLngBounds(latlngs);
-        // Zoom calculé sur les bounds, puis +1 cran pour écarter les clusters serrés
-        const fitZoom = map.getBoundsZoom(b, false, [40, 40]);
-        map.setView(b.getCenter(), Math.min(fitZoom + 1, 18));
+        map.fitBounds(L.latLngBounds(latlngs), { padding: [55, 70] });
       }
 
       // X cross marker
@@ -80,7 +77,7 @@ instanceRef.current = map;
         className: '',
       });
 
-      const CHAR_W = 6.2, LABEL_H = 14, PAD = 4;
+      const CHAR_W = 5.0, LABEL_H = 12, PAD = 4;
       const labelW = (s) => Math.max((s || '').length * CHAR_W, 10);
 
       // Crée les croix + des markers de label vides (repositionnés ensuite)
@@ -138,7 +135,7 @@ instanceRef.current = map;
           }
 
           labelMarkers[i].setIcon(L.divIcon({
-            html: `<span style="font-size:9px;letter-spacing:0.18em;color:rgba(245,240,232,0.85);text-transform:uppercase;font-family:system-ui;white-space:nowrap;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,0.95);display:inline-block;transform:translate(${chosen.dx}px,${chosen.dy + LABEL_H / 2 - 4}px)">${pt.label}</span>`,
+            html: `<span style="font-size:8px;letter-spacing:0.1em;color:rgba(245,240,232,0.9);text-transform:uppercase;font-family:system-ui;white-space:nowrap;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,0.95);display:inline-block;transform:translate(${chosen.dx}px,${chosen.dy + LABEL_H / 2 - 4}px)">${pt.label}</span>`,
             iconSize: [0, 0], iconAnchor: [0, 0], className: '',
           }));
         });
