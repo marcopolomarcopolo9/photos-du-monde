@@ -77,17 +77,10 @@ instanceRef.current = map;
         className: '',
       });
 
-      const CHAR_W = 6.2, LABEL_H = 15, GAP_Y = 3, DX = 11;
+      const CHAR_W = 6.2, LABEL_H = 14, PAD = 4;
       const labelW = (s) => Math.max((s || '').length * CHAR_W, 10);
 
-      // Calque SVG pour les traits de liaison croix → label
-      // Attaché au conteneur de la carte (coordonnées écran fixes, pas un pane mobile)
-      const svgNS = 'http://www.w3.org/2000/svg';
-      const svg = document.createElementNS(svgNS, 'svg');
-      svg.setAttribute('style', 'position:absolute;top:0;left:0;width:100%;height:100%;overflow:visible;pointer-events:none;z-index:600;');
-      map.getContainer().appendChild(svg);
-
-      // Crée les croix + les markers de label (vides au départ)
+      // Crée les croix + des markers de label vides (repositionnés ensuite)
       const labelMarkers = [];
       pts.forEach((pt, i) => {
         const marker = L.marker([pt.lat, pt.lng], { icon: xIcon(i === 0) }).addTo(map);
@@ -105,48 +98,49 @@ instanceRef.current = map;
         labelMarkers.push(lm);
       });
 
-      // Recalcule les offsets anti-chevauchement + redessine les traits de liaison
+      // Place chaque label collé à SA croix, dans la 1ère direction libre.
+      // 8 directions candidates testées dans l'ordre (droite, gauche, bas, haut, diagonales).
       const repositionLabels = () => {
-        const boxes = [];
-        // efface les anciens traits
-        while (svg.firstChild) svg.removeChild(svg.firstChild);
+        const screen = pts.map(p => map.latLngToContainerPoint([p.lat, p.lng]));
+        // boîtes occupées par les croix elles-mêmes (~18px) pour ne pas écrire dessus
+        const boxes = screen.map(sp => ({ x1: sp.x - 9, y1: sp.y - 9, x2: sp.x + 9, y2: sp.y + 9 }));
+
+        const overlaps = (a, b) =>
+          a.x1 < b.x2 + PAD && a.x2 > b.x1 - PAD && a.y1 < b.y2 + PAD && a.y2 > b.y1 - PAD;
 
         pts.forEach((pt, i) => {
-          const sp = map.latLngToContainerPoint([pt.lat, pt.lng]);
+          const sp = screen[i];
           const w = labelW(pt.label);
-          const dx = DX;
-          let dy = 2, guard = 0;
-          while (guard < 14) {
-            const x1 = sp.x + dx, y1 = sp.y + dy - LABEL_H / 2;
-            const x2 = x1 + w, y2 = y1 + LABEL_H;
-            const hit = boxes.some(b =>
-              x1 < b.x2 + 4 && x2 > b.x1 - 4 && y1 < b.y2 + GAP_Y && y2 > b.y1 - GAP_Y
-            );
-            if (!hit) { boxes.push({ x1, y1, x2, y2 }); break; }
-            dy += LABEL_H + GAP_Y;
-            guard++;
-          }
+          // candidats {dx, dy} : dx/dy = coin haut-gauche de la boîte texte par rapport au X
+          const candidates = [
+            { dx: 11,        dy: -LABEL_H / 2 }, // droite
+            { dx: -w - 11,   dy: -LABEL_H / 2 }, // gauche
+            { dx: -w / 2,    dy: 11 },           // bas
+            { dx: -w / 2,    dy: -LABEL_H - 11 },// haut
+            { dx: 11,        dy: 11 },           // bas-droite
+            { dx: -w - 11,   dy: 11 },           // bas-gauche
+            { dx: 11,        dy: -LABEL_H - 11 },// haut-droite
+            { dx: -w - 11,   dy: -LABEL_H - 11 },// haut-gauche
+          ];
 
-          // Trait de liaison seulement si le label est décalé loin du X
-          if (dy > 10) {
-            const line = document.createElementNS(svgNS, 'line');
-            line.setAttribute('x1', String(sp.x));
-            line.setAttribute('y1', String(sp.y));
-            line.setAttribute('x2', String(sp.x + dx));
-            line.setAttribute('y2', String(sp.y + dy));
-            line.setAttribute('stroke', 'rgba(196,150,42,0.5)');
-            line.setAttribute('stroke-width', '1');
-            svg.appendChild(line);
+          let chosen = candidates[0];
+          for (const c of candidates) {
+            const box = { x1: sp.x + c.dx, y1: sp.y + c.dy, x2: sp.x + c.dx + w, y2: sp.y + c.dy + LABEL_H };
+            const hit = boxes.some(b => overlaps(box, b));
+            if (!hit) { chosen = c; boxes.push(box); break; }
+            // si dernier candidat et tout chevauche, on prend quand même le 1er
+            if (c === candidates[candidates.length - 1]) {
+              boxes.push({ x1: sp.x + chosen.dx, y1: sp.y + chosen.dy, x2: sp.x + chosen.dx + w, y2: sp.y + chosen.dy + LABEL_H });
+            }
           }
 
           labelMarkers[i].setIcon(L.divIcon({
-            html: `<span style="font-size:9px;letter-spacing:0.18em;color:rgba(245,240,232,0.85);text-transform:uppercase;font-family:system-ui;white-space:nowrap;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,0.95);display:inline-block;transform:translate(${dx}px,${dy}px)">${pt.label}</span>`,
+            html: `<span style="font-size:9px;letter-spacing:0.18em;color:rgba(245,240,232,0.85);text-transform:uppercase;font-family:system-ui;white-space:nowrap;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,0.95);display:inline-block;transform:translate(${chosen.dx}px,${chosen.dy + LABEL_H / 2 - 4}px)">${pt.label}</span>`,
             iconSize: [0, 0], iconAnchor: [0, 0], className: '',
           }));
         });
       };
 
-      // Recalcule après calage de la vue, puis à chaque zoom/déplacement
       map.whenReady(() => { repositionLabels(); setTimeout(repositionLabels, 100); });
       map.on('zoomend moveend', repositionLabels);
     });
