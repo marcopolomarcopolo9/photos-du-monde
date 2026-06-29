@@ -99,7 +99,7 @@ export default function VoyageMap({ waypoints, country, centerLat, centerLng }: 
         const marker = L.marker([pt.lat, pt.lng], { icon: numberedIcon(i + 1) }).addTo(map);
         marker.bindPopup(`
           <div style="background:#111;border:1px solid #2a2a2a;padding:10px 14px;font-family:system-ui;color:#f5f0e8;min-width:120px;">
-            <div style="color:#c4962a;font-size:9px;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:4px;">${pt.day ? `Jour ${pt.day}` : `Etape ${i + 1}`}</div>
+            ${pt.day ? `<div style="color:#c4962a;font-size:9px;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:4px;">Jour ${pt.day}</div>` : ''}
             <div style="font-size:13px;">${pt.label || ''}</div>
           </div>
         `, { className: 'custom-popup' });
