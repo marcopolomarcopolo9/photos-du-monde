@@ -41,6 +41,9 @@ export interface Voyage {
   subtitle: string;
   description: string;
   country: string;
+  country2?: string;
+  lat2?: number | null;
+  lng2?: number | null;
   continent: string;
   city: string;
   region?: string;

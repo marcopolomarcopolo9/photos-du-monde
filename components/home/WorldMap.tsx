@@ -20,15 +20,24 @@ export default function WorldMap() {
     import('leaflet').then(Lm => {
       const L = Lm.default;
 
-      const pts = voyages.map(v => ({
-        lat: v.lat || null,
-        lng: v.lng || null,
-        title: v.title,
-        country: v.country?.trim(),
-        slug: v.slug || v.id,
-        link: `/voyages/${v.slug || v.id}`,
-        photos: (v.photos || []).length,
-      })).filter(p => p.lat && p.lng);
+      const pts = voyages.flatMap(v => {
+        const base = {
+          title: v.title,
+          slug: v.slug || v.id,
+          link: `/voyages/${v.slug || v.id}`,
+          photos: (v.photos || []).length,
+        };
+        const points = [];
+        // Point principal
+        if (v.lat && v.lng) {
+          points.push({ ...base, lat: v.lat, lng: v.lng, country: v.country?.trim() });
+        }
+        // Second point (album bi-pays) → même album au clic
+        if (v.country2?.trim() && v.lat2 && v.lng2) {
+          points.push({ ...base, lat: v.lat2, lng: v.lng2, country: v.country2.trim() });
+        }
+        return points;
+      }).filter(p => p.lat && p.lng);
 
       // Point spécial Svalbard → toutes les photos taguées "svalbard"
       const svalbardCount = voyages.reduce((acc, v) =>

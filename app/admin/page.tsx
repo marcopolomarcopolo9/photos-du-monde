@@ -380,7 +380,7 @@ export default function AdminPage() {
   };
 
   const openEdit = v => setEditingVoyage({ ...v, slug: v.slug || v.id, id: v.slug || v.id, isNew: false, heroImage: v.heroImage || v.coverImage || '' });
-  const openNew = () => setEditingVoyage({ isNew: true, slug: '', title: '', country: '', city: '', startDate: '', description: '', heroImage: '', coverImage: '', photos: [], tags: [], lat: null, lng: null, published: true, waypoints: [] });
+  const openNew = () => setEditingVoyage({ isNew: true, slug: '', title: '', country: '', city: '', startDate: '', description: '', heroImage: '', coverImage: '', photos: [], tags: [], lat: null, lng: null, country2: '', lat2: null, lng2: null, published: true, waypoints: [] });
 
   /* ─── LOGIN ─── */
   if (!auth) return (
@@ -467,6 +467,25 @@ export default function AdminPage() {
               <Field label="Longitude (centre carte)">
                 <Inp value={editingVoyage.lng != null ? String(editingVoyage.lng) : ''} onChange={v => setEditingVoyage(p => ({ ...p, lng: parseFloat(v) || null }))} placeholder="-83.7534" />
               </Field>
+            </div>
+
+            {/* Second pays optionnel (album bi-pays) */}
+            <div style={{ marginTop: '16px', padding: '16px 18px', background: '#0d0d0d', borderRadius: '10px', border: '1px solid #1e1e1e' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                <label style={lbl}>SECOND PAYS (optionnel)</label>
+                <span style={{ fontSize: '11px', color: '#555' }}>— pour un album couvrant deux pays, ajoute un 2ᵉ point sur la carte d'accueil</span>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
+                <Field label="Pays 2">
+                  <Inp value={editingVoyage.country2 || ''} onChange={v => setEditingVoyage(p => ({ ...p, country2: v }))} placeholder="Nicaragua" />
+                </Field>
+                <Field label="Latitude pays 2">
+                  <Inp value={editingVoyage.lat2 != null ? String(editingVoyage.lat2) : ''} onChange={v => setEditingVoyage(p => ({ ...p, lat2: parseFloat(v) || null }))} placeholder="12.8654" />
+                </Field>
+                <Field label="Longitude pays 2">
+                  <Inp value={editingVoyage.lng2 != null ? String(editingVoyage.lng2) : ''} onChange={v => setEditingVoyage(p => ({ ...p, lng2: parseFloat(v) || null }))} placeholder="-85.2072" />
+                </Field>
+              </div>
             </div>
 
             {/* Waypoints */}
