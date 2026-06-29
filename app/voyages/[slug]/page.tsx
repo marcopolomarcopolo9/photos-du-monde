@@ -187,7 +187,7 @@ export default function VoyagePage({ params }: { params: { slug: string } }) {
                 {getYear(voyage.startDate||voyage.date) && (
                   <div><div className="text-[10px] tracking-widest uppercase text-or mb-1 font-poppins">Année</div><div className="text-sm text-creme/70">{getYear(voyage.startDate||voyage.date)}</div></div>
                 )}
-                <div><div className="text-[10px] tracking-widest uppercase text-or mb-1 font-poppins">Pays</div><div className="text-sm text-creme/70">{voyage.country}</div></div>
+                <div><div className="text-[10px] tracking-widest uppercase text-or mb-1 font-poppins">Pays</div><div className="text-sm text-creme/70">{voyage.country2 && voyage.country2.trim() ? `${(voyage.country || '').trim()} et ${voyage.country2.trim()}` : voyage.country}</div></div>
                 {voyage.city && <div><div className="text-[10px] tracking-widest uppercase text-or mb-1 font-poppins">Région</div><div className="text-sm text-creme/70">{voyage.city}</div></div>}
                 {allPhotos.length > 0 && <div><div className="text-[10px] tracking-widest uppercase text-or mb-1 font-poppins">Photos</div><div className="text-sm text-creme/70">{allPhotos.length}</div></div>}
               </div>

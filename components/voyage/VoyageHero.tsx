@@ -69,7 +69,7 @@ export default function VoyageHero({ voyage }: { voyage: any }) {
             }}>
               <div style={{ width: '40px', height: '1px', background: '#c4962a' }} />
               <span style={{ fontSize: '10px', letterSpacing: '0.35em', color: '#c4962a', textTransform: 'uppercase', fontFamily: 'system-ui' }}>
-                {voyage.country}{year ? ` · ${year}` : ''}
+                {voyage.country2 && voyage.country2.trim() ? `${(voyage.country || '').trim()} et ${voyage.country2.trim()}` : voyage.country}{year ? ` · ${year}` : ''}
               </span>
             </div>
 
