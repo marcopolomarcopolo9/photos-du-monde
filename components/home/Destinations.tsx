@@ -65,7 +65,7 @@ export default function Destinations() {
                       </span>
                     </div>
                     <h3 className="font-serif italic text-xl md:text-2xl text-creme font-light leading-tight mb-1">
-                      {voyage.country}
+                      {voyage.country2 && voyage.country2.trim() ? `${(voyage.country || '').trim()} et ${voyage.country2.trim()}` : voyage.country}
                     </h3>
                     <p className="text-xs text-creme/55 font-poppins font-light leading-relaxed line-clamp-2 max-w-xs opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-400">
                       {voyage.subtitle || voyage.description || voyage.city}

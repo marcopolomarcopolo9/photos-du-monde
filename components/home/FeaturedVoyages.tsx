@@ -71,7 +71,7 @@ function VoyageCard({ v, index }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <div style={{ width: '14px', height: '1px', background: '#c4962a' }} />
           <span style={{ fontFamily: 'system-ui', fontSize: '14px', letterSpacing: '0.3em', color: 'rgba(196,150,42,0.8)', textTransform: 'uppercase' }}>
-            {v.country}{getYear() ? ` · ${getYear()}` : ''}
+            {v.country2 && v.country2.trim() ? `${(v.country || '').trim()} et ${v.country2.trim()}` : v.country}{getYear() ? ` · ${getYear()}` : ''}
           </span>
         </div>
         <div style={{ marginTop: '12px', opacity: isHovered ? 1 : 0, transform: isHovered ? 'translateY(0)' : 'translateY(6px)', transition: 'all .3s', display: 'flex', alignItems: 'center', gap: '10px' }}>
