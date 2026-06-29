@@ -63,7 +63,10 @@ instanceRef.current = map;
       }).addTo(map);
 
       if (pts.length > 1) {
-        map.fitBounds(L.latLngBounds(latlngs), { padding: [48, 48] });
+        const b = L.latLngBounds(latlngs);
+        // Zoom calculé sur les bounds, puis +1 cran pour écarter les clusters serrés
+        const fitZoom = map.getBoundsZoom(b, false, [40, 40]);
+        map.setView(b.getCenter(), Math.min(fitZoom + 1, 18));
       }
 
       // X cross marker
