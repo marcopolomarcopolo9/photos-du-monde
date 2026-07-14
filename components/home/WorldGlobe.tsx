@@ -68,9 +68,20 @@ export default function WorldGlobe() {
       }
       import('three').then(THREE => {
         if (cancelled) return;
-        // Éclairage 100% ambiant → rendu plat et uniforme, plus de face "nuit"
-        // (les taches noires venaient de la lumière directionnelle par défaut)
-        g.lights([new THREE.AmbientLight(0xffffff, Math.PI)]);
+        // Ambiant modéré + lumière directionnelle ATTACHÉE À LA CAMÉRA :
+        // elle éclaire toujours la face visible (pas de face "nuit") tout en
+        // créant les ombres rasantes qui font ressortir le relief (bump map)
+        g.lights([new THREE.AmbientLight(0xffffff, 0.9)]);
+        const cam = g.camera();
+        const dl = new THREE.DirectionalLight(0xffffff, 1.6);
+        dl.position.set(0.7, 1, 1); // légèrement en haut à gauche du point de vue
+        cam.add(dl);
+        g.scene().add(cam);
+
+        // Accentue le relief de la topographie
+        const mat = g.globeMaterial();
+        mat.bumpScale = 14;
+        mat.needsUpdate = true;
 
         const c = g.controls();
         c.autoRotate = true;
@@ -131,24 +142,29 @@ export default function WorldGlobe() {
             atmosphereAltitude={0.15}
             onGlobeReady={onGlobeReady}
 
-            pointsData={pts}
-            pointLat="lat"
-            pointLng="lng"
-            pointColor={() => '#ffd76a'}
-            pointAltitude={0.02}
-            pointRadius={0.6}
-            onPointClick={p => { window.location.href = p.link; }}
-
-            labelsData={pts}
-            labelLat="lat"
-            labelLng="lng"
-            labelText="country"
-            labelSize={1.15}
-            labelDotRadius={0}
-            labelColor={() => '#ffffff'}
-            labelAltitude={0.025}
-            labelResolution={2}
-            onLabelClick={p => { window.location.href = p.link; }}
+            htmlElementsData={pts}
+            htmlLat="lat"
+            htmlLng="lng"
+            htmlAltitude={0.01}
+            htmlElement={p => {
+              const el = document.createElement('div');
+              el.innerHTML = `
+                <div style="display:flex;flex-direction:column;align-items:center;gap:5px;transform:translateY(-4px);">
+                  <div style="width:9px;height:9px;border-radius:50%;background:#ffd76a;border:1.5px solid rgba(8,8,8,0.9);box-shadow:0 0 10px rgba(255,215,106,0.8);"></div>
+                  <div style="background:rgba(8,8,8,0.85);border:1px solid rgba(196,150,42,0.55);padding:3px 9px;font-size:10px;letter-spacing:0.15em;color:#f5f0e8;text-transform:uppercase;font-family:system-ui,sans-serif;white-space:nowrap;backdrop-filter:blur(2px);">
+                    ${p.country}
+                  </div>
+                </div>`;
+              el.style.pointerEvents = 'auto';
+              el.style.cursor = 'pointer';
+              el.onclick = () => { window.location.href = p.link; };
+              return el;
+            }}
+            htmlElementVisibilityModifier={(el, isVisible) => {
+              el.style.opacity = isVisible ? '1' : '0';
+              el.style.pointerEvents = isVisible ? 'auto' : 'none';
+              el.style.transition = 'opacity .25s';
+            }}
           />
         )}
       </div>
