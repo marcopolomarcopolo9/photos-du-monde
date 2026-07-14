@@ -63,21 +63,45 @@ export default function WorldGlobe() {
   // Point spécial Svalbard
   pts.push({ lat: 78.2232, lng: 15.6267, country: 'Svalbard', link: '/categories/svalbard' });
 
-  // Config initiale du globe : rotation auto + vue centrée Europe/Afrique
-  const onGlobeReady = () => {
-    const g = globeRef.current;
-    if (!g) return;
-    g.controls().autoRotate = true;
-    g.controls().autoRotateSpeed = 0.55;
-    g.controls().enableZoom = true;
-    g.controls().minDistance = 180;
-    g.controls().maxDistance = 480;
-    g.pointOfView({ lat: 25, lng: 10, altitude: window.innerWidth < 768 ? 2.6 : 2.1 }, 0);
-    // Sphère quasi-noire, légèrement plus claire que le fond
-    const mat = g.globeMaterial();
-    mat.color.set('#0d0d0d');
-    mat.emissive?.set?.('#050505');
-  };
+  const [globeMounted, setGlobeMounted] = useState(false);
+
+  // Config du globe : appliquée dès que l'instance existe (plus fiable que onGlobeReady
+  // à travers le wrapper next/dynamic). Retente tant que la ref n'est pas prête.
+  useEffect(() => {
+    let cancelled = false;
+    let tries = 0;
+    const setup = () => {
+      if (cancelled) return;
+      const g = globeRef.current;
+      if (!g || typeof g.controls !== 'function') {
+        if (tries++ < 100) setTimeout(setup, 100);
+        return;
+      }
+      import('three').then(THREE => {
+        if (cancelled) return;
+        // Éclairage 100% ambiant → rendu plat et uniforme, plus de face "nuit"
+        // (les taches noires venaient de la lumière directionnelle par défaut)
+        g.lights([new THREE.AmbientLight(0xffffff, Math.PI)]);
+
+        const c = g.controls();
+        c.autoRotate = true;
+        c.autoRotateSpeed = 0.55;
+        c.enableZoom = true;
+        c.zoomSpeed = 0.8;
+        c.minDistance = 140;   // zoom rapproché possible
+        c.maxDistance = 500;
+        c.update();
+
+        g.pointOfView({ lat: 25, lng: 10, altitude: window.innerWidth < 768 ? 2.6 : 2.1 }, 0);
+        const mat = g.globeMaterial();
+        mat.color.set('#0d0d0d');
+      });
+    };
+    setup();
+    return () => { cancelled = true; };
+  }, [globeMounted, voyages.length]);
+
+  const onGlobeReady = () => setGlobeMounted(true);
 
   if (!voyages.length) return null;
 
@@ -105,7 +129,7 @@ export default function WorldGlobe() {
             hexPolygonResolution={3}
             hexPolygonMargin={0.55}
             hexPolygonUseDots={true}
-            hexPolygonColor={() => 'rgba(196,150,42,0.55)'}
+            hexPolygonColor={() => '#a37f24'}
 
             pointsData={pts}
             pointLat="lat"
