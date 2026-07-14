@@ -33,7 +33,7 @@ export default function WorldGlobe() {
       if (!containerRef.current) return;
       const w = containerRef.current.offsetWidth;
       const isMobile = window.innerWidth < 768;
-      setSize({ w, h: isMobile ? Math.min(w, 420) : Math.min(w * 0.72, 620) });
+      setSize({ w, h: isMobile ? Math.min(w * 1.1, 520) : Math.min(w * 0.85, 780) });
     };
     update();
     window.addEventListener('resize', update);
@@ -68,20 +68,29 @@ export default function WorldGlobe() {
       }
       import('three').then(THREE => {
         if (cancelled) return;
-        // Ambiant modéré + lumière directionnelle ATTACHÉE À LA CAMÉRA :
-        // elle éclaire toujours la face visible (pas de face "nuit") tout en
-        // créant les ombres rasantes qui font ressortir le relief (bump map)
-        g.lights([new THREE.AmbientLight(0xffffff, 0.9)]);
+        // Ambiant modéré + directionnelle attachée à la caméra avec un GRAND
+        // décalage latéral : lumière rasante qui sculpte le relief, toujours
+        // du côté visible (pas de face nuit)
+        g.lights([new THREE.AmbientLight(0xffffff, 0.85)]);
         const cam = g.camera();
-        const dl = new THREE.DirectionalLight(0xffffff, 1.6);
-        dl.position.set(0.7, 1, 1); // légèrement en haut à gauche du point de vue
+        const dl = new THREE.DirectionalLight(0xffffff, 1.5);
+        dl.position.set(250, 180, 60); // fort décalage → ombres rasantes visibles
         cam.add(dl);
         g.scene().add(cam);
 
-        // Accentue le relief de la topographie
+        // Relief 3D RÉEL : la topographie déforme la géométrie de la sphère
+        // (displacement), en plus de l'effet d'ombrage (bump)
         const mat = g.globeMaterial();
-        mat.bumpScale = 14;
-        mat.needsUpdate = true;
+        new THREE.TextureLoader().load(
+          '//unpkg.com/three-globe/example/img/earth-topology.png',
+          topo => {
+            mat.displacementMap = topo;
+            mat.displacementScale = 4.5;
+            mat.bumpMap = topo;
+            mat.bumpScale = 22;
+            mat.needsUpdate = true;
+          }
+        );
 
         const c = g.controls();
         c.autoRotate = true;
@@ -92,7 +101,7 @@ export default function WorldGlobe() {
         c.maxDistance = 500;
         c.update();
 
-        g.pointOfView({ lat: 25, lng: 10, altitude: window.innerWidth < 768 ? 2.6 : 2.1 }, 0);
+        g.pointOfView({ lat: 25, lng: 10, altitude: window.innerWidth < 768 ? 2.1 : 1.65 }, 0);
       });
     };
     setup();
@@ -110,7 +119,11 @@ export default function WorldGlobe() {
     g.pointOfView({ ...pov, altitude: alt }, 350);
   };
 
-  if (!voyages.length) return null;
+  // Espace réservé pendant le chargement des données : évite que la section
+  // apparaisse d'un coup et fasse sauter la page vers le globe
+  if (!voyages.length) {
+    return <section style={{ background: '#070707', minHeight: '60vh' }} />;
+  }
 
   return (
     <section style={{ background: '#070707', overflow: 'hidden' }}>
@@ -120,7 +133,9 @@ export default function WorldGlobe() {
         </h2>
       </div>
 
-      <div ref={containerRef} style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'center', cursor: 'grab', position: 'relative' }}>
+      <div ref={containerRef}
+        onDoubleClick={() => zoomBy(1 / 1.5)}
+        style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'center', cursor: 'grab', position: 'relative', userSelect: 'none', WebkitUserSelect: 'none' }}>
         <div style={{ position: 'absolute', right: 'clamp(12px,3vw,32px)', top: '50%', transform: 'translateY(-50%)', display: 'flex', flexDirection: 'column', gap: '8px', zIndex: 5 }}>
           {[['+', 1 / 1.35], ['−', 1.35]].map(([sym, f]) => (
             <button key={sym} onClick={() => zoomBy(f)} aria-label={sym === '+' ? 'Zoomer' : 'Dézoomer'}
@@ -145,7 +160,7 @@ export default function WorldGlobe() {
             htmlElementsData={pts}
             htmlLat="lat"
             htmlLng="lng"
-            htmlAltitude={0.01}
+            htmlAltitude={0.05}
             htmlElement={p => {
               const el = document.createElement('div');
               el.innerHTML = `
@@ -170,7 +185,7 @@ export default function WorldGlobe() {
       </div>
 
       <p style={{ textAlign: 'center', color: 'rgba(245,240,232,0.35)', fontSize: '11px', letterSpacing: '0.12em', textTransform: 'uppercase', fontFamily: 'system-ui', padding: '4px 0 28px' }}>
-        Faites tourner le globe — touchez un point pour explorer
+        Faites tourner le globe — double-cliquez pour zoomer, touchez un point pour explorer
       </p>
     </section>
   );
