@@ -217,14 +217,15 @@ export default function WorldGlobe() {
             htmlLng="lng"
             htmlAltitude={0.002}
             htmlElement={p => {
+              // Conteneur de taille NULLE : ancre non ambiguë (centre = coin = même point).
+              // Le point doré est centré pile sur la coordonnée, le label en dessous.
               const el = document.createElement('div');
+              el.style.position = 'relative';
+              el.style.width = '0';
+              el.style.height = '0';
               el.innerHTML = `
-                <div style="display:flex;flex-direction:column;align-items:center;gap:5px;transform:translateY(-4px);">
-                  <div style="width:9px;height:9px;border-radius:50%;background:#ffd76a;border:1.5px solid rgba(8,8,8,0.9);box-shadow:0 0 10px rgba(255,215,106,0.8);"></div>
-                  <div style="background:rgba(8,8,8,0.85);border:1px solid rgba(196,150,42,0.55);padding:3px 9px;font-size:10px;letter-spacing:0.15em;color:#f5f0e8;text-transform:uppercase;font-family:system-ui,sans-serif;white-space:nowrap;backdrop-filter:blur(2px);">
-                    ${p.country}
-                  </div>
-                </div>`;
+                <div style="position:absolute;left:0;top:0;transform:translate(-50%,-50%);width:9px;height:9px;border-radius:50%;background:#ffd76a;border:1.5px solid rgba(8,8,8,0.9);box-shadow:0 0 10px rgba(255,215,106,0.8);"></div>
+                <div style="position:absolute;left:0;top:8px;transform:translateX(-50%);background:rgba(8,8,8,0.85);border:1px solid rgba(196,150,42,0.55);padding:3px 9px;font-size:10px;letter-spacing:0.15em;color:#f5f0e8;text-transform:uppercase;font-family:system-ui,sans-serif;white-space:nowrap;backdrop-filter:blur(2px);">${p.country}</div>`;
               el.style.pointerEvents = 'auto';
               el.style.cursor = 'pointer';
               el.onclick = () => { window.location.href = p.link; };
