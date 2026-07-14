@@ -15,7 +15,8 @@ const Globe = dynamic(
 
 export default function WorldGlobe() {
   const globeRef = useRef(null);
-  const rafRef = useRef(null);
+  const hoverRef = useRef(false); // pause de la rotation au survol
+  const controlsRef = useRef(null);
   const containerRef = useRef(null);
   const [voyages, setVoyages] = useState([]);
   const [size, setSize] = useState({ w: 0, h: 0 });
@@ -113,8 +114,12 @@ export default function WorldGlobe() {
         );
 
         const c = g.controls();
-        c.autoRotate = true;
-        c.autoRotateSpeed = 0.55;
+        controlsRef.current = c;
+        c.enableDamping = false; // arrêt NET de la rotation au survol (sinon inertie de plusieurs secondes)
+        // Le autoRotate natif fonctionne depuis le fix du crash globeMaterial
+        // (c'est lui qui tournait "tout seul") — on le pilote directement
+        c.autoRotate = !hoverRef.current;
+        c.autoRotateSpeed = 0.4; // rotation légère
         c.enableZoom = true;
         c.zoomSpeed = 0.8;
         c.minDistance = 140;   // zoom rapproché possible
@@ -123,32 +128,40 @@ export default function WorldGlobe() {
 
         g.pointOfView({ lat: 25, lng: 10, altitude: window.innerWidth < 768 ? 2.1 : 1.65 }, 0);
 
-        // Rotation automatique : les contrôles de la lib ignorent autoRotate,
-        // on fait donc tourner la caméra nous-mêmes via pointOfView.
-        // Pause pendant la manipulation, reprise après 4s d'inactivité
-        let interacting = false;
+        // Pause pendant la manipulation (drag/pinch), reprise après 4s
         let resumeTimer = null;
         c.addEventListener('start', () => {
-          interacting = true;
+          c.autoRotate = false;
           if (resumeTimer) clearTimeout(resumeTimer);
         });
         c.addEventListener('end', () => {
-          resumeTimer = setTimeout(() => { interacting = false; }, 4000);
+          resumeTimer = setTimeout(() => { if (!hoverRef.current) c.autoRotate = true; }, 4000);
         });
-        const spin = () => {
-          if (cancelled) return;
-          if (!interacting) {
-            const pov = g.pointOfView();
-            g.pointOfView({ lat: pov.lat, lng: pov.lng + 0.022, altitude: pov.altitude });
-          }
-          rafRef.current = requestAnimationFrame(spin);
-        };
-        rafRef.current = requestAnimationFrame(spin);
       });
     };
     setup();
-    return () => { cancelled = true; if (rafRef.current) cancelAnimationFrame(rafRef.current); };
+    return () => { cancelled = true; };
   }, [globeMounted, voyages.length]);
+
+  // Pause de la rotation quand la souris est sur le globe.
+  // Méthode infaillible : on écoute les mouvements au niveau du document
+  // et on teste si le curseur est dans le rectangle du conteneur
+  // (les événements enter/leave sur ce conteneur se sont avérés peu fiables)
+  useEffect(() => {
+    const onMove = (e) => {
+      const el = containerRef.current;
+      const c = controlsRef.current;
+      if (!el || !c) return;
+      const r = el.getBoundingClientRect();
+      const inside = e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+      if (inside !== hoverRef.current) {
+        hoverRef.current = inside;
+        c.autoRotate = !inside;
+      }
+    };
+    document.addEventListener('pointermove', onMove);
+    return () => document.removeEventListener('pointermove', onMove);
+  }, []);
 
   const onGlobeReady = () => setGlobeMounted(true);
 
@@ -202,7 +215,7 @@ export default function WorldGlobe() {
             htmlElementsData={pts}
             htmlLat="lat"
             htmlLng="lng"
-            htmlAltitude={0.015}
+            htmlAltitude={0.002}
             htmlElement={p => {
               const el = document.createElement('div');
               el.innerHTML = `
