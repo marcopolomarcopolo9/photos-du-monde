@@ -15,6 +15,7 @@ const Globe = dynamic(
 
 export default function WorldGlobe() {
   const globeRef = useRef(null);
+  const rafRef = useRef(null);
   const containerRef = useRef(null);
   const [voyages, setVoyages] = useState([]);
   const [size, setSize] = useState({ w: 0, h: 0 });
@@ -68,6 +69,19 @@ export default function WorldGlobe() {
       }
       import('three').then(THREE => {
         if (cancelled) return;
+
+        // Trouve le mesh du globe dans la scène (react-globe.gl n'expose pas
+        // globeMaterial() comme méthode — c'était la cause du plantage qui
+        // annulait relief ET rotation)
+        let globeMesh = null;
+        g.scene().traverse(o => {
+          if (!globeMesh && o.isMesh && o.material?.isMeshPhongMaterial) globeMesh = o;
+        });
+        if (!globeMesh) {
+          if (tries++ < 100) setTimeout(setup, 150);
+          return;
+        }
+
         // Ambiant modéré + directionnelle attachée à la caméra avec un GRAND
         // décalage latéral : lumière rasante qui sculpte le relief, toujours
         // du côté visible (pas de face nuit)
@@ -82,19 +96,15 @@ export default function WorldGlobe() {
         // CRUCIAL : la sphère d'origine (75x75 segments) est trop grossière
         // pour que les chaînes de montagnes existent → on la remplace par une
         // géométrie haute résolution avant d'appliquer le displacement
-        const mat = g.globeMaterial();
-        let globeMesh = null;
-        g.scene().traverse(o => { if (o.isMesh && o.material === mat) globeMesh = o; });
-        if (globeMesh) {
-          const r = globeMesh.geometry?.parameters?.radius || 100;
-          globeMesh.geometry.dispose();
-          globeMesh.geometry = new THREE.SphereGeometry(r, 400, 200);
-        }
+        const mat = globeMesh.material;
+        const r = globeMesh.geometry?.parameters?.radius || 100;
+        globeMesh.geometry.dispose();
+        globeMesh.geometry = new THREE.SphereGeometry(r, 400, 200);
         new THREE.TextureLoader().load(
-          '//unpkg.com/three-globe/example/img/earth-topology.png',
+          'https://unpkg.com/three-globe/example/img/earth-topology.png',
           topo => {
             mat.displacementMap = topo;
-            mat.displacementScale = 8;   // relief exagéré pour être bien visible
+            mat.displacementScale = 6;   // relief exagéré mais limité (parallaxe des badges)
             mat.displacementBias = -0.5; // les océans restent au niveau de la sphère
             mat.bumpMap = topo;
             mat.bumpScale = 30;
@@ -112,10 +122,32 @@ export default function WorldGlobe() {
         c.update();
 
         g.pointOfView({ lat: 25, lng: 10, altitude: window.innerWidth < 768 ? 2.1 : 1.65 }, 0);
+
+        // Rotation automatique : les contrôles de la lib ignorent autoRotate,
+        // on fait donc tourner la caméra nous-mêmes via pointOfView.
+        // Pause pendant la manipulation, reprise après 4s d'inactivité
+        let interacting = false;
+        let resumeTimer = null;
+        c.addEventListener('start', () => {
+          interacting = true;
+          if (resumeTimer) clearTimeout(resumeTimer);
+        });
+        c.addEventListener('end', () => {
+          resumeTimer = setTimeout(() => { interacting = false; }, 4000);
+        });
+        const spin = () => {
+          if (cancelled) return;
+          if (!interacting) {
+            const pov = g.pointOfView();
+            g.pointOfView({ lat: pov.lat, lng: pov.lng + 0.022, altitude: pov.altitude });
+          }
+          rafRef.current = requestAnimationFrame(spin);
+        };
+        rafRef.current = requestAnimationFrame(spin);
       });
     };
     setup();
-    return () => { cancelled = true; };
+    return () => { cancelled = true; if (rafRef.current) cancelAnimationFrame(rafRef.current); };
   }, [globeMounted, voyages.length]);
 
   const onGlobeReady = () => setGlobeMounted(true);
@@ -160,8 +192,8 @@ export default function WorldGlobe() {
             width={size.w}
             height={size.h}
             backgroundColor="rgba(0,0,0,0)"
-            globeImageUrl="//unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
-            bumpImageUrl="//unpkg.com/three-globe/example/img/earth-topology.png"
+            globeImageUrl="https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
+            bumpImageUrl="https://unpkg.com/three-globe/example/img/earth-topology.png"
             showAtmosphere={true}
             atmosphereColor="#88b3d6"
             atmosphereAltitude={0.15}
@@ -170,7 +202,7 @@ export default function WorldGlobe() {
             htmlElementsData={pts}
             htmlLat="lat"
             htmlLng="lng"
-            htmlAltitude={0.05}
+            htmlAltitude={0.015}
             htmlElement={p => {
               const el = document.createElement('div');
               el.innerHTML = `
