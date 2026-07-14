@@ -3,7 +3,15 @@
 import { useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 
-const Globe = dynamic(() => import('react-globe.gl'), { ssr: false });
+const Globe = dynamic(
+  () => import('react-globe.gl').then(m => {
+    const G = m.default;
+    // next/dynamic ne transmet pas les refs → on passe par une prop dédiée
+    const Wrapped = ({ fRef, ...props }) => <G ref={fRef} {...props} />;
+    return Wrapped;
+  }),
+  { ssr: false, loading: () => <div style={{ color: '#c4962a', padding: '40px' }}>…</div> }
+);
 
 export default function WorldGlobe() {
   const globeRef = useRef(null);
@@ -29,7 +37,8 @@ export default function WorldGlobe() {
       .catch(() => {});
   }, []);
 
-  // Dimensionnement responsive
+  // Dimensionnement responsive — dépend de voyages car le conteneur
+  // n'existe pas tant que les données ne sont pas chargées
   useEffect(() => {
     const update = () => {
       if (!containerRef.current) return;
@@ -40,7 +49,7 @@ export default function WorldGlobe() {
     update();
     window.addEventListener('resize', update);
     return () => window.removeEventListener('resize', update);
-  }, []);
+  }, [voyages.length]);
 
   // Points de voyage (même logique que l'ancienne carte, bi-pays inclus)
   const pts = voyages.flatMap(v => {
@@ -83,7 +92,7 @@ export default function WorldGlobe() {
       <div ref={containerRef} style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'center', cursor: 'grab' }}>
         {size.w > 0 && (
           <Globe
-            ref={globeRef}
+            fRef={globeRef}
             width={size.w}
             height={size.h}
             backgroundColor="rgba(0,0,0,0)"
