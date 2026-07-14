@@ -56,12 +56,15 @@ export default function WorldMap() {
       const map = L.map(mapRef.current, {
         center: [30, 10],
         zoom: 1.5,
-        zoomControl: false,
+        minZoom: 1,
+        zoomControl: true,
+        zoomSnap: 0.5,
+        zoomDelta: 0.5,
         attributionControl: false,
         scrollWheelZoom: window.innerWidth >= 768,
         dragging: window.innerWidth >= 768,
         touchZoom: false,
-        doubleClickZoom: false,
+        doubleClickZoom: true,
       });
       instanceRef.current = map;
 
@@ -132,7 +135,6 @@ export default function WorldMap() {
             <div class="pm-dot" style="width:8px;height:8px;border-radius:50%;background:#c4962a;position:relative;z-index:2;"></div>
             <div class="pm-badge" style="position:absolute;${badgeStyle}background:rgba(8,8,8,0.88);border:1px solid rgba(196,150,42,0.4);padding:4px 9px;white-space:nowrap;z-index:3;cursor:pointer;transition:border-color .2s;">
               <div style="font-size:10px;letter-spacing:0.15em;color:#f5f0e8;text-transform:uppercase;font-family:system-ui;">${pt.country}</div>
-              <div style="font-size:9px;color:#c4962a;font-family:system-ui;margin-top:1px;">${pt.photos} photos</div>
             </div>
           </div>`,
           iconSize: [8, 8],
@@ -172,6 +174,13 @@ export default function WorldMap() {
           .leaflet-container { background:#0a0a0a !important; }
           .leaflet-tile { filter: brightness(2.3) contrast(1.6) saturate(1.2); }
           .pm-dot:hover { transform: scale(1.8); }
+          .leaflet-control-zoom { border: 1px solid rgba(196,150,42,0.4) !important; box-shadow: none !important; }
+          .leaflet-control-zoom a {
+            background: rgba(8,8,8,0.88) !important;
+            color: #c4962a !important;
+            border-color: rgba(196,150,42,0.25) !important;
+          }
+          .leaflet-control-zoom a:hover { background: rgba(20,20,20,0.95) !important; color: #f5f0e8 !important; }
         `}</style>
         <div ref={mapRef} className="world-map-container" style={{ width: '100%', background: '#0a0a0a' }} />
       </div>
