@@ -78,16 +78,26 @@ export default function WorldGlobe() {
         cam.add(dl);
         g.scene().add(cam);
 
-        // Relief 3D RÉEL : la topographie déforme la géométrie de la sphère
-        // (displacement), en plus de l'effet d'ombrage (bump)
+        // Relief 3D RÉEL : la topographie déforme la géométrie de la sphère.
+        // CRUCIAL : la sphère d'origine (75x75 segments) est trop grossière
+        // pour que les chaînes de montagnes existent → on la remplace par une
+        // géométrie haute résolution avant d'appliquer le displacement
         const mat = g.globeMaterial();
+        let globeMesh = null;
+        g.scene().traverse(o => { if (o.isMesh && o.material === mat) globeMesh = o; });
+        if (globeMesh) {
+          const r = globeMesh.geometry?.parameters?.radius || 100;
+          globeMesh.geometry.dispose();
+          globeMesh.geometry = new THREE.SphereGeometry(r, 400, 200);
+        }
         new THREE.TextureLoader().load(
           '//unpkg.com/three-globe/example/img/earth-topology.png',
           topo => {
             mat.displacementMap = topo;
-            mat.displacementScale = 4.5;
+            mat.displacementScale = 8;   // relief exagéré pour être bien visible
+            mat.displacementBias = -0.5; // les océans restent au niveau de la sphère
             mat.bumpMap = topo;
-            mat.bumpScale = 22;
+            mat.bumpScale = 30;
             mat.needsUpdate = true;
           }
         );
