@@ -17,23 +17,12 @@ export default function WorldGlobe() {
   const globeRef = useRef(null);
   const containerRef = useRef(null);
   const [voyages, setVoyages] = useState([]);
-  const [countries, setCountries] = useState({ features: [] });
   const [size, setSize] = useState({ w: 0, h: 0 });
 
   useEffect(() => {
     fetch('/api/voyages')
       .then(r => r.json())
       .then(d => setVoyages(d.voyages || []))
-      .catch(() => {});
-
-    // GeoJSON pays pour l'habillage hexagonal du globe
-    fetch('https://unpkg.com/world-atlas@2/countries-110m.json')
-      .then(r => r.json())
-      .then(topo =>
-        import('topojson-client').then(tj =>
-          setCountries(tj.feature(topo, topo.objects.countries))
-        )
-      )
       .catch(() => {});
   }, []);
 
@@ -93,8 +82,6 @@ export default function WorldGlobe() {
         c.update();
 
         g.pointOfView({ lat: 25, lng: 10, altitude: window.innerWidth < 768 ? 2.6 : 2.1 }, 0);
-        const mat = g.globeMaterial();
-        mat.color.set('#0d0d0d');
       });
     };
     setup();
@@ -102,6 +89,15 @@ export default function WorldGlobe() {
   }, [globeMounted, voyages.length]);
 
   const onGlobeReady = () => setGlobeMounted(true);
+
+  // Zoom garanti via boutons : ajuste l'altitude de la caméra directement
+  const zoomBy = (factor) => {
+    const g = globeRef.current;
+    if (!g) return;
+    const pov = g.pointOfView();
+    const alt = Math.min(4, Math.max(0.35, pov.altitude * factor));
+    g.pointOfView({ ...pov, altitude: alt }, 350);
+  };
 
   if (!voyages.length) return null;
 
@@ -113,30 +109,34 @@ export default function WorldGlobe() {
         </h2>
       </div>
 
-      <div ref={containerRef} style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'center', cursor: 'grab' }}>
+      <div ref={containerRef} style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'center', cursor: 'grab', position: 'relative' }}>
+        <div style={{ position: 'absolute', right: 'clamp(12px,3vw,32px)', top: '50%', transform: 'translateY(-50%)', display: 'flex', flexDirection: 'column', gap: '8px', zIndex: 5 }}>
+          {[['+', 1 / 1.35], ['−', 1.35]].map(([sym, f]) => (
+            <button key={sym} onClick={() => zoomBy(f)} aria-label={sym === '+' ? 'Zoomer' : 'Dézoomer'}
+              style={{ width: '38px', height: '38px', background: 'rgba(8,8,8,0.75)', border: '1px solid rgba(196,150,42,0.5)', color: '#c4962a', fontSize: '20px', lineHeight: 1, cursor: 'pointer', fontFamily: 'system-ui', backdropFilter: 'blur(2px)' }}>
+              {sym}
+            </button>
+          ))}
+        </div>
         {size.w > 0 && (
           <Globe
             fRef={globeRef}
             width={size.w}
             height={size.h}
             backgroundColor="rgba(0,0,0,0)"
+            globeImageUrl="//unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
+            bumpImageUrl="//unpkg.com/three-globe/example/img/earth-topology.png"
             showAtmosphere={true}
-            atmosphereColor="#c4962a"
-            atmosphereAltitude={0.13}
+            atmosphereColor="#88b3d6"
+            atmosphereAltitude={0.15}
             onGlobeReady={onGlobeReady}
-
-            hexPolygonsData={countries.features}
-            hexPolygonResolution={3}
-            hexPolygonMargin={0.55}
-            hexPolygonUseDots={true}
-            hexPolygonColor={() => '#a37f24'}
 
             pointsData={pts}
             pointLat="lat"
             pointLng="lng"
-            pointColor={() => '#f5f0e8'}
-            pointAltitude={0.015}
-            pointRadius={0.55}
+            pointColor={() => '#ffd76a'}
+            pointAltitude={0.02}
+            pointRadius={0.6}
             onPointClick={p => { window.location.href = p.link; }}
 
             labelsData={pts}
@@ -145,8 +145,8 @@ export default function WorldGlobe() {
             labelText="country"
             labelSize={1.15}
             labelDotRadius={0}
-            labelColor={() => '#f5f0e8'}
-            labelAltitude={0.018}
+            labelColor={() => '#ffffff'}
+            labelAltitude={0.025}
             labelResolution={2}
             onLabelClick={p => { window.location.href = p.link; }}
           />
