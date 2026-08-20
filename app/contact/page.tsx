@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import ScrollReveal from '@/components/ui/ScrollReveal';
-import { Mail, Instagram, Send, Check } from 'lucide-react';
+import { Send, Check } from 'lucide-react';
 
 export default function ContactPage() {
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
@@ -121,20 +121,7 @@ export default function ContactPage() {
               </div>
 
               <div className="pt-6 border-t border-white/5 space-y-4">
-                <a href="mailto:contact@photosdumonde.fr"
-                  className="flex items-center gap-3 text-sm text-creme/50 hover:text-creme transition-colors font-poppins group">
-                  <div className="w-9 h-9 border border-white/10 group-hover:border-or/40 flex items-center justify-center transition-colors">
-                    <Mail size={14} className="text-or/60" />
-                  </div>
-                  contact@photosdumonde.fr
-                </a>
-                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer"
-                  className="flex items-center gap-3 text-sm text-creme/50 hover:text-creme transition-colors font-poppins group">
-                  <div className="w-9 h-9 border border-white/10 group-hover:border-or/40 flex items-center justify-center transition-colors">
-                    <Instagram size={14} className="text-or/60" />
-                  </div>
-                  @photosdumonde
-                </a>
+                {/* Coordonnées temporairement masquées */}
               </div>
 
               <div className="pt-6 border-t border-white/5">
