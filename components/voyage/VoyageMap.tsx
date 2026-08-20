@@ -41,33 +41,20 @@ export default function VoyageMap({ waypoints, country, centerLat, centerLng }: 
       const cLat = (Math.min(...lats) + Math.max(...lats)) / 2;
       const cLng = (Math.min(...lngs) + Math.max(...lngs)) / 2;
 
+      const isDesktop = window.innerWidth >= 768;
       const map = L.map(mapRef.current, {
         center: [cLat, cLng],
         zoom: pts.length === 1 ? 7 : 6,
-        scrollWheelZoom: false,
-        dragging: window.innerWidth >= 768,
-        touchZoom: window.innerWidth < 768,
-        zoomControl: false,
+        scrollWheelZoom: isDesktop,   // molette sur desktop
+        dragging: true,               // un doigt / la souris déplace toujours
+        touchZoom: true,              // deux doigts zooment sur mobile
+        zoomControl: true,            // curseur +/- pour zoomer/naviguer
         attributionControl: false,
       });
       instanceRef.current = map;
 
-      // Mobile : 2 doigts pour zoomer, 1 doigt pour deplacer quand zoome
-      if (typeof window !== 'undefined' && window.innerWidth < 768) {
-        const initialZoom = map.getZoom();
-        const container = mapRef.current;
-        if (container) {
-          container.addEventListener('touchstart', (e) => {
-            if (e.touches.length >= 2) {
-              map.touchZoom.enable();
-              map.dragging.enable();
-            } else if (e.touches.length === 1) {
-              if (map.getZoom() > initialZoom) map.dragging.enable();
-              else map.dragging.disable();
-            }
-          }, { passive: true });
-        }
-      }
+      // Curseur de zoom en bas à droite, à l'écart de la légende en haut.
+      map.zoomControl.setPosition('bottomright');
 
       L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
         maxZoom: 18,
@@ -122,6 +109,14 @@ export default function VoyageMap({ waypoints, country, centerLat, centerLng }: 
         .custom-popup .leaflet-popup-content-wrapper { background:transparent!important; border:none!important; box-shadow:none!important; padding:0!important; }
         .custom-popup .leaflet-popup-content { margin:0!important; }
         .custom-popup .leaflet-popup-tip { background:#111!important; }
+        .leaflet-tile { filter: saturate(1.15) contrast(1.12); }
+        .leaflet-control-zoom { border: 1px solid rgba(196,150,42,0.4) !important; box-shadow: none !important; margin: 0 14px 14px 0 !important; }
+        .leaflet-control-zoom a {
+          background: rgba(8,8,8,0.88) !important;
+          color: #c4962a !important;
+          border-color: rgba(196,150,42,0.25) !important;
+        }
+        .leaflet-control-zoom a:hover { background: rgba(20,20,20,0.95) !important; color: #f5f0e8 !important; }
       `}</style>
       <div ref={mapRef} style={{ width: '100%', height: '400px', background: '#0d0d0d' }} />
 
