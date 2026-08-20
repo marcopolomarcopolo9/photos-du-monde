@@ -69,7 +69,7 @@ export default function VoyageMap({ waypoints, country, centerLat, centerLng }: 
         }
       }
 
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
+      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
         maxZoom: 18,
       }).addTo(map);
 
@@ -122,7 +122,6 @@ export default function VoyageMap({ waypoints, country, centerLat, centerLng }: 
         .custom-popup .leaflet-popup-content-wrapper { background:transparent!important; border:none!important; box-shadow:none!important; padding:0!important; }
         .custom-popup .leaflet-popup-content { margin:0!important; }
         .custom-popup .leaflet-popup-tip { background:#111!important; }
-        .leaflet-tile-pane { filter: brightness(2.3) contrast(1.6) saturate(1.2); }
       `}</style>
       <div ref={mapRef} style={{ width: '100%', height: '400px', background: '#0d0d0d' }} />
 
