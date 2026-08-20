@@ -2,7 +2,6 @@
 import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
-import { Instagram, Mail } from 'lucide-react';
 
 function FooterDesc() {
   const [desc, setDesc] = useState('Un carnet visuel de voyages autour du monde.');
@@ -43,22 +42,7 @@ export default function Footer() {
               Contact
             </div>
             <div className="flex flex-col gap-3">
-              <a
-                href="https://instagram.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 text-sm text-creme/50 hover:text-creme transition-colors"
-              >
-                <Instagram size={14} />
-                @photosdumonde
-              </a>
-              <a
-                href="mailto:contact@photosdumonde.fr"
-                className="flex items-center gap-2 text-sm text-creme/50 hover:text-creme transition-colors"
-              >
-                <Mail size={14} />
-                contact@photosdumonde.fr
-              </a>
+              {/* Coordonnées temporairement masquées */}
             </div>
           </div>
         </div>
