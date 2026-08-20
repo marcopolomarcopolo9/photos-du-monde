@@ -100,7 +100,10 @@ export default function WorldMap() {
         container.addEventListener('touchstart', onTouchStart, { passive: true });
       }
 
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', { maxZoom: 18 }).addTo(map);
+      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        maxZoom: 18,
+        attribution: 'Tiles &copy; Esri',
+      }).addTo(map);
 
       // Fit bounds
       const bounds = L.latLngBounds(pts.map(p => [p.lat, p.lng]));
@@ -132,7 +135,7 @@ export default function WorldMap() {
 
         const icon = L.divIcon({
           html: `<div style="position:relative;width:8px;height:8px;cursor:pointer;">
-            <div class="pm-dot" style="width:8px;height:8px;border-radius:50%;background:#c4962a;position:relative;z-index:2;"></div>
+            <div class="pm-dot" style="width:8px;height:8px;border-radius:50%;background:#c4962a;position:relative;z-index:2;box-shadow:0 0 0 2px rgba(8,8,8,0.55),0 1px 3px rgba(0,0,0,0.6);"></div>
             <div class="pm-badge" style="position:absolute;${badgeStyle}background:rgba(8,8,8,0.88);border:1px solid rgba(196,150,42,0.4);padding:4px 9px;white-space:nowrap;z-index:3;cursor:pointer;transition:border-color .2s;">
               <div style="font-size:10px;letter-spacing:0.15em;color:#f5f0e8;text-transform:uppercase;font-family:system-ui;">${pt.country}</div>
             </div>
@@ -172,7 +175,7 @@ export default function WorldMap() {
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
         <style>{`
           .leaflet-container { background:#0a0a0a !important; }
-          .leaflet-tile { filter: brightness(2.3) contrast(1.6) saturate(1.2); }
+          .leaflet-tile { filter: saturate(1.15) contrast(1.12); }
           .pm-dot:hover { transform: scale(1.8); }
           .leaflet-control-zoom { border: 1px solid rgba(196,150,42,0.4) !important; box-shadow: none !important; }
           .leaflet-control-zoom a {
