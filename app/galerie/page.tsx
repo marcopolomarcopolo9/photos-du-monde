@@ -33,7 +33,27 @@ export default function GaleriePage() {
       voyageSlug: v.slug || v.id,
     }))
   );
-  const filtered = filter === 'all' ? allPhotos : allPhotos.filter(p => p.country === filter);
+
+  // Méli-mélo : on brasse toutes les photos pour ne pas voir des clichés
+  // du même voyage les uns à côté des autres. Le mélange est déterministe
+  // (basé sur un hash de l'id), donc il reste stable d'un rendu à l'autre
+  // et ne saute pas quand on scrolle ou qu'on rouvre la page.
+  const hash = (s: string) => {
+    let h = 0x811c9dc5;
+    for (let i = 0; i < s.length; i++) {
+      h ^= s.charCodeAt(i);
+      h = Math.imul(h, 0x01000193);
+    }
+    // brassage final (avalanche) pour que deux ids proches donnent
+    // des valeurs très éloignées, sinon un préfixe commun regroupe tout
+    h ^= h >>> 15; h = Math.imul(h, 0x85ebca6b);
+    h ^= h >>> 13; h = Math.imul(h, 0xc2b2ae35);
+    h ^= h >>> 16;
+    return h >>> 0;
+  };
+  const shuffled = [...allPhotos].sort((a, b) => hash(a.id) - hash(b.id));
+
+  const filtered = filter === 'all' ? shuffled : shuffled.filter(p => p.country === filter);
 
   return (
     <div className="min-h-screen bg-noir pt-28 pb-24">
@@ -88,4 +108,5 @@ export default function GaleriePage() {
     </div>
   );
 }
+
 
