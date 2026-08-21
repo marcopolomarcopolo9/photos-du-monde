@@ -50,7 +50,7 @@ export default function GaleriePage() {
 
         {countries.length > 1 && (
           <div className="flex flex-wrap gap-2 mb-10">
-            <button onClick={() => setFilter('all')} className={`text-[10px] tracking-[0.2em] uppercase px-4 py-2 border transition-colors font-poppins ${filter === 'all' ? 'border-or text-or' : 'border-white/10 text-creme/40 hover:text-creme/70'}`}>Tous</button>
+            <button onClick={() => setFilter('all')} className={`text-[10px] tracking-[0.2em] uppercase px-4 py-2 border transition-colors font-poppins ${filter === 'all' ? 'border-or text-or' : 'border-white/10 text-creme/40 hover:text-creme/70'}`}>Photos du Monde</button>
             {countries.map(c => (
               <button key={c} onClick={() => setFilter(c)} className={`text-[10px] tracking-[0.2em] uppercase px-4 py-2 border transition-colors font-poppins ${filter === c ? 'border-or text-or' : 'border-white/10 text-creme/40 hover:text-creme/70'}`}>{c}</button>
             ))}
@@ -88,3 +88,4 @@ export default function GaleriePage() {
     </div>
   );
 }
+
