@@ -38,12 +38,12 @@ export default function Footer() {
 
           {/* Contact */}
           <div>
-            <div className="text-[10px] tracking-widest uppercase text-or mb-5">
+            <Link
+              href="/contact"
+              className="text-[10px] tracking-widest uppercase text-or hover:text-creme transition-colors"
+            >
               Contact
-            </div>
-            <div className="flex flex-col gap-3">
-              {/* Coordonnées temporairement masquées */}
-            </div>
+            </Link>
           </div>
         </div>
 
@@ -67,3 +67,4 @@ export default function Footer() {
     </footer>
   );
 }
+
