@@ -109,7 +109,7 @@ export default function VoyageMap({ waypoints, country, centerLat, centerLng }: 
         .custom-popup .leaflet-popup-content-wrapper { background:transparent!important; border:none!important; box-shadow:none!important; padding:0!important; }
         .custom-popup .leaflet-popup-content { margin:0!important; }
         .custom-popup .leaflet-popup-tip { background:#111!important; }
-        .leaflet-tile { filter: saturate(1.2) contrast(1.32); }
+        .leaflet-tile { filter: contrast(1.28); }
         .leaflet-control-zoom { border: 1px solid rgba(196,150,42,0.4) !important; box-shadow: none !important; margin: 0 14px 14px 0 !important; }
         .leaflet-control-zoom a {
           background: rgba(8,8,8,0.88) !important;
@@ -148,4 +148,5 @@ export default function VoyageMap({ waypoints, country, centerLat, centerLng }: 
     </div>
   );
 }
+
 
